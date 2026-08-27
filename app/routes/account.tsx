@@ -6,6 +6,11 @@ import {
   useLoaderData,
 } from 'react-router';
 import type {Route} from './+types/account';
+
+export const meta: Route.MetaFunction = () => [
+  {title: 'Account | Render-Lab'},
+  {name: 'robots', content: 'noindex, nofollow'},
+];
 import {CUSTOMER_DETAILS_QUERY} from '~/graphql/customer-account/CustomerDetailsQuery';
 
 export function shouldRevalidate() {

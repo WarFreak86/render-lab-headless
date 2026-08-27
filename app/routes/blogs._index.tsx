@@ -3,11 +3,19 @@ import type {Route} from './+types/blogs._index';
 import {getPaginationVariables} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import type {BlogsQuery} from 'storefrontapi.generated';
+import {getProductionUrl} from '~/lib/config';
 
 type BlogNode = BlogsQuery['blogs']['nodes'][0];
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Blogs`}];
+  const canonical = getProductionUrl('/blogs');
+  return [
+    {title: 'Journal | Render-Lab'},
+    {name: 'description', content: 'Render-Lab journal and studio notes.'},
+    {tagName: 'link', rel: 'canonical', href: canonical},
+    {property: 'og:type', content: 'website'},
+    {property: 'og:url', content: canonical},
+  ];
 };
 
 export async function loader(args: Route.LoaderArgs) {

@@ -1,5 +1,6 @@
 import {Await, Link} from 'react-router';
 import {Suspense, useId} from 'react';
+import {useOptimisticCart} from '@shopify/hydrogen';
 import type {
   CartApiQueryFragment,
   FooterQuery,
@@ -8,6 +9,7 @@ import type {
 import {Aside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
 import {Header, HeaderMenu} from '~/components/Header';
+import {AnnouncementBar} from '~/components/AnnouncementBar';
 import {CartMain} from '~/components/CartMain';
 import {
   SEARCH_ENDPOINT,
@@ -34,9 +36,13 @@ export function PageLayout({
 }: PageLayoutProps) {
   return (
     <Aside.Provider>
+      <a className="skip-link" href="#main-content">
+        Skip to main content
+      </a>
       <CartAside cart={cart} />
       <SearchAside />
       <MobileMenuAside header={header} publicStoreDomain={publicStoreDomain} />
+      <AnnouncementBar />
       {header && (
         <Header
           header={header}
@@ -45,7 +51,9 @@ export function PageLayout({
           publicStoreDomain={publicStoreDomain}
         />
       )}
-      <main>{children}</main>
+      <main id="main-content" tabIndex={-1}>
+        {children}
+      </main>
       <Footer
         footer={footer}
         header={header}
@@ -57,7 +65,16 @@ export function PageLayout({
 
 function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
   return (
-    <Aside type="cart" heading="CART">
+    <Aside
+      type="cart"
+      heading={
+        <Suspense fallback="Your cart">
+          <Await resolve={cart}>
+            {(resolvedCart) => <CartAsideHeading cart={resolvedCart} />}
+          </Await>
+        </Suspense>
+      }
+    >
       <Suspense fallback={<p>Loading cart ...</p>}>
         <Await resolve={cart}>
           {(cart) => {
@@ -69,16 +86,28 @@ function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
   );
 }
 
+function CartAsideHeading({cart}: {cart: CartApiQueryFragment | null}) {
+  const optimisticCart = useOptimisticCart(cart);
+  return (
+    <>
+      Your cart{' '}
+      <span className="drawer__title-count">
+        ({optimisticCart?.totalQuantity ?? 0})
+      </span>
+    </>
+  );
+}
+
 function SearchAside() {
   const queriesDatalistId = useId();
   return (
     <Aside type="search" heading="SEARCH">
       <div className="predictive-search">
-        <br />
         <SearchFormPredictive>
           {({fetchResults, goToSearch, inputRef}) => (
             <>
               <input
+                aria-label="Search Render-Lab"
                 name="q"
                 onChange={fetchResults}
                 onFocus={fetchResults}
@@ -87,8 +116,13 @@ function SearchAside() {
                 type="search"
                 list={queriesDatalistId}
               />
-              &nbsp;
-              <button onClick={goToSearch}>Search</button>
+              <button
+                className="button button--primary"
+                onClick={goToSearch}
+                type="button"
+              >
+                Search
+              </button>
             </>
           )}
         </SearchFormPredictive>
@@ -152,23 +186,15 @@ function SearchAside() {
 }
 
 function MobileMenuAside({
-  header,
-  publicStoreDomain,
+  header: _header,
+  publicStoreDomain: _publicStoreDomain,
 }: {
   header: PageLayoutProps['header'];
   publicStoreDomain: PageLayoutProps['publicStoreDomain'];
 }) {
   return (
-    header.menu &&
-    header.shop.primaryDomain?.url && (
-      <Aside type="mobile" heading="MENU">
-        <HeaderMenu
-          menu={header.menu}
-          viewport="mobile"
-          primaryDomainUrl={header.shop.primaryDomain.url}
-          publicStoreDomain={publicStoreDomain}
-        />
-      </Aside>
-    )
+    <Aside type="mobile" heading="MENU">
+      <HeaderMenu viewport="mobile" />
+    </Aside>
   );
 }

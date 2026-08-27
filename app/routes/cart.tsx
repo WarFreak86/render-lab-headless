@@ -3,9 +3,13 @@ import type {Route} from './+types/cart';
 import type {CartQueryDataReturn} from '@shopify/hydrogen';
 import {CartForm} from '@shopify/hydrogen';
 import {CartMain} from '~/components/CartMain';
+import {getSafeRedirect} from '~/lib/redirect';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Cart`}];
+  return [
+    {title: 'Cart | Render-Lab'},
+    {name: 'robots', content: 'noindex, nofollow'},
+  ];
 };
 
 export const headers: HeadersFunction = ({actionHeaders}) => actionHeaders;
@@ -33,6 +37,9 @@ export async function action({request, context}: Route.ActionArgs) {
       break;
     case CartForm.ACTIONS.LinesRemove:
       result = await cart.removeLines(inputs.lineIds);
+      break;
+    case CartForm.ACTIONS.NoteUpdate:
+      result = await cart.updateNote(inputs.note);
       break;
     case CartForm.ACTIONS.DiscountCodesUpdate: {
       const formDiscountCode = inputs.discountCode;
@@ -77,10 +84,10 @@ export async function action({request, context}: Route.ActionArgs) {
   const headers = cartId ? cart.setCartId(result.cart.id) : new Headers();
   const {cart: cartResult, errors, warnings} = result;
 
-  const redirectTo = formData.get('redirectTo') ?? null;
-  if (typeof redirectTo === 'string') {
+  const redirectTo = formData.get('redirectTo');
+  if (redirectTo !== null) {
     status = 303;
-    headers.set('Location', redirectTo);
+    headers.set('Location', getSafeRedirect(redirectTo, request.url, '/cart'));
   }
 
   return data(
@@ -106,7 +113,8 @@ export default function Cart() {
 
   return (
     <div className="cart">
-      <h1>Cart</h1>
+      <p className="cart-page__eyebrow">Render-Lab selection</p>
+      <h1>Your cart</h1>
       <CartMain layout="page" cart={cart} />
     </div>
   );

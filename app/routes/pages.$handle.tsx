@@ -1,9 +1,25 @@
 import {useLoaderData} from 'react-router';
 import type {Route} from './+types/pages.$handle';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {getProductionUrl} from '~/lib/config';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.page.title ?? ''}`}];
+  const page = data?.page;
+  const title = `${page?.seo?.title || page?.title || 'Page'} | Render-Lab`;
+  const canonical = getProductionUrl(`/pages/${page?.handle ?? ''}`);
+  return [
+    {title},
+    ...(page?.seo?.description
+      ? [{name: 'description', content: page.seo.description}]
+      : []),
+    {tagName: 'link', rel: 'canonical', href: canonical},
+    {property: 'og:title', content: title},
+    ...(page?.seo?.description
+      ? [{property: 'og:description', content: page.seo.description}]
+      : []),
+    {property: 'og:type', content: 'article'},
+    {property: 'og:url', content: canonical},
+  ];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -62,7 +78,7 @@ export default function Page() {
       <header>
         <h1>{page.title}</h1>
       </header>
-      <main dangerouslySetInnerHTML={{__html: page.body}} />
+      <div dangerouslySetInnerHTML={{__html: page.body}} />
     </div>
   );
 }

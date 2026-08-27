@@ -12,9 +12,23 @@ import type {
   RegularSearchQuery,
   PredictiveSearchQuery,
 } from 'storefrontapi.generated';
+import {getProductionUrl} from '~/lib/config';
+import {SEARCH_ROBOTS_DIRECTIVE} from '~/lib/seo';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Search`}];
+  return [
+    {title: 'Search | Render-Lab'},
+    {
+      name: 'description',
+      content: 'Search Render-Lab art, apparel, collections, and studio notes.',
+    },
+    {name: 'robots', content: SEARCH_ROBOTS_DIRECTIVE},
+    {
+      tagName: 'link',
+      rel: 'canonical',
+      href: getProductionUrl('/search'),
+    },
+  ];
 };
 
 export async function loader({request, context}: Route.LoaderArgs) {
@@ -41,9 +55,12 @@ export default function SearchPage() {
   if (type === 'predictive') return null;
 
   return (
-    <div className="search">
-      <h1>Search</h1>
-      <SearchForm>
+    <div className="search search-page">
+      <header className="search-page__header">
+        <h1>Search</h1>
+        <p>Find artwork, apparel, collections, and studio notes.</p>
+      </header>
+      <SearchForm aria-label="Search Render-Lab" className="search-form">
         {({inputRef}) => (
           <>
             <input
@@ -53,12 +70,13 @@ export default function SearchPage() {
               ref={inputRef}
               type="search"
             />
-            &nbsp;
-            <button type="submit">Search</button>
+            <button className="button button--primary" type="submit">
+              Search
+            </button>
           </>
         )}
       </SearchForm>
-      {error && <p style={{color: 'red'}}>{error}</p>}
+      {error ? <p className="search-page__error" role="alert">Search is temporarily unavailable.</p> : null}
       {!term || !result?.total ? (
         <SearchResults.Empty />
       ) : (

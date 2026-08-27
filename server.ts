@@ -1,6 +1,7 @@
 import * as serverBuild from 'virtual:react-router/server-build';
 import {createRequestHandler, storefrontRedirect} from '@shopify/hydrogen';
 import {createHydrogenRouterContext} from '~/lib/context';
+import {applySecurityHeaders} from '~/lib/security';
 
 /**
  * Export a fetch handler in module format.
@@ -29,6 +30,7 @@ export default {
       });
 
       const response = await handleRequest(request);
+      applySecurityHeaders(response.headers, request.url);
 
       if (hydrogenContext.session.isPending) {
         response.headers.set(
@@ -43,17 +45,22 @@ export default {
          * If the redirect doesn't exist, then `storefrontRedirect`
          * will pass through the 404 response.
          */
-        return storefrontRedirect({
+        const redirectResponse = await storefrontRedirect({
           request,
           response,
           storefront: hydrogenContext.storefront,
         });
+        applySecurityHeaders(redirectResponse.headers, request.url);
+        return redirectResponse;
       }
 
       return response;
     } catch (error) {
       console.error(error);
-      return new Response('An unexpected error occurred', {status: 500});
+      return new Response('An unexpected error occurred', {
+        status: 500,
+        headers: applySecurityHeaders(new Headers(), request.url),
+      });
     }
   },
 };

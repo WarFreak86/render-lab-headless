@@ -1,6 +1,7 @@
 import {Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/policies.$handle';
 import {type Shop} from '@shopify/hydrogen/storefront-api-types';
+import {getProductionUrl} from '~/lib/config';
 
 type SelectedPolicies = keyof Pick<
   Shop,
@@ -8,7 +9,15 @@ type SelectedPolicies = keyof Pick<
 >;
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.policy.title ?? ''}`}];
+  const policy = data?.policy;
+  return [
+    {title: `${policy?.title ?? 'Policy'} | Render-Lab`},
+    {
+      rel: 'canonical',
+      tagName: 'link',
+      href: getProductionUrl(`/policies/${policy?.handle ?? ''}`),
+    },
+  ];
 };
 
 export async function loader({params, context}: Route.LoaderArgs) {

@@ -1,5 +1,6 @@
 import {Analytics, getShopAnalytics, useNonce} from '@shopify/hydrogen';
 import {
+  Link,
   Outlet,
   useRouteError,
   isRouteErrorResponse,
@@ -13,11 +14,41 @@ import {
 import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
+import {SHOPIFY_CHECKOUT_DOMAIN, SITE_NAME} from '~/lib/config';
+import {getRouteErrorPresentation} from '~/lib/errors';
+import {
+  getEnvironmentRobotsDirective,
+  getGlobalStructuredData,
+  safeJsonLd,
+} from '~/lib/seo';
 import resetStyles from '~/styles/reset.css?url';
+import tokenStyles from '~/styles/tokens.css?url';
 import appStyles from '~/styles/app.css?url';
+import homeStyles from '~/styles/home.css?url';
+import collectionStyles from '~/styles/collection.css?url';
+import productStyles from '~/styles/product.css?url';
+import cartStyles from '~/styles/cart.css?url';
+import dropStyles from '~/styles/drop.css?url';
 import {PageLayout} from './components/PageLayout';
 
+import '@fontsource/cormorant-garamond/latin-500.css';
+import '@fontsource/cormorant-garamond/latin-600.css';
+import '@fontsource/manrope/latin-400.css';
+import '@fontsource/manrope/latin-500.css';
+import '@fontsource/manrope/latin-600.css';
+import '@fontsource/manrope/latin-700.css';
+
 export type RootLoader = typeof loader;
+
+export const meta: Route.MetaFunction = () => {
+  return [
+    {title: SITE_NAME},
+    {
+      name: 'description',
+      content: 'Render-Lab — art, editions, and objects for collectors.',
+    },
+  ];
+};
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -83,13 +114,14 @@ export async function loader(args: Route.LoaderArgs) {
       publicStorefrontId: env.PUBLIC_STOREFRONT_ID,
     }),
     consent: {
-      checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
+      checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN || SHOPIFY_CHECKOUT_DOMAIN,
       storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
       withPrivacyBanner: false,
       // localize the privacy banner
       country: args.context.storefront.i18n.country,
       language: args.context.storefront.i18n.language,
     },
+    robots: getEnvironmentRobotsDirective(args.request.url),
   };
 }
 
@@ -143,6 +175,8 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 
 export function Layout({children}: {children?: React.ReactNode}) {
   const nonce = useNonce();
+  const rootData = useRouteLoaderData<RootLoader>('root');
+  const globalJsonLd = safeJsonLd(getGlobalStructuredData());
 
   return (
     <html lang="en">
@@ -150,9 +184,24 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <link rel="stylesheet" href={resetStyles}></link>
+        <link rel="stylesheet" href={tokenStyles}></link>
         <link rel="stylesheet" href={appStyles}></link>
+        <link rel="stylesheet" href={homeStyles}></link>
+        <link rel="stylesheet" href={collectionStyles}></link>
+        <link rel="stylesheet" href={productStyles}></link>
+        <link rel="stylesheet" href={cartStyles}></link>
+        <link rel="stylesheet" href={dropStyles}></link>
+        {rootData?.robots ? (
+          <meta name="robots" content={rootData.robots} />
+        ) : null}
         <Meta />
         <Links />
+        <script
+          dangerouslySetInnerHTML={{__html: globalJsonLd}}
+          nonce={nonce}
+          suppressHydrationWarning
+          type="application/ld+json"
+        />
       </head>
       <body>
         {children}
@@ -185,25 +234,31 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  let errorMessage = 'Unknown error';
   let errorStatus = 500;
 
   if (isRouteErrorResponse(error)) {
-    errorMessage = error?.data?.message ?? error.data;
     errorStatus = error.status;
-  } else if (error instanceof Error) {
-    errorMessage = error.message;
   }
+  const presentation = getRouteErrorPresentation(errorStatus);
 
   return (
-    <div className="route-error">
-      <h1>Oops</h1>
-      <h2>{errorStatus}</h2>
-      {errorMessage && (
-        <fieldset>
-          <pre>{errorMessage}</pre>
-        </fieldset>
-      )}
-    </div>
+    <main className="route-error">
+      <Link className="route-error__brand" to="/">
+        RENDER-LAB
+      </Link>
+      <div className="route-error__content">
+        <p className="route-error__eyebrow">{presentation.eyebrow}</p>
+        <h1>{presentation.title}</h1>
+        <p>{presentation.message}</p>
+        <div className="route-error__actions">
+          <Link className="button button--primary" to="/">
+            Return home
+          </Link>
+          <Link className="button button--secondary" to="/collections">
+            Browse collections
+          </Link>
+        </div>
+      </div>
+    </main>
   );
 }

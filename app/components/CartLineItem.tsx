@@ -1,23 +1,26 @@
 import type {CartLineUpdateInput} from '@shopify/hydrogen/storefront-api-types';
-import type {CartLayout, LineItemChildrenMap} from '~/components/CartMain';
-import {CartForm, Image, type OptimisticCartLine} from '@shopify/hydrogen';
-import {useVariantUrl} from '~/lib/variants';
-import {Link} from 'react-router';
-import {ProductPrice} from './ProductPrice';
-import {useAside} from './Aside';
+import {
+  CartForm,
+  Image,
+  Money,
+  type OptimisticCartLine,
+} from '@shopify/hydrogen';
+import {Link, useFetcher} from 'react-router';
 import type {
   CartApiQueryFragment,
   CartLineFragment,
 } from 'storefrontapi.generated';
+import type {CartLayout, LineItemChildrenMap} from '~/components/CartMain';
+import {useAside} from '~/components/Aside';
+import {
+  getCartMutationMessage,
+  isMeaningfulCartOption,
+  isStableShopifyLineId,
+} from '~/lib/cart';
+import {useVariantUrl} from '~/lib/variants';
 
 export type CartLine = OptimisticCartLine<CartApiQueryFragment>;
 
-/**
- * A single line item in the cart. It displays the product image, title, price.
- * It also provides controls to update the quantity or remove the line item.
- * If the line is a parent line that has child components (like warranties or gift wrapping), they are
- * rendered nested below the parent line.
- */
 export function CartLineItem({
   layout,
   line,
@@ -32,56 +35,99 @@ export function CartLineItem({
   const lineItemUrl = useVariantUrl(product.handle, selectedOptions);
   const {close} = useAside();
   const lineItemChildren = childrenMap[id];
-  const childrenLabelId = `cart-line-children-${id}`;
+  const meaningfulOptions = selectedOptions.filter(isMeaningfulCartOption);
+  const mutationKey = getCartMutationKey([id]);
+  const mutationFetcher = useFetcher({key: mutationKey});
+  const pending = mutationFetcher.state !== 'idle';
+  const mutationError = getCartMutationMessage(mutationFetcher.data);
 
   return (
-    <li key={id} className="cart-line">
-      <div className="cart-line-inner">
-        {image && (
-          <Image
-            alt={title}
-            aspectRatio="1/1"
-            data={image}
-            height={100}
-            loading="lazy"
-            width={100}
-          />
-        )}
+    <li className="cart-line">
+      <article className="cart-line__inner">
+        <Link
+          aria-label={`View ${product.title}`}
+          className="cart-line__media"
+          onClick={layout === 'aside' ? close : undefined}
+          prefetch="intent"
+          to={lineItemUrl}
+        >
+          {image ? (
+            <Image
+              alt={image.altText || `${product.title} — ${title}`}
+              data={image}
+              height={128}
+              loading="lazy"
+              sizes="(max-width: 430px) 88px, 112px"
+              width={128}
+            />
+          ) : (
+            <span aria-hidden className="cart-line__media-placeholder" />
+          )}
+        </Link>
 
-        <div>
-          <Link
-            prefetch="intent"
-            to={lineItemUrl}
-            onClick={() => {
-              if (layout === 'aside') {
-                close();
-              }
-            }}
+        <div className="cart-line__content">
+          <div className="cart-line__heading">
+            <div>
+              <Link
+                className="cart-line__title"
+                onClick={layout === 'aside' ? close : undefined}
+                prefetch="intent"
+                to={lineItemUrl}
+              >
+                {product.title}
+              </Link>
+              {meaningfulOptions.length ? (
+                <dl className="cart-line__options">
+                  {meaningfulOptions.map((option) => (
+                    <div key={option.name}>
+                      <dt>{option.name}</dt>
+                      <dd>{option.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
+            </div>
+            <Money
+              as="p"
+              className="cart-line__price"
+              data={line.cost.totalAmount}
+            />
+          </div>
+
+          <div className="cart-line__actions">
+            <CartLineQuantity
+              line={line}
+              mutationKey={mutationKey}
+              pending={pending}
+            />
+            <CartLineRemoveButton
+              disabled={!isStableShopifyLineId(id)}
+              lineId={id}
+              mutationKey={mutationKey}
+              pending={pending}
+              productTitle={product.title}
+            />
+          </div>
+          <div
+            aria-live="polite"
+            className="cart-line__status"
+            data-pending={pending || undefined}
           >
-            <p>
-              <strong>{product.title}</strong>
-            </p>
-          </Link>
-          <ProductPrice price={line?.cost?.totalAmount} />
-          <ul>
-            {selectedOptions.map((option) => (
-              <li key={option.name}>
-                <small>
-                  {option.name}: {option.value}
-                </small>
-              </li>
-            ))}
-          </ul>
-          <CartLineQuantity line={line} />
+            {mutationError ? (
+              <span role="alert">{mutationError}</span>
+            ) : pending ? (
+              'Updating cart…'
+            ) : null}
+          </div>
         </div>
-      </div>
+      </article>
 
-      {lineItemChildren ? (
-        <div>
-          <p id={childrenLabelId} className="sr-only">
-            Line items with {product.title}
+      {lineItemChildren?.length ? (
+        <div className="cart-line__children">
+          <p id={`cart-line-children-${id}`} className="sr-only">
+            Items included with {product.title}
           </p>
-          <ul aria-labelledby={childrenLabelId} className="cart-line-children">
+          <ul aria-labelledby={`cart-line-children-${id}`}>
             {lineItemChildren.map((childLine) => (
               <CartLineItem
                 childrenMap={childrenMap}
@@ -97,67 +143,86 @@ export function CartLineItem({
   );
 }
 
-/**
- * Provides the controls to update the quantity of a line item in the cart.
- * These controls are disabled when the line item is new, and the server
- * hasn't yet responded that it was successfully added to the cart.
- */
-function CartLineQuantity({line}: {line: CartLine}) {
-  if (!line || typeof line?.quantity === 'undefined') return null;
-  const {id: lineId, quantity, isOptimistic} = line;
-  const prevQuantity = Number(Math.max(0, quantity - 1).toFixed(0));
-  const nextQuantity = Number((quantity + 1).toFixed(0));
+function CartLineQuantity({
+  line,
+  mutationKey,
+  pending,
+}: {
+  line: CartLine;
+  mutationKey: string;
+  pending: boolean;
+}) {
+  if (typeof line.quantity === 'undefined') return null;
+  const {id: lineId, quantity} = line;
+  const stableLine = isStableShopifyLineId(lineId);
+  const productTitle = line.merchandise.product.title;
 
   return (
-    <div className="cart-line-quantity">
-      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
-      <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
+    <div
+      aria-label={`Quantity for ${productTitle}`}
+      className="cart-line-quantity"
+      role="group"
+    >
+      <CartLineUpdateButton
+        fetcherKey={mutationKey}
+        lines={[{id: lineId, quantity: Math.max(1, quantity - 1)}]}
+      >
         <button
-          aria-label="Decrease quantity"
-          disabled={quantity <= 1 || !!isOptimistic}
-          name="decrease-quantity"
-          value={prevQuantity}
+          aria-busy={pending || undefined}
+          aria-label={`Decrease quantity of ${productTitle}`}
+          disabled={!stableLine || quantity <= 1}
+          type="submit"
         >
-          <span>&#8722; </span>
+          <span aria-hidden>−</span>
         </button>
       </CartLineUpdateButton>
-      &nbsp;
-      <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
+      <output aria-live="off" aria-label="Current quantity">
+        {quantity}
+      </output>
+      <CartLineUpdateButton
+        fetcherKey={mutationKey}
+        lines={[{id: lineId, quantity: quantity + 1}]}
+      >
         <button
-          aria-label="Increase quantity"
-          name="increase-quantity"
-          value={nextQuantity}
-          disabled={!!isOptimistic}
+          aria-busy={pending || undefined}
+          aria-label={`Increase quantity of ${productTitle}`}
+          disabled={!stableLine}
+          type="submit"
         >
-          <span>&#43;</span>
+          <span aria-hidden>+</span>
         </button>
       </CartLineUpdateButton>
-      &nbsp;
-      <CartLineRemoveButton lineIds={[lineId]} disabled={!!isOptimistic} />
     </div>
   );
 }
 
-/**
- * A button that removes a line item from the cart. It is disabled
- * when the line item is new, and the server hasn't yet responded
- * that it was successfully added to the cart.
- */
 function CartLineRemoveButton({
-  lineIds,
   disabled,
+  lineId,
+  mutationKey,
+  pending,
+  productTitle,
 }: {
-  lineIds: string[];
   disabled: boolean;
+  lineId: string;
+  mutationKey: string;
+  pending: boolean;
+  productTitle: string;
 }) {
   return (
     <CartForm
-      fetcherKey={getUpdateKey(lineIds)}
-      route="/cart"
       action={CartForm.ACTIONS.LinesRemove}
-      inputs={{lineIds}}
+      fetcherKey={mutationKey}
+      inputs={{lineIds: [lineId]}}
+      route="/cart"
     >
-      <button disabled={disabled} type="submit">
+      <button
+        aria-busy={pending || undefined}
+        aria-label={`Remove ${productTitle} from cart`}
+        className="cart-line__remove"
+        disabled={disabled}
+        type="submit"
+      >
         Remove
       </button>
     </CartForm>
@@ -166,32 +231,27 @@ function CartLineRemoveButton({
 
 function CartLineUpdateButton({
   children,
+  fetcherKey,
   lines,
 }: {
   children: React.ReactNode;
+  fetcherKey: string;
   lines: CartLineUpdateInput[];
 }) {
-  const lineIds = lines.map((line) => line.id);
-
   return (
     <CartForm
-      fetcherKey={getUpdateKey(lineIds)}
-      route="/cart"
       action={CartForm.ACTIONS.LinesUpdate}
+      fetcherKey={fetcherKey}
       inputs={{lines}}
+      route="/cart"
     >
       {children}
     </CartForm>
   );
 }
 
-/**
- * Returns a unique key for the update action. This is used to make sure actions modifying the same line
- * items are not run concurrently, but cancel each other. For example, if the user clicks "Increase quantity"
- * and "Decrease quantity" in rapid succession, the actions will cancel each other and only the last one will run.
- * @param lineIds - line ids affected by the update
- * @returns
- */
-function getUpdateKey(lineIds: string[]) {
-  return [CartForm.ACTIONS.LinesUpdate, ...lineIds].join('-');
+export function getCartMutationKey(lineIds: string[]) {
+  return ['cart-line', ...lineIds].join('-');
 }
+
+export type {CartLineFragment};

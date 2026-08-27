@@ -1,9 +1,36 @@
-// NOTE: https://shopify.dev/docs/api/storefront/latest/queries/cart
-export const CART_QUERY_FRAGMENT = `#graphql
+export const MONEY_FRAGMENT = `#graphql
   fragment Money on MoneyV2 {
     currencyCode
     amount
   }
+` as const;
+
+export const PRODUCT_CARD_FRAGMENT = `#graphql
+  fragment ProductCard on Product {
+    id
+    handle
+    title
+    featuredImage {
+      id
+      altText
+      url
+      width
+      height
+    }
+    priceRange {
+      minVariantPrice {
+        ...Money
+      }
+      maxVariantPrice {
+        ...Money
+      }
+    }
+  }
+  ${MONEY_FRAGMENT}
+` as const;
+
+// NOTE: https://shopify.dev/docs/api/storefront/latest/queries/cart
+export const CART_QUERY_FRAGMENT = `#graphql
   fragment CartLine on CartLine {
     id
     quantity
@@ -169,6 +196,7 @@ export const CART_QUERY_FRAGMENT = `#graphql
       applicable
     }
   }
+  ${MONEY_FRAGMENT}
 ` as const;
 
 const MENU_FRAGMENT = `#graphql

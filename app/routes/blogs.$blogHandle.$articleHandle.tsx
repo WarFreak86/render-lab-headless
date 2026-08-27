@@ -2,9 +2,30 @@ import {useLoaderData} from 'react-router';
 import type {Route} from './+types/blogs.$blogHandle.$articleHandle';
 import {Image} from '@shopify/hydrogen';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {getProductionUrl} from '~/lib/config';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.article.title ?? ''} article`}];
+  const article = data?.article;
+  const title = `${article?.seo?.title || article?.title || 'Article'} | Render-Lab`;
+  const canonical = getProductionUrl(
+    `/blogs/${article?.blog?.handle ?? ''}/${article?.handle ?? ''}`,
+  );
+  return [
+    {title},
+    ...(article?.seo?.description
+      ? [{name: 'description', content: article.seo.description}]
+      : []),
+    {tagName: 'link', rel: 'canonical', href: canonical},
+    {property: 'og:title', content: title},
+    ...(article?.seo?.description
+      ? [{property: 'og:description', content: article.seo.description}]
+      : []),
+    {property: 'og:type', content: 'article'},
+    {property: 'og:url', content: canonical},
+    ...(article?.image?.url
+      ? [{property: 'og:image', content: article.image.url}]
+      : []),
+  ];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -77,13 +98,11 @@ export default function Article() {
 
   return (
     <div className="article">
-      <h1>
-        {title}
-        <div>
-          <time dateTime={article.publishedAt}>{publishedDate}</time> &middot;{' '}
-          <address>{author?.name}</address>
-        </div>
-      </h1>
+      <h1>{title}</h1>
+      <p>
+        <time dateTime={article.publishedAt}>{publishedDate}</time>
+        {author?.name ? <> &middot; <span>{author.name}</span></> : null}
+      </p>
 
       {image && <Image data={image} sizes="90vw" loading="eager" />}
       <div
@@ -106,6 +125,9 @@ const ARTICLE_QUERY = `#graphql
       handle
       articleByHandle(handle: $articleHandle) {
         handle
+        blog {
+          handle
+        }
         title
         contentHtml
         publishedAt

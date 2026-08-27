@@ -1,11 +1,12 @@
 import {
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
-  useEffect,
+  useMemo,
   useState,
 } from 'react';
-import {useId} from 'react';
+import {Drawer} from '~/components/Drawer';
 
 type AsideType = 'search' | 'cart' | 'mobile' | 'closed';
 type AsideContextValue = {
@@ -14,63 +15,22 @@ type AsideContextValue = {
   close: () => void;
 };
 
-/**
- * A side bar component with Overlay
- * @example
- * ```jsx
- * <Aside type="search" heading="SEARCH">
- *  <input type="search" />
- *  ...
- * </Aside>
- * ```
- */
-export function Aside({
-  children,
-  heading,
-  type,
-}: {
+export function Aside({children, heading, type}: {
   children?: React.ReactNode;
-  type: AsideType;
+  type: Exclude<AsideType, 'closed'>;
   heading: React.ReactNode;
 }) {
   const {type: activeType, close} = useAside();
-  const expanded = type === activeType;
-  const id = useId();
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    if (expanded) {
-      document.addEventListener(
-        'keydown',
-        function handler(event: KeyboardEvent) {
-          if (event.key === 'Escape') {
-            close();
-          }
-        },
-        {signal: abortController.signal},
-      );
-    }
-    return () => abortController.abort();
-  }, [close, expanded]);
-
   return (
-    <div
-      aria-modal
-      className={`overlay ${expanded ? 'expanded' : ''}`}
-      role="dialog"
-      aria-labelledby={id}
+    <Drawer
+      className={`drawer--${type}`}
+      onClose={close}
+      open={type === activeType}
+      placement={type === 'mobile' ? 'left' : 'right'}
+      title={heading}
     >
-      <button className="close-outside" onClick={close} />
-      <aside>
-        <header>
-          <h3 id={id}>{heading}</h3>
-          <button className="close reset" onClick={close} aria-label="Close">
-            &times;
-          </button>
-        </header>
-        <main>{children}</main>
-      </aside>
-    </div>
+      {children}
+    </Drawer>
   );
 }
 
@@ -78,24 +38,13 @@ const AsideContext = createContext<AsideContextValue | null>(null);
 
 Aside.Provider = function AsideProvider({children}: {children: ReactNode}) {
   const [type, setType] = useState<AsideType>('closed');
-
-  return (
-    <AsideContext.Provider
-      value={{
-        type,
-        open: setType,
-        close: () => setType('closed'),
-      }}
-    >
-      {children}
-    </AsideContext.Provider>
-  );
+  const close = useCallback(() => setType('closed'), []);
+  const value = useMemo(() => ({type, open: setType, close}), [close, type]);
+  return <AsideContext.Provider value={value}>{children}</AsideContext.Provider>;
 };
 
 export function useAside() {
   const aside = useContext(AsideContext);
-  if (!aside) {
-    throw new Error('useAside must be used within an AsideProvider');
-  }
+  if (!aside) throw new Error('useAside must be used within an AsideProvider');
   return aside;
 }

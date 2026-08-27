@@ -1,5 +1,5 @@
 {
-  "name": "skeleton",
+  "name": "render-lab-headless",
   "private": true,
   "sideEffects": false,
   "version": "2026.4.6",
@@ -10,16 +10,20 @@
     "preview": "shopify hydrogen preview --build",
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "react-router typegen && tsc --noEmit",
-    "codegen": "shopify hydrogen codegen && react-router typegen"
+    "codegen": "shopify hydrogen codegen && react-router typegen",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "prettier": "@shopify/prettier-config",
   "dependencies": {
-    "@shopify/hydrogen": "workspace:*",
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/manrope": "^5.3.0",
+    "@shopify/hydrogen": "2026.4.5",
     "graphql": "^16.10.0",
     "graphql-tag": "^2.12.6",
     "isbot": "^5.1.22",
-    "react": "catalog:",
-    "react-dom": "catalog:",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "react-router": "7.16.0",
     "react-router-dom": "7.16.0"
   },
@@ -31,14 +35,17 @@
     "@react-router/dev": "7.16.0",
     "@react-router/fs-routes": "7.16.0",
     "@shopify/cli": "3.93.2",
-    "@shopify/hydrogen-codegen": "workspace:*",
-    "@shopify/mini-oxygen": "workspace:*",
+    "@shopify/hydrogen-codegen": "0.3.3",
+    "@shopify/mini-oxygen": "4.2.2",
     "@shopify/oxygen-workers-types": "^4.1.6",
-    "@shopify/prettier-config": "catalog:",
+    "@shopify/prettier-config": "1.1.4",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.6",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/eslint": "^9.6.1",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
+    "@types/react": "^18.3.28",
+    "@types/react-dom": "^18.3.7",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^8.21.0",
     "eslint": "^9.18.0",
@@ -52,11 +59,18 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "globals": "^15.14.0",
     "graphql-config": "^5.0.3",
+    "jsdom": "^29.1.1",
     "prettier": "^3.4.2",
     "typescript": "^5.9.2",
-    "vite": "^8.0.1"
+    "vite": "^8.0.1",
+    "vitest": "^4.1.11"
   },
   "engines": {
     "node": "^22 || ^24"
+  },
+  "allowScripts": {
+    "esbuild@0.27.4": true,
+    "unrs-resolver@1.12.2": true,
+    "workerd@1.20250310.0": true
   }
 }

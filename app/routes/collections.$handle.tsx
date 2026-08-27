@@ -1,131 +1,110 @@
-import {redirect, useLoaderData} from 'react-router';
+import {Analytics, getPaginationVariables} from '@shopify/hydrogen';
+import {redirect, useLoaderData, useSearchParams} from 'react-router';
 import type {Route} from './+types/collections.$handle';
-import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
-import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {CollectionView} from '~/components/collection/CollectionView';
+import {getProductionUrl} from '~/lib/config';
+import {
+  getCollectionSortVariables,
+  normalizeCollectionPage,
+  parseProductFilters,
+  parseSortValue,
+  type RawCollectionPage,
+} from '~/lib/collection';
+import {PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {ProductItem} from '~/components/ProductItem';
-import type {ProductItemFragment} from 'storefrontapi.generated';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
+  const page = data?.collectionPage;
+  const title = `${page?.hero.title ?? 'Collection'} | Render-Lab`;
+  const description =
+    page?.hero.description ??
+    `Browse ${page?.hero.title ?? 'the collection'} at Render-Lab.`;
+  const canonical = getProductionUrl(`/collections/${page?.handle ?? ''}`);
+  return [
+    {title},
+    {name: 'description', content: description},
+    {tagName: 'link', rel: 'canonical', href: canonical},
+    {property: 'og:title', content: title},
+    {property: 'og:description', content: description},
+    {property: 'og:type', content: 'website'},
+    {property: 'og:url', content: canonical},
+    ...(page?.hero.image
+      ? [
+          {property: 'og:image', content: page.hero.image.url},
+          {property: 'og:image:alt', content: page.hero.image.altText},
+        ]
+      : []),
+  ];
 };
 
-export async function loader(args: Route.LoaderArgs) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
-  const criticalData = await loadCriticalData(args);
-
-  return {...deferredData, ...criticalData};
-}
-
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
-async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
+export async function loader({context, params, request}: Route.LoaderArgs) {
   const {handle} = params;
-  const {storefront} = context;
-  const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8,
+  if (!handle) throw redirect('/collections');
+
+  const url = new URL(request.url);
+  const pagination = getPaginationVariables(request, {pageBy: 12});
+  const filters = parseProductFilters(url.searchParams);
+  const sort = getCollectionSortVariables(
+    parseSortValue(url.searchParams),
+    'collection',
+  );
+  const {collection} = await context.storefront.query(COLLECTION_QUERY, {
+    variables: {handle, ...pagination, filters, ...sort},
   });
 
-  if (!handle) {
-    throw redirect('/collections');
-  }
-
-  const [{collection}] = await Promise.all([
-    storefront.query(COLLECTION_QUERY, {
-      variables: {handle, ...paginationVariables},
-      // Add other queries here, so that they are loaded in parallel
-    }),
-  ]);
-
   if (!collection) {
-    throw new Response(`Collection ${handle} not found`, {
-      status: 404,
-    });
+    throw new Response(`Collection ${handle} not found`, {status: 404});
   }
-
-  // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, {handle, data: collection});
 
+  const heroReference = collection.heroMedia?.reference;
+  const collectionPage = normalizeCollectionPage({
+    id: collection.id,
+    handle: collection.handle,
+    title: collection.title,
+    description: collection.description,
+    image: collection.image,
+    editorialHeading: collection.editorialHeading,
+    editorialCopy: collection.editorialCopy,
+    heroMedia:
+      heroReference && 'image' in heroReference
+        ? {reference: {image: heroReference.image}}
+        : null,
+    products: collection.products,
+  } satisfies RawCollectionPage);
+
   return {
-    collection,
+    collectionPage,
+    productConnection: {
+      nodes: collectionPage.products,
+      pageInfo: collection.products.pageInfo,
+    },
   };
 }
 
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
-function loadDeferredData({context}: Route.LoaderArgs) {
-  return {};
-}
-
-export default function Collection() {
-  const {collection} = useLoaderData<typeof loader>();
-
+export default function CollectionRoute() {
+  const {collectionPage, productConnection} = useLoaderData<typeof loader>();
+  const [searchParams] = useSearchParams();
   return (
-    <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
-      <PaginatedResourceSection<ProductItemFragment>
-        connection={collection.products}
-        resourcesClassName="products-grid"
-      >
-        {({node: product, index}) => (
-          <ProductItem
-            key={product.id}
-            product={product}
-            loading={index < 8 ? 'eager' : undefined}
-          />
-        )}
-      </PaginatedResourceSection>
+    <>
+      <CollectionView
+        connection={productConnection}
+        data={collectionPage}
+        searchParams={searchParams}
+      />
       <Analytics.CollectionView
         data={{
           collection: {
-            id: collection.id,
-            handle: collection.handle,
+            id: collectionPage.id,
+            handle: collectionPage.handle,
           },
         }}
       />
-    </div>
+    </>
   );
 }
 
-const PRODUCT_ITEM_FRAGMENT = `#graphql
-  fragment MoneyProductItem on MoneyV2 {
-    amount
-    currencyCode
-  }
-  fragment ProductItem on Product {
-    id
-    handle
-    title
-    featuredImage {
-      id
-      altText
-      url
-      width
-      height
-    }
-    priceRange {
-      minVariantPrice {
-        ...MoneyProductItem
-      }
-      maxVariantPrice {
-        ...MoneyProductItem
-      }
-    }
-  }
-` as const;
-
-// NOTE: https://shopify.dev/docs/api/storefront/2022-04/objects/collection
 const COLLECTION_QUERY = `#graphql
-  ${PRODUCT_ITEM_FRAGMENT}
   query Collection(
     $handle: String!
     $country: CountryCode
@@ -134,20 +113,65 @@ const COLLECTION_QUERY = `#graphql
     $last: Int
     $startCursor: String
     $endCursor: String
+    $filters: [ProductFilter!]
+    $sortKey: ProductCollectionSortKeys
+    $reverse: Boolean
   ) @inContext(country: $country, language: $language) {
     collection(handle: $handle) {
       id
       handle
       title
       description
+      image {
+        id
+        url
+        altText
+        width
+        height
+      }
+      editorialHeading: metafield(namespace: "custom", key: "editorial_heading") {
+        value
+      }
+      editorialCopy: metafield(namespace: "custom", key: "editorial_copy") {
+        value
+      }
+      heroMedia: metafield(namespace: "custom", key: "hero_media") {
+        reference {
+          ... on MediaImage {
+            image {
+              id
+              url
+              altText
+              width
+              height
+            }
+          }
+        }
+      }
       products(
-        first: $first,
-        last: $last,
-        before: $startCursor,
+        first: $first
+        last: $last
+        before: $startCursor
         after: $endCursor
+        filters: $filters
+        sortKey: $sortKey
+        reverse: $reverse
       ) {
+        filters {
+          id
+          label
+          type
+          values {
+            id
+            label
+            count
+            input
+          }
+        }
         nodes {
-          ...ProductItem
+          ...ProductCard
+          productType
+          availableForSale
         }
         pageInfo {
           hasPreviousPage
@@ -158,4 +182,5 @@ const COLLECTION_QUERY = `#graphql
       }
     }
   }
+  ${PRODUCT_CARD_FRAGMENT}
 ` as const;

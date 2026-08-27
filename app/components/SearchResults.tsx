@@ -157,5 +157,11 @@ function SearchResultsProducts({
 }
 
 function SearchResultsEmpty() {
-  return <p>No results, try a different search.</p>;
+  return (
+    <div className="search-empty">
+      <p className="search-empty__eyebrow">The archive is quiet</p>
+      <h2>No results yet.</h2>
+      <p>Try a different title, material, or collection.</p>
+    </div>
+  );
 }

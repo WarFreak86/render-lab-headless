@@ -4,9 +4,25 @@ import {Image, getPaginationVariables} from '@shopify/hydrogen';
 import type {ArticleItemFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {getProductionUrl} from '~/lib/config';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.blog.title ?? ''} blog`}];
+  const blog = data?.blog;
+  const title = `${blog?.seo?.title || blog?.title || 'Journal'} | Render-Lab`;
+  const canonical = getProductionUrl(`/blogs/${blog?.handle ?? ''}`);
+  return [
+    {title},
+    ...(blog?.seo?.description
+      ? [{name: 'description', content: blog.seo.description}]
+      : []),
+    {tagName: 'link', rel: 'canonical', href: canonical},
+    {property: 'og:title', content: title},
+    ...(blog?.seo?.description
+      ? [{property: 'og:description', content: blog.seo.description}]
+      : []),
+    {property: 'og:type', content: 'website'},
+    {property: 'og:url', content: canonical},
+  ];
 };
 
 export async function loader(args: Route.LoaderArgs) {

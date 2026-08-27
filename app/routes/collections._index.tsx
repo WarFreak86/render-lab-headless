@@ -3,6 +3,22 @@ import type {Route} from './+types/collections._index';
 import {getPaginationVariables, Image} from '@shopify/hydrogen';
 import type {CollectionFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {getProductionUrl} from '~/lib/config';
+
+export const meta: Route.MetaFunction = () => {
+  const canonical = getProductionUrl('/collections');
+  const title = 'Collections | Render-Lab';
+  const description = 'Explore Render-Lab art, editions, and apparel collections.';
+  return [
+    {title},
+    {name: 'description', content: description},
+    {tagName: 'link', rel: 'canonical', href: canonical},
+    {property: 'og:title', content: title},
+    {property: 'og:description', content: description},
+    {property: 'og:type', content: 'website'},
+    {property: 'og:url', content: canonical},
+  ];
+};
 
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte
@@ -87,7 +103,7 @@ function CollectionItem({
           sizes="(min-width: 45em) 400px, 100vw"
         />
       )}
-      <h5>{collection.title}</h5>
+      <h2>{collection.title}</h2>
     </Link>
   );
 }

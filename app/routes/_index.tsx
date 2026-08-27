@@ -1,177 +1,113 @@
-import {Await, useLoaderData, Link} from 'react-router';
+import {useLoaderData} from 'react-router';
 import type {Route} from './+types/_index';
-import {Suspense} from 'react';
-import {Image} from '@shopify/hydrogen';
-import type {
-  FeaturedCollectionFragment,
-  RecommendedProductsQuery,
-} from 'storefrontapi.generated';
-import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
+import {HomepageView} from '~/components/homepage/HomepageView';
+import {PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
+import {getProductionUrl} from '~/lib/config';
+import {
+  HOMEPAGE_EDITORIAL_FALLBACK,
+  normalizeHomepageData,
+} from '~/lib/homepage';
+import {DROP_CONFIGS} from '~/lib/drops';
 
-export const meta: Route.MetaFunction = () => {
-  return [{title: 'Hydrogen | Home'}];
+const HOME_DESCRIPTION =
+  'Discover Render-Lab art, collector editions, and visual objects across metal, canvas, print, digital, and apparel formats.';
+
+export const meta: Route.MetaFunction = ({data}) => {
+  const canonical = getProductionUrl('/');
+  const image = data?.homepage.hero?.image;
+  return [
+    {title: 'Render-Lab | Art for considered spaces'},
+    {name: 'description', content: HOME_DESCRIPTION},
+    {tagName: 'link', rel: 'canonical', href: canonical},
+    {property: 'og:title', content: 'Render-Lab | Art for considered spaces'},
+    {property: 'og:description', content: HOME_DESCRIPTION},
+    {property: 'og:type', content: 'website'},
+    {property: 'og:url', content: canonical},
+    ...(image
+      ? [
+          {property: 'og:image', content: image.url},
+          {property: 'og:image:alt', content: image.altText},
+        ]
+      : []),
+  ];
 };
 
-export async function loader(args: Route.LoaderArgs) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
-  const criticalData = await loadCriticalData(args);
-
-  return {...deferredData, ...criticalData};
-}
-
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
-async function loadCriticalData({context}: Route.LoaderArgs) {
-  const [{collections}] = await Promise.all([
-    context.storefront.query(FEATURED_COLLECTION_QUERY),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
-
+export async function loader({context}: Route.LoaderArgs) {
+  const {collections, products, featuredDropProduct} =
+    await context.storefront.query(HOMEPAGE_QUERY, {
+      variables: {dropHandle: DROP_CONFIGS[0].productHandle},
+    });
   return {
     isShopLinked: Boolean(context.env.PUBLIC_STORE_DOMAIN),
-    featuredCollection: collections.nodes[0],
-  };
-}
-
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
-function loadDeferredData({context}: Route.LoaderArgs) {
-  const recommendedProducts = context.storefront
-    .query(RECOMMENDED_PRODUCTS_QUERY)
-    .catch((error: Error) => {
-      // Log query errors, but don't throw them so the page can still render
-      console.error(error);
-      return null;
-    });
-
-  return {
-    recommendedProducts,
+    homepage: normalizeHomepageData(
+      {
+        collections: collections.nodes,
+        products: products.nodes,
+        featuredDropProduct,
+      },
+      HOMEPAGE_EDITORIAL_FALLBACK,
+    ),
   };
 }
 
 export default function Homepage() {
   const data = useLoaderData<typeof loader>();
   return (
-    <div className="home">
+    <>
       {data.isShopLinked ? null : <MockShopNotice />}
-      <FeaturedCollection collection={data.featuredCollection} />
-      <RecommendedProducts products={data.recommendedProducts} />
-    </div>
+      <HomepageView data={data.homepage} />
+    </>
   );
 }
 
-function FeaturedCollection({
-  collection,
-}: {
-  collection: FeaturedCollectionFragment;
-}) {
-  if (!collection) return null;
-  const image = collection?.image;
-  return (
-    <Link
-      className="featured-collection"
-      to={`/collections/${collection.handle}`}
-    >
-      {image && (
-        <div className="featured-collection-image">
-          <Image
-            data={image}
-            sizes="100vw"
-            alt={image.altText || collection.title}
-          />
-        </div>
-      )}
-      <h1>{collection.title}</h1>
-    </Link>
-  );
-}
-
-function RecommendedProducts({
-  products,
-}: {
-  products: Promise<RecommendedProductsQuery | null>;
-}) {
-  return (
-    <section
-      className="recommended-products"
-      aria-labelledby="recommended-products"
-    >
-      <h2 id="recommended-products">Recommended Products</h2>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Await resolve={products}>
-          {(response) => (
-            <div className="recommended-products-grid">
-              {response
-                ? response.products.nodes.map((product) => (
-                    <ProductItem key={product.id} product={product} />
-                  ))
-                : null}
-            </div>
-          )}
-        </Await>
-      </Suspense>
-      <br />
-    </section>
-  );
-}
-
-const FEATURED_COLLECTION_QUERY = `#graphql
-  fragment FeaturedCollection on Collection {
-    id
-    title
-    image {
-      id
-      url
-      altText
-      width
-      height
-    }
-    handle
-  }
-  query FeaturedCollection($country: CountryCode, $language: LanguageCode)
+const HOMEPAGE_QUERY = `#graphql
+  query Homepage(
+    $country: CountryCode
+    $dropHandle: String!
+    $language: LanguageCode
+  )
     @inContext(country: $country, language: $language) {
-    collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
+    collections(first: 12, sortKey: UPDATED_AT, reverse: true) {
       nodes {
-        ...FeaturedCollection
+        id
+        handle
+        title
+        description
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        products(first: 6) {
+          nodes {
+            ...ProductCard
+            description
+            descriptionHtml
+            productType
+            availableForSale
+          }
+        }
       }
     }
-  }
-` as const;
-
-const RECOMMENDED_PRODUCTS_QUERY = `#graphql
-  fragment RecommendedProduct on Product {
-    id
-    title
-    handle
-    priceRange {
-      minVariantPrice {
-        amount
-        currencyCode
-      }
-    }
-    featuredImage {
-      id
-      url
-      altText
-      width
-      height
-    }
-  }
-  query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    products(first: 4, sortKey: UPDATED_AT, reverse: true) {
+    products(first: 12, sortKey: UPDATED_AT, reverse: true) {
       nodes {
-        ...RecommendedProduct
+        ...ProductCard
+        description
+        descriptionHtml
+        productType
+        availableForSale
       }
     }
+    featuredDropProduct: product(handle: $dropHandle) {
+      ...ProductCard
+      description
+      descriptionHtml
+      productType
+      availableForSale
+    }
   }
+  ${PRODUCT_CARD_FRAGMENT}
 ` as const;

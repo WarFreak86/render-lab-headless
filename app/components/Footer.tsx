@@ -1,6 +1,8 @@
 import {Suspense} from 'react';
 import {Await, NavLink} from 'react-router';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import {Container} from '~/components/Container';
+import {SITE_NAME} from '~/lib/config';
 
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
@@ -8,122 +10,80 @@ interface FooterProps {
   publicStoreDomain: string;
 }
 
-export function Footer({
-  footer: footerPromise,
-  header,
-  publicStoreDomain,
-}: FooterProps) {
+export function Footer({footer: footerPromise, header, publicStoreDomain}: FooterProps) {
   return (
-    <Suspense>
-      <Await resolve={footerPromise}>
-        {(footer) => (
-          <footer className="footer">
-            {footer?.menu && header.shop.primaryDomain?.url && (
-              <FooterMenu
-                menu={footer.menu}
-                primaryDomainUrl={header.shop.primaryDomain.url}
-                publicStoreDomain={publicStoreDomain}
-              />
-            )}
-          </footer>
-        )}
-      </Await>
-    </Suspense>
+    <footer className="site-footer">
+      <Container className="site-footer__grid" size="wide">
+        <div className="site-footer__brand">
+          <NavLink className="brand-mark" to="/">RENDER-LAB</NavLink>
+          <p>Art, editions, and objects selected for considered spaces.</p>
+        </div>
+        <FooterLinkGroup title="Explore">
+          <NavLink to="/collections">Collections</NavLink>
+          <NavLink to="/collections/hoodies">Apparel</NavLink>
+        </FooterLinkGroup>
+        <FooterLinkGroup title="Support">
+          <NavLink to="/account">Account</NavLink>
+          <NavLink to="/cart">Cart</NavLink>
+          <NavLink to="/search">Search</NavLink>
+        </FooterLinkGroup>
+        <div>
+          <h2 className="site-footer__heading">Policies</h2>
+          <Suspense fallback={null}>
+            <Await resolve={footerPromise}>
+              {(footer) => (
+                <FooterMenu
+                  footer={footer}
+                  header={header}
+                  publicStoreDomain={publicStoreDomain}
+                />
+              )}
+            </Await>
+          </Suspense>
+        </div>
+      </Container>
+      <Container className="site-footer__bottom" size="wide">
+        <p>© {new Date().getFullYear()} {SITE_NAME}</p>
+        <p>Shopify-powered commerce</p>
+      </Container>
+    </footer>
   );
 }
 
-function FooterMenu({
-  menu,
-  primaryDomainUrl,
-  publicStoreDomain,
-}: {
-  menu: FooterQuery['menu'];
-  primaryDomainUrl: FooterProps['header']['shop']['primaryDomain']['url'];
+function FooterLinkGroup({children, title}: {children: React.ReactNode; title: string}) {
+  return (
+    <div>
+      <h2 className="site-footer__heading">{title}</h2>
+      <nav className="site-footer__links" aria-label={title}>{children}</nav>
+    </div>
+  );
+}
+
+function FooterMenu({footer, header, publicStoreDomain}: {
+  footer: FooterQuery | null;
+  header: HeaderQuery;
   publicStoreDomain: string;
 }) {
+  if (!footer?.menu) return null;
+  const primaryDomainUrl = header.shop.primaryDomain.url;
   return (
-    <nav className="footer-menu" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
+    <nav className="site-footer__links" aria-label="Policies">
+      {footer.menu.items.map((item) => {
         if (!item.url) return null;
-        // if the url is internal, we strip the domain
         const url =
           item.url.includes('myshopify.com') ||
           item.url.includes(publicStoreDomain) ||
           item.url.includes(primaryDomainUrl)
             ? new URL(item.url).pathname
             : item.url;
-        const isExternal = !url.startsWith('/');
-        return isExternal ? (
+        return !url.startsWith('/') ? (
           <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
             {item.title}
           </a>
         ) : (
-          <NavLink
-            end
-            key={item.id}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
+          <NavLink key={item.id} to={url}>{item.title}</NavLink>
         );
       })}
     </nav>
   );
-}
-
-const FALLBACK_FOOTER_MENU = {
-  id: 'gid://shopify/Menu/199655620664',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461633060920',
-      resourceId: 'gid://shopify/ShopPolicy/23358046264',
-      tags: [],
-      title: 'Privacy Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/privacy-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633093688',
-      resourceId: 'gid://shopify/ShopPolicy/23358013496',
-      tags: [],
-      title: 'Refund Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/refund-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633126456',
-      resourceId: 'gid://shopify/ShopPolicy/23358111800',
-      tags: [],
-      title: 'Shipping Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/shipping-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633159224',
-      resourceId: 'gid://shopify/ShopPolicy/23358079032',
-      tags: [],
-      title: 'Terms of Service',
-      type: 'SHOP_POLICY',
-      url: '/policies/terms-of-service',
-      items: [],
-    },
-  ],
-};
-
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'white',
-  };
 }

@@ -1,4 +1,4 @@
-import {redirect, useLoaderData} from 'react-router';
+import {Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/products.$handle';
 import {
   getSelectedProductOptions,
@@ -8,18 +8,53 @@ import {
   getAdjacentAndFirstAvailableVariants,
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
-import {ProductPrice} from '~/components/ProductPrice';
-import {ProductImage} from '~/components/ProductImage';
-import {ProductForm} from '~/components/ProductForm';
+import {ProductDetails} from '~/components/product/ProductDetails';
+import {ProductGallery} from '~/components/product/ProductGallery';
+import {ProductPurchasePanel} from '~/components/product/ProductPurchasePanel';
+import {getProductionUrl} from '~/lib/config';
+import {normalizeProductPage} from '~/lib/product';
+import {PRODUCT_QUERY} from '~/lib/product-query';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {getCommerceStructuredData, safeJsonLd} from '~/lib/seo';
 
 export const meta: Route.MetaFunction = ({data}) => {
+  const product = data?.product;
+  const description = product?.seo?.description || product?.description;
+  const image = product?.media?.nodes?.[0]?.image;
+  const canonical = getProductionUrl(`/products/${product?.handle ?? ''}`);
+  const variant = product?.selectedOrFirstAvailableVariant;
+  const title = `${product?.seo?.title || product?.title || 'Product'} | Render-Lab`;
   return [
-    {title: `Hydrogen | ${data?.product.title ?? ''}`},
-    {
-      rel: 'canonical',
-      href: `/products/${data?.product.handle}`,
-    },
+    {title},
+    ...(description ? [{name: 'description', content: description}] : []),
+    {tagName: 'link', rel: 'canonical', href: canonical},
+    {property: 'og:title', content: title},
+    ...(description
+      ? [{property: 'og:description', content: description}]
+      : []),
+    {property: 'og:type', content: 'product'},
+    {property: 'og:url', content: canonical},
+    ...(image?.url
+      ? [
+          {property: 'og:image', content: image.url},
+          ...(image.altText
+            ? [{property: 'og:image:alt', content: image.altText}]
+            : []),
+        ]
+      : []),
+    ...(variant
+      ? [
+          {property: 'product:price:amount', content: variant.price.amount},
+          {
+            property: 'product:price:currency',
+            content: variant.price.currencyCode,
+          },
+          {
+            property: 'product:availability',
+            content: variant.availableForSale ? 'in stock' : 'out of stock',
+          },
+        ]
+      : []),
   ];
 };
 
@@ -95,31 +130,78 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  const {title, descriptionHtml} = product;
+  const page = normalizeProductPage(product);
+  const selectedImageId = selectedVariant?.image?.id;
+  const canonical = getProductionUrl(`/products/${product.handle}`);
+  const jsonLdString = safeJsonLd(
+    getCommerceStructuredData({
+      canonical,
+      title: product.title,
+      description: product.description,
+      images: page.gallery.map((image) => image.url),
+      vendor: product.vendor,
+      variant: selectedVariant
+        ? {
+            availableForSale: selectedVariant.availableForSale,
+            price: selectedVariant.price,
+            sku: selectedVariant.sku,
+          }
+        : null,
+      breadcrumb: [
+        {name: 'Shop', url: getProductionUrl('/collections')},
+        ...(page.breadcrumb
+          ? [
+              {
+                name: page.breadcrumb.title,
+                url: getProductionUrl(`/collections/${page.breadcrumb.handle}`),
+              },
+            ]
+          : []),
+        {name: product.title, url: canonical},
+      ],
+    }),
+  );
 
   return (
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
+    <article className="product-detail">
+      <script
+        dangerouslySetInnerHTML={{__html: jsonLdString}}
+        type="application/ld+json"
+      />
+      <nav className="product-detail__breadcrumb" aria-label="Breadcrumb">
+        <Link to="/collections">Shop</Link>
+        <span aria-hidden>/</span>
+        {page.breadcrumb ? (
+          <>
+            <Link to={`/collections/${page.breadcrumb.handle}`}>
+              {page.breadcrumb.title}
+            </Link>
+            <span aria-hidden>/</span>
+          </>
+        ) : null}
+        <span aria-current="page">{product.title}</span>
+      </nav>
+
+      <div className="product-detail__hero">
+        <ProductGallery
+          images={page.gallery}
+          selectedVariantImageId={selectedImageId}
+          title={product.title}
         />
-        <br />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-        <br />
+        <div className="product-detail__purchase-column">
+          <ProductPurchasePanel
+            badge={page.editorial.badge}
+            product={product}
+            productOptions={productOptions}
+            selectedVariant={selectedVariant}
+          />
+        </div>
       </div>
+
+      <ProductDetails
+        descriptionHtml={product.descriptionHtml}
+        editorial={page.editorial}
+      />
       <Analytics.ProductView
         data={{
           products: [
@@ -135,98 +217,6 @@ export default function Product() {
           ],
         }}
       />
-    </div>
+    </article>
   );
 }
-
-const PRODUCT_VARIANT_FRAGMENT = `#graphql
-  fragment ProductVariant on ProductVariant {
-    availableForSale
-    compareAtPrice {
-      amount
-      currencyCode
-    }
-    id
-    image {
-      __typename
-      id
-      url
-      altText
-      width
-      height
-    }
-    price {
-      amount
-      currencyCode
-    }
-    product {
-      title
-      handle
-    }
-    selectedOptions {
-      name
-      value
-    }
-    sku
-    title
-    unitPrice {
-      amount
-      currencyCode
-    }
-  }
-` as const;
-
-const PRODUCT_FRAGMENT = `#graphql
-  fragment Product on Product {
-    id
-    title
-    vendor
-    handle
-    descriptionHtml
-    description
-    encodedVariantExistence
-    encodedVariantAvailability
-    options {
-      name
-      optionValues {
-        name
-        firstSelectableVariant {
-          ...ProductVariant
-        }
-        swatch {
-          color
-          image {
-            previewImage {
-              url
-            }
-          }
-        }
-      }
-    }
-    selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
-      ...ProductVariant
-    }
-    adjacentVariants (selectedOptions: $selectedOptions) {
-      ...ProductVariant
-    }
-    seo {
-      description
-      title
-    }
-  }
-  ${PRODUCT_VARIANT_FRAGMENT}
-` as const;
-
-const PRODUCT_QUERY = `#graphql
-  query Product(
-    $country: CountryCode
-    $handle: String!
-    $language: LanguageCode
-    $selectedOptions: [SelectedOptionInput!]!
-  ) @inContext(country: $country, language: $language) {
-    product(handle: $handle) {
-      ...Product
-    }
-  }
-  ${PRODUCT_FRAGMENT}
-` as const;
