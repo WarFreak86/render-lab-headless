@@ -11,6 +11,7 @@ import {
   type RawCollectionPage,
 } from '~/lib/collection';
 import {PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
+import {applyMaterialCollectionContext} from '~/lib/material-collection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 
 export const meta: Route.MetaFunction = ({data}) => {
@@ -58,7 +59,7 @@ export async function loader({context, params, request}: Route.LoaderArgs) {
   redirectIfHandleIsLocalized(request, {handle, data: collection});
 
   const heroReference = collection.heroMedia?.reference;
-  const collectionPage = normalizeCollectionPage({
+  const normalizedPage = normalizeCollectionPage({
     id: collection.id,
     handle: collection.handle,
     title: collection.title,
@@ -73,10 +74,19 @@ export async function loader({context, params, request}: Route.LoaderArgs) {
     products: collection.products,
   } satisfies RawCollectionPage);
 
+  const products = normalizedPage.products.map((product, index) =>
+    applyMaterialCollectionContext({
+      product,
+      collectionHandle: collection.handle,
+      variants: collection.products.nodes[index]?.variants?.nodes ?? [],
+    }),
+  );
+  const collectionPage = {...normalizedPage, products};
+
   return {
     collectionPage,
     productConnection: {
-      nodes: collectionPage.products,
+      nodes: products,
       pageInfo: collection.products.pageInfo,
     },
   };
@@ -172,6 +182,19 @@ const COLLECTION_QUERY = `#graphql
           ...ProductCard
           productType
           availableForSale
+          variants(first: 20) {
+            nodes {
+              availableForSale
+              price {
+                amount
+                currencyCode
+              }
+              selectedOptions {
+                name
+                value
+              }
+            }
+          }
         }
         pageInfo {
           hasPreviousPage
