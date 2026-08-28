@@ -110,7 +110,7 @@ export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
     headline: ['Vision. Chaos.', 'Mastered.'],
     accentLine: 1,
     description:
-      'Premium metal and canvas art prints designed to transform your space and ignite your imagination.',
+      'Premium metal, canvas, and poster editions designed to transform your space and ignite your imagination.',
     primaryCta: {label: 'Shop Wall Art', to: '/collections/wall-art'},
   },
   categories: {title: 'Explore by category'},
@@ -119,7 +119,7 @@ export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
     {
       icon: 'material',
       title: 'Material options',
-      description: 'Explore metal, canvas, print, and digital formats.',
+      description: 'Choose metal, canvas, or poster finishes for your space.',
     },
     {
       icon: 'edition',
@@ -149,7 +149,7 @@ const CATEGORY_PRIORITY = [
   'metal-wall-art',
   'canvas-art',
   'posters',
-  'digital-downloads',
+  'bundles',
   'hoodies',
 ] as const;
 
@@ -158,6 +158,7 @@ const FEATURED_COLLECTION_PRIORITY = [
   'limited-editions',
   'metal-wall-art',
   'canvas-art',
+  'bundles',
   'hoodies',
 ] as const;
 
