@@ -168,6 +168,10 @@ export function ProductPurchasePanel({
         option.optionValues[0]?.name === 'Default Title'
       ),
   );
+  const selectedMaterial = productOptions
+    .find((option) => option.name.toLowerCase() === 'material')
+    ?.optionValues.find((value) => value.selected)
+    ?.name.toLowerCase();
 
   return (
     <section
@@ -195,7 +199,7 @@ export function ProductPurchasePanel({
             <fieldset className="product-option" key={option.name}>
               <legend>{option.name}</legend>
               <div className="product-option__values">
-                {option.optionValues.map((value) => {
+                {option.optionValues.map((value, index) => {
                   const state = getOptionState(value);
                   const stateLabel =
                     state === 'impossible'
@@ -203,9 +207,18 @@ export function ProductPurchasePanel({
                       : state === 'sold-out' || state === 'selected-sold-out'
                         ? 'Sold out'
                         : undefined;
+                  const isBestValue =
+                    product.productType === 'Wall Art' &&
+                    option.name.toLowerCase() === 'size' &&
+                    selectedMaterial === 'metal' &&
+                    option.optionValues.length >= 3 &&
+                    index === 1;
                   const content = (
                     <>
                       <span>{value.name}</span>
+                      {isBestValue ? (
+                        <span className="product-option__value-badge">Best value</span>
+                      ) : null}
                       {stateLabel ? (
                         <span className="product-option__state">
                           {stateLabel}

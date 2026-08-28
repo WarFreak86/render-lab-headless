@@ -29,6 +29,7 @@ import collectionStyles from '~/styles/collection.css?url';
 import productStyles from '~/styles/product.css?url';
 import cartStyles from '~/styles/cart.css?url';
 import dropStyles from '~/styles/drop.css?url';
+import enhancementStyles from '~/styles/enhancements.css?url';
 import {PageLayout} from './components/PageLayout';
 
 import '@fontsource/cormorant-garamond/latin-500.css';
@@ -146,7 +147,7 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
 }
 
 /**
- * Load data for rendering content below the fold. This data is deferred and will be
+ * Load data necessary for rendering content below the fold. This data is deferred and will be
  * fetched after the initial page load. If it's unavailable, the page should still 200.
  * Make sure to not throw any errors here, as it will cause the page to 500.
  */
@@ -191,6 +192,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={productStyles}></link>
         <link rel="stylesheet" href={cartStyles}></link>
         <link rel="stylesheet" href={dropStyles}></link>
+        <link rel="stylesheet" href={enhancementStyles}></link>
         {rootData?.robots ? (
           <meta name="robots" content={rootData.robots} />
         ) : null}
