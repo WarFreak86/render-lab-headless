@@ -29,6 +29,9 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}: Foote
         </FooterLinkGroup>
         <div>
           <h2 className="site-footer__heading">Policies</h2>
+          <nav className="site-footer__links" aria-label="Rights and intellectual property">
+            <NavLink to="/legal/rights-notice">Rights &amp; Intellectual Property</NavLink>
+          </nav>
           <Suspense fallback={null}>
             <Await resolve={footerPromise}>
               {(footer) => (
@@ -41,6 +44,16 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}: Foote
             </Await>
           </Suspense>
         </div>
+      </Container>
+      <Container className="site-footer__rights" size="wide">
+        <p>
+          Render-Lab features artwork created by independent artists. Some works may
+          reference third-party trademarks, copyrighted material, public figures, or
+          other protected subject matter. Unless expressly stated, no affiliation,
+          endorsement, sponsorship, or authorization by a third-party rights holder is
+          claimed or implied.{' '}
+          <NavLink to="/legal/rights-notice">Read the rights notice.</NavLink>
+        </p>
       </Container>
       <Container className="site-footer__bottom" size="wide">
         <p>© {new Date().getFullYear()} {SITE_NAME}</p>
@@ -67,7 +80,7 @@ function FooterMenu({footer, header, publicStoreDomain}: {
   if (!footer?.menu) return null;
   const primaryDomainUrl = header.shop.primaryDomain.url;
   return (
-    <nav className="site-footer__links" aria-label="Policies">
+    <nav className="site-footer__links site-footer__links--policy-menu" aria-label="Store policies">
       {footer.menu.items.map((item) => {
         if (!item.url) return null;
         const url =
