@@ -70,7 +70,7 @@ describe('Header foundation', () => {
     await user.click(collections);
     expect(collections).toHaveAttribute('aria-expanded', 'true');
 
-    expect(screen.getByRole('menuitem', {name: 'Art Prints'})).toHaveAttribute(
+    expect(screen.getByRole('menuitem', {name: 'Wall Art'})).toHaveAttribute(
       'href',
       '/collections/wall-art',
     );
@@ -79,10 +79,15 @@ describe('Header foundation', () => {
     ).toHaveAttribute('href', '/collections/metal-wall-art');
     expect(
       screen.getByRole('menuitem', {name: 'Canvas Prints'}),
-    ).toHaveAttribute('href', '/collections/cavas');
-    expect(
-      screen.getByRole('menuitem', {name: 'Digital Downloads'}),
-    ).toHaveAttribute('href', '/collections/digital-downloads');
+    ).toHaveAttribute('href', '/collections/canvas-art');
+    expect(screen.getByRole('menuitem', {name: 'Posters'})).toHaveAttribute(
+      'href',
+      '/collections/posters',
+    );
+    expect(screen.getByRole('menuitem', {name: 'Bundles'})).toHaveAttribute(
+      'href',
+      '/collections/bundles',
+    );
     expect(screen.getByRole('menuitem', {name: 'Apparel'})).toHaveAttribute(
       'href',
       '/collections/hoodies',
@@ -90,6 +95,7 @@ describe('Header foundation', () => {
     expect(
       screen.getByRole('menuitem', {name: 'All Collections'}),
     ).toHaveAttribute('href', '/collections');
+    expect(screen.queryByText('Digital Downloads')).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Drops'})).toHaveAttribute(
       'href',
       '/drops/marine-heavyweight-oversized-hoodie',
@@ -114,7 +120,7 @@ describe('Header foundation', () => {
     expect(collections).toHaveAttribute('aria-expanded', 'true');
     await user.keyboard('{ArrowDown}');
     await waitFor(() =>
-      expect(screen.getByRole('menuitem', {name: 'Art Prints'})).toHaveFocus(),
+      expect(screen.getByRole('menuitem', {name: 'Wall Art'})).toHaveFocus(),
     );
     await user.keyboard('{ArrowDown}');
     expect(screen.getByRole('menuitem', {name: 'Metal Prints'})).toHaveFocus();
@@ -133,7 +139,7 @@ describe('Header foundation', () => {
 
     await user.hover(collections);
     expect(collections).toHaveAttribute('aria-expanded', 'true');
-    await user.hover(screen.getByRole('menuitem', {name: 'Art Prints'}));
+    await user.hover(screen.getByRole('menuitem', {name: 'Wall Art'}));
     expect(collections).toHaveAttribute('aria-expanded', 'true');
   });
 
@@ -162,8 +168,13 @@ describe('Header foundation', () => {
     expect(collections).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getByRole('link', {name: 'Canvas Prints'})).toHaveAttribute(
       'href',
-      '/collections/cavas',
+      '/collections/canvas-art',
     );
+    expect(screen.getByRole('link', {name: 'Bundles'})).toHaveAttribute(
+      'href',
+      '/collections/bundles',
+    );
+    expect(screen.queryByText('Digital Downloads')).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Drops'})).toHaveAttribute(
       'href',
       '/drops/marine-heavyweight-oversized-hoodie',
