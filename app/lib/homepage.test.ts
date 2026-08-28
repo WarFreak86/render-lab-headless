@@ -39,6 +39,13 @@ function commerce(): HomepageCommerceInput {
         image: art('limited'),
         products: {nodes: [release]},
       },
+      {
+        id: 'collection-metal',
+        handle: 'metal-wall-art',
+        title: 'Metal Wall Art',
+        image: art('metal'),
+        products: {nodes: [release]},
+      },
     ],
   };
 }
@@ -49,6 +56,7 @@ describe('homepage data normalization', () => {
     expect(data.categories.map((category) => category.to)).toEqual([
       '/collections/after-dark',
       '/collections/limited-editions',
+      '/collections/metal-wall-art',
     ]);
     expect(data.featuredCollections[0]).toMatchObject({
       title: 'After Dark',

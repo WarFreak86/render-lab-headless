@@ -111,7 +111,7 @@ export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
     accentLine: 1,
     description:
       'Premium metal and canvas art prints designed to transform your space and ignite your imagination.',
-    primaryCta: {label: 'Explore collections', to: '/collections'},
+    primaryCta: {label: 'Shop Wall Art', to: '/collections/wall-art'},
   },
   categories: {title: 'Explore by category'},
   featuredCollections: {title: 'Featured collections'},
@@ -146,18 +146,18 @@ export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
 const CATEGORY_PRIORITY = [
   'after-dark',
   'limited-editions',
-  'metal',
-  'cavas',
-  'wall-art',
-  'printables',
+  'metal-wall-art',
+  'canvas-art',
+  'posters',
+  'digital-downloads',
   'hoodies',
 ] as const;
 
 const FEATURED_COLLECTION_PRIORITY = [
   'after-dark',
   'limited-editions',
-  'metal',
-  'cavas',
+  'metal-wall-art',
+  'canvas-art',
   'hoodies',
 ] as const;
 
@@ -317,6 +317,8 @@ export function normalizeHomepageData(
         label:
           secondaryCollection.handle === 'best-sellers'
             ? 'Shop best sellers'
+            : secondaryCollection.handle === 'after-dark'
+              ? 'Shop After Dark Collection'
             : `Shop ${secondaryCollection.title}`,
         to: `/collections/${secondaryCollection.handle}`,
       }

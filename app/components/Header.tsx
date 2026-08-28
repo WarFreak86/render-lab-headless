@@ -1,4 +1,4 @@
-import {Suspense, useEffect, useState} from 'react';
+import {Suspense, useCallback, useEffect, useId, useRef, useState} from 'react';
 import {Await, NavLink, useAsyncValue} from 'react-router';
 import {
   type CartViewPayload,
@@ -6,10 +6,12 @@ import {
   useOptimisticCart,
 } from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
+import {Accordion} from '~/components/Accordion';
 import {Icon} from '~/components/Icon';
 import {IconButton} from '~/components/IconButton';
 import {useAside} from '~/components/Aside';
 import {SITE_NAME} from '~/lib/config';
+import {COLLECTION_NAV_ITEMS, PRIMARY_NAV_ITEMS} from '~/lib/navigation';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -19,17 +21,6 @@ interface HeaderProps {
 }
 
 type Viewport = 'desktop' | 'mobile';
-
-const PRIMARY_NAV_ITEMS = [
-  {title: 'Art Prints', url: '/collections/wall-art', visible: true},
-  {title: 'Metal Prints', url: '/collections/metal', visible: true},
-  {title: 'Canvas Prints', url: '/collections/cavas', visible: true},
-  {title: 'Digital Downloads', url: '/collections/printables', visible: true},
-  {title: 'Apparel', url: '/collections/hoodies', visible: true},
-  {title: 'Collections', url: '/collections', visible: true},
-  // Keep the intended destination configured, but do not expose a known 404.
-  {title: 'About', url: '/pages/about', visible: false},
-] as const;
 
 export function Header({isLoggedIn, cart}: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
@@ -52,7 +43,7 @@ export function Header({isLoggedIn, cart}: HeaderProps) {
           prefetch="intent"
           to="/"
         >
-          RENDER-LAB
+          RENDER<span aria-hidden="true">·</span>LAB
         </NavLink>
         <HeaderMenu viewport="desktop" />
         <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
@@ -62,18 +53,58 @@ export function Header({isLoggedIn, cart}: HeaderProps) {
 }
 
 export function HeaderMenu({viewport}: {viewport: Viewport}) {
-  const {close} = useAside();
+  const {close, open} = useAside();
+
+  if (viewport === 'mobile') {
+    return (
+      <nav
+        aria-label="Mobile navigation"
+        className="header-menu header-menu--mobile"
+      >
+        <Accordion title="Collections">
+          <div className="header-menu__mobile-links">
+            {COLLECTION_NAV_ITEMS.map((item) => (
+              <NavLink
+                className={({isActive}) => (isActive ? 'is-active' : undefined)}
+                key={item.title}
+                onClick={close}
+                prefetch="intent"
+                to={item.url}
+              >
+                {item.title}
+              </NavLink>
+            ))}
+          </div>
+        </Accordion>
+        {PRIMARY_NAV_ITEMS.map((item) => (
+          <NavLink
+            className={({isActive}) => (isActive ? 'is-active' : undefined)}
+            key={item.title}
+            onClick={close}
+            prefetch="intent"
+            to={item.url}
+          >
+            {item.title}
+          </NavLink>
+        ))}
+        <div className="header-menu__mobile-utilities">
+          <button onClick={() => open('search')} type="button">
+            <Icon name="search" />
+            Search
+          </button>
+          <NavLink onClick={close} prefetch="intent" to="/account">
+            <Icon name="account" />
+            Account
+          </NavLink>
+        </div>
+      </nav>
+    );
+  }
+
   return (
-    <nav
-      aria-label={viewport === 'mobile' ? 'Mobile navigation' : 'Primary'}
-      className={`header-menu header-menu--${viewport}`}
-    >
-      {viewport === 'mobile' ? (
-        <NavLink end onClick={close} prefetch="intent" to="/">
-          Home
-        </NavLink>
-      ) : null}
-      {PRIMARY_NAV_ITEMS.filter((item) => item.visible).map((item) => (
+    <nav aria-label="Primary" className="header-menu header-menu--desktop">
+      <CollectionsDropdown onNavigate={close} />
+      {PRIMARY_NAV_ITEMS.map((item) => (
         <NavLink
           className={({isActive}) => (isActive ? 'is-active' : undefined)}
           key={item.title}
@@ -85,6 +116,127 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
         </NavLink>
       ))}
     </nav>
+  );
+}
+
+function CollectionsDropdown({onNavigate}: {onNavigate: () => void}) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelId = useId();
+  const closeMenu = useCallback(() => setOpen(false), []);
+
+  const getMenuItems = useCallback(
+    () =>
+      Array.from(
+        containerRef.current?.querySelectorAll<HTMLAnchorElement>(
+          '[role="menuitem"]',
+        ) ?? [],
+      ),
+    [],
+  );
+
+  const openAndFocus = (position: 'first' | 'last') => {
+    setOpen(true);
+    requestAnimationFrame(() => {
+      const items = getMenuItems();
+      items[position === 'first' ? 0 : items.length - 1]?.focus();
+    });
+  };
+
+  useEffect(() => {
+    if (!open) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeMenu();
+        triggerRef.current?.focus();
+      }
+    };
+    const closeOnPointerDown = (event: PointerEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) closeMenu();
+    };
+
+    document.addEventListener('keydown', closeOnEscape);
+    document.addEventListener('pointerdown', closeOnPointerDown);
+    return () => {
+      document.removeEventListener('keydown', closeOnEscape);
+      document.removeEventListener('pointerdown', closeOnPointerDown);
+    };
+  }, [closeMenu, open]);
+
+  const handleMenuKeyDown = (event: React.KeyboardEvent<HTMLUListElement>) => {
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const items = getMenuItems();
+    if (items.length === 0) return;
+    const currentIndex = items.indexOf(
+      document.activeElement as HTMLAnchorElement,
+    );
+    const nextIndex =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? items.length - 1
+          : event.key === 'ArrowDown'
+            ? (currentIndex + 1) % items.length
+            : (currentIndex - 1 + items.length) % items.length;
+    items[nextIndex]?.focus();
+  };
+
+  return (
+    <div
+      className="header-menu__group"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={closeMenu}
+      ref={containerRef}
+    >
+      <button
+        aria-controls={panelId}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        className="header-menu__trigger"
+        onClick={() => setOpen(true)}
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            openAndFocus(event.key === 'ArrowDown' ? 'first' : 'last');
+          }
+        }}
+        ref={triggerRef}
+        type="button"
+      >
+        Collections
+        <Icon name="chevron-down" size={12} />
+      </button>
+      <div
+        aria-label="Collections menu"
+        className="header-menu__panel"
+        data-open={open || undefined}
+        hidden={!open}
+        id={panelId}
+      >
+        <ul onKeyDown={handleMenuKeyDown} role="menu">
+          {COLLECTION_NAV_ITEMS.map((item) => (
+            <li key={item.title} role="none">
+              <NavLink
+                className={({isActive}) => (isActive ? 'is-active' : undefined)}
+                onClick={() => {
+                  closeMenu();
+                  onNavigate();
+                }}
+                prefetch="intent"
+                role="menuitem"
+                to={item.url}
+              >
+                {item.title}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }
 

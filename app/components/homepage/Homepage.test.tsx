@@ -31,12 +31,12 @@ const product = {
 const data: HomepageData = {
   editorial: HOMEPAGE_EDITORIAL_FALLBACK,
   hero: product,
-  heroSecondaryCta: {label: 'Shop After Dark', to: '/collections/after-dark'},
+  heroSecondaryCta: {label: 'Shop After Dark Collection', to: '/collections/after-dark'},
   categories: [
     {id: 'category-1', title: 'After Dark', to: '/collections/after-dark', image},
   ],
   featuredCollections: [
-    {id: 'collection-1', title: 'Metal', to: '/collections/metal', image},
+    {id: 'collection-1', title: 'Metal', to: '/collections/metal-wall-art', image},
   ],
   featuredDrop: product,
 };
@@ -53,11 +53,11 @@ describe('homepage presentation', () => {
   it('renders the editorial hero structure and both configured CTAs', () => {
     renderHomepage();
     expect(screen.getByRole('heading', {level: 1, name: 'Vision. Chaos. Mastered.'})).toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'Explore collections'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Shop Wall Art'})).toHaveAttribute(
       'href',
-      '/collections',
+      '/collections/wall-art',
     );
-    expect(screen.getByRole('link', {name: 'Shop After Dark'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Shop After Dark Collection'})).toHaveAttribute(
       'href',
       '/collections/after-dark',
     );
@@ -71,7 +71,7 @@ describe('homepage presentation', () => {
     );
     expect(screen.getByRole('link', {name: 'Metal'})).toHaveAttribute(
       'href',
-      '/collections/metal',
+      '/collections/metal-wall-art',
     );
   });
 
