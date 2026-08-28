@@ -5,6 +5,12 @@ import type {CollectionFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {getProductionUrl} from '~/lib/config';
 
+const HIDDEN_COLLECTION_HANDLES = new Set([
+  'frontpage',
+  'digital-downloads',
+  'limited-edition-clothing',
+]);
+
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/collections');
   const title = 'Collections | Render-Lab';
@@ -36,7 +42,7 @@ export async function loader(args: Route.LoaderArgs) {
  */
 async function loadCriticalData({context, request}: Route.LoaderArgs) {
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 4,
+    pageBy: 8,
   });
 
   const [{collections}] = await Promise.all([
@@ -68,13 +74,15 @@ export default function Collections() {
         connection={collections}
         resourcesClassName="collections-grid"
       >
-        {({node: collection, index}) => (
-          <CollectionItem
-            key={collection.id}
-            collection={collection}
-            index={index}
-          />
-        )}
+        {({node: collection, index}) =>
+          HIDDEN_COLLECTION_HANDLES.has(collection.handle) ? null : (
+            <CollectionItem
+              key={collection.id}
+              collection={collection}
+              index={index}
+            />
+          )
+        }
       </PaginatedResourceSection>
     </div>
   );
