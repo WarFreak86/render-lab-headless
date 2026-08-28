@@ -6,8 +6,9 @@ export interface NavigationItem {
 export const COLLECTION_NAV_ITEMS: ReadonlyArray<NavigationItem> = [
   {title: 'Wall Art', url: '/collections/wall-art'},
   {title: 'Metal Prints', url: '/collections/metal-wall-art'},
-  {title: 'Canvas Prints', url: '/collections/cavas'},
-  {title: 'Digital Downloads', url: '/collections/digital-downloads'},
+  {title: 'Canvas Prints', url: '/collections/canvas-art'},
+  {title: 'Posters', url: '/collections/posters'},
+  {title: 'Bundles', url: '/collections/bundles'},
   {title: 'Apparel', url: '/collections/hoodies'},
   {title: 'All Collections', url: '/collections'},
 ];
