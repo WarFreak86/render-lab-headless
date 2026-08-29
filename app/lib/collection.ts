@@ -146,6 +146,35 @@ export const COLLECTION_SORT_OPTIONS: Array<{
   {label: 'Price: High to low', value: 'price-descending'},
 ];
 
+const COLLECTION_MERCHANDISING_FALLBACKS: Record<
+  string,
+  {eyebrow: string; heading: string}
+> = {
+  'wall-art': {eyebrow: 'Wall art', heading: 'Art built to change the room.'},
+  'metal-wall-art': {
+    eyebrow: 'Format / Metal',
+    heading: 'Brushed aluminum. Maximum impact.',
+  },
+  'canvas-art': {
+    eyebrow: 'Format / Canvas',
+    heading: 'Texture made for the wall.',
+  },
+  posters: {
+    eyebrow: 'Format / Poster',
+    heading: 'Easy to frame. Hard to ignore.',
+  },
+  bundles: {eyebrow: 'Curated sets', heading: 'Better together.'},
+  hoodies: {eyebrow: 'Wearable art', heading: 'Wear the art.'},
+  'neon-memento': {
+    eyebrow: 'Series / Neon Memento',
+    heading: 'Mortality in color.',
+  },
+  'nightmare-lab-halloween-2026': {
+    eyebrow: 'Seasonal series / Halloween 2026',
+    heading: 'When the lights go out, the experiments begin.',
+  },
+};
+
 const FILTER_PREFIX = 'filter.';
 const PAGINATION_PARAMS = ['cursor', 'direction'];
 
@@ -249,13 +278,16 @@ export function normalizeCollectionPage(
   const title = options?.allArt ? 'All Art' : collection.title;
   const currencyCode = firstProduct?.minPrice.currencyCode ?? 'USD';
   const heroMedia = collection.heroMedia?.reference?.image;
+  const merchandising = COLLECTION_MERCHANDISING_FALLBACKS[collection.handle];
 
   return {
     id: collection.id,
     handle: collection.handle,
     hero: {
       title,
-      editorialHeading: cleanText(collection.editorialHeading?.value),
+      eyebrow: merchandising?.eyebrow,
+      editorialHeading:
+        cleanText(collection.editorialHeading?.value) ?? merchandising?.heading,
       description:
         cleanText(collection.editorialCopy?.value) ??
         cleanText(collection.description),

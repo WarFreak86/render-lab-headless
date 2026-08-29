@@ -106,15 +106,21 @@ export interface HomepageData {
 
 export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
   hero: {
-    eyebrow: 'Art that hits different',
-    headline: ['Vision. Chaos.', 'Mastered.'],
+    eyebrow: 'Render-Lab / Limited Art Drops',
+    headline: ['Collect the', 'Chaos.'],
     accentLine: 1,
     description:
-      'Premium metal, canvas, and poster editions designed to transform your space and ignite your imagination.',
-    primaryCta: {label: 'Shop Wall Art', to: '/collections/wall-art'},
+      'Limited-run artwork for walls and wardrobes. Choose the finish, size, and format that fits your space.',
+    primaryCta: {label: 'Explore Wall Art', to: '/collections/wall-art'},
   },
-  categories: {title: 'Explore by category'},
-  featuredCollections: {title: 'Featured collections'},
+  categories: {
+    eyebrow: 'Shop by format',
+    title: 'Choose your finish',
+  },
+  featuredCollections: {
+    eyebrow: 'Curated series',
+    title: 'Enter the collection',
+  },
   benefits: [
     {
       icon: 'material',
@@ -138,14 +144,13 @@ export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
     },
   ],
   featuredDrop: {
-    eyebrow: 'Featured release',
+    eyebrow: 'Latest drop',
     ctaLabel: 'View release',
   },
 };
 
 const CATEGORY_PRIORITY = [
-  'after-dark',
-  'limited-editions',
+  'wall-art',
   'metal-wall-art',
   'canvas-art',
   'posters',
@@ -154,12 +159,17 @@ const CATEGORY_PRIORITY = [
 ] as const;
 
 const FEATURED_COLLECTION_PRIORITY = [
+  'nightmare-lab-halloween-2026',
+  'neon-memento',
   'after-dark',
   'limited-editions',
-  'metal-wall-art',
-  'canvas-art',
-  'bundles',
-  'hoodies',
+  'neon-speed',
+  'alt-history',
+] as const;
+
+const HERO_COLLECTION_PRIORITY = [
+  'nightmare-lab-halloween-2026',
+  'neon-memento',
 ] as const;
 
 const UUID_LIKE_ALT = /^[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12}$/i;
@@ -199,6 +209,22 @@ function normalizeProduct(product: HomepageProductInput | undefined) {
     availableForSale: Boolean(product.availableForSale),
     image,
     price: product.priceRange?.minVariantPrice,
+  } satisfies HomepageProductFeature;
+}
+
+function normalizeCollectionHero(collection: HomepageCollectionInput | undefined) {
+  if (!collection) return null;
+  const image = collectionImage(collection);
+  if (!image) return null;
+  return {
+    id: collection.id,
+    handle: collection.handle,
+    title: collection.title,
+    to: `/collections/${collection.handle}`,
+    description: cleanProductDescription(collection.description),
+    productType: 'Collection',
+    availableForSale: false,
+    image,
   } satisfies HomepageProductFeature;
 }
 
@@ -252,7 +278,7 @@ export function normalizeHomepageData(
   const categoryCollections = prioritizedCollections(
     collectionsWithImages,
     CATEGORY_PRIORITY,
-  ).slice(0, 7);
+  );
   const featuredCandidates = prioritizedCollections(
     collectionsWithImages,
     FEATURED_COLLECTION_PRIORITY,
@@ -285,7 +311,12 @@ export function normalizeHomepageData(
     const normalized = normalizeProduct(product);
     return normalized ? [normalized] : [];
   });
+  const heroCollection = prioritizedCollections(
+    collectionsWithImages,
+    HERO_COLLECTION_PRIORITY,
+  )[0];
   const hero =
+    normalizeCollectionHero(heroCollection) ??
     normalizedProducts.find(
       (product) =>
         product.image.width &&
@@ -310,19 +341,10 @@ export function normalizeHomepageData(
     normalizedProducts.find((product) => product !== hero) ??
     null;
 
-  const secondaryCollection =
-    collectionsWithImages.find((collection) => collection.handle === 'best-sellers') ??
-    categoryCollections[0];
-  const heroSecondaryCta = secondaryCollection
-    ? {
-        label:
-          secondaryCollection.handle === 'best-sellers'
-            ? 'Shop best sellers'
-            : secondaryCollection.handle === 'after-dark'
-              ? 'Shop After Dark Collection'
-            : `Shop ${secondaryCollection.title}`,
-        to: `/collections/${secondaryCollection.handle}`,
-      }
+  const heroSecondaryCta = commerce.collections.some(
+    (collection) => collection.handle === 'metal-wall-art',
+  )
+    ? {label: 'Explore Metal Art', to: '/collections/metal-wall-art'}
     : null;
 
   return {

@@ -31,12 +31,17 @@ const product = {
 const data: HomepageData = {
   editorial: HOMEPAGE_EDITORIAL_FALLBACK,
   hero: product,
-  heroSecondaryCta: {label: 'Shop After Dark Collection', to: '/collections/after-dark'},
+  heroSecondaryCta: {label: 'Explore Metal Art', to: '/collections/metal-wall-art'},
   categories: [
-    {id: 'category-1', title: 'After Dark', to: '/collections/after-dark', image},
+    {id: 'category-1', title: 'Wall Art', to: '/collections/wall-art', image},
   ],
   featuredCollections: [
-    {id: 'collection-1', title: 'Metal', to: '/collections/metal-wall-art', image},
+    {
+      id: 'collection-1',
+      title: 'Neon Memento',
+      to: '/collections/neon-memento',
+      image,
+    },
   ],
   featuredDrop: product,
 };
@@ -52,26 +57,28 @@ function renderHomepage(homepage = data) {
 describe('homepage presentation', () => {
   it('renders the editorial hero structure and both configured CTAs', () => {
     renderHomepage();
-    expect(screen.getByRole('heading', {level: 1, name: 'Vision. Chaos. Mastered.'})).toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'Shop Wall Art'})).toHaveAttribute(
+    expect(
+      screen.getByRole('heading', {level: 1, name: 'Collect the Chaos.'}),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', {name: 'Explore Wall Art'})).toHaveAttribute(
       'href',
       '/collections/wall-art',
     );
-    expect(screen.getByRole('link', {name: 'Shop After Dark Collection'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Explore Metal Art'})).toHaveAttribute(
       'href',
-      '/collections/after-dark',
+      '/collections/metal-wall-art',
     );
   });
 
   it('renders Shopify-backed categories and featured collection destinations', () => {
     renderHomepage();
-    expect(screen.getByRole('link', {name: 'After Dark'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Wall Art'})).toHaveAttribute(
       'href',
-      '/collections/after-dark',
+      '/collections/wall-art',
     );
-    expect(screen.getByRole('link', {name: 'Metal'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Neon Memento'})).toHaveAttribute(
       'href',
-      '/collections/metal-wall-art',
+      '/collections/neon-memento',
     );
   });
 
@@ -103,10 +110,10 @@ describe('homepage presentation', () => {
 
     render(
       <MemoryRouter>
-        <CategoryRail categories={data.categories} title="Explore by category" />
+        <CategoryRail categories={data.categories} title="Choose your finish" />
       </MemoryRouter>,
     );
-    expect(screen.getByRole('link', {name: 'After Dark'})).toBeVisible();
+    expect(screen.getByRole('link', {name: 'Wall Art'})).toBeVisible();
     await user.click(screen.getByRole('button', {name: 'Next categories'}));
     expect(scrollBy).toHaveBeenCalledWith(expect.objectContaining({behavior: 'auto'}));
     vi.unstubAllGlobals();

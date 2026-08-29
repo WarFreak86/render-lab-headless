@@ -78,6 +78,34 @@ describe('collection data and URL state', () => {
     });
   });
 
+  it('adds merchandising fallback headings to known collection handles', () => {
+    const page = normalizeCollectionPage({
+      ...rawCollection,
+      handle: 'metal-wall-art',
+      title: 'Metal Wall Art',
+    });
+    expect(page.hero).toMatchObject({
+      eyebrow: 'Format / Metal',
+      editorialHeading: 'Brushed aluminum. Maximum impact.',
+    });
+  });
+
+  it('lets Shopify editorial metafields override fallback headings and copy', () => {
+    const page = normalizeCollectionPage({
+      ...rawCollection,
+      handle: 'neon-memento',
+      title: 'Neon Memento',
+      description: 'Base collection description.',
+      editorialHeading: {value: 'Custom collection headline'},
+      editorialCopy: {value: 'Custom merchandising copy.'},
+    });
+    expect(page.hero).toMatchObject({
+      eyebrow: 'Series / Neon Memento',
+      editorialHeading: 'Custom collection headline',
+      description: 'Custom merchandising copy.',
+    });
+  });
+
   it('normalizes only filter groups returned by Shopify', () => {
     const page = normalizeCollectionPage(rawCollection);
     expect(page.filterGroups.map((group) => group.label)).toEqual([
