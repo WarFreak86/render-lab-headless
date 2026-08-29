@@ -26,17 +26,10 @@ function commerce(): HomepageCommerceInput {
     products: [release],
     collections: [
       {
-        id: 'collection-after-dark',
-        handle: 'after-dark',
-        title: 'After Dark',
-        image: null,
-        products: {nodes: [release]},
-      },
-      {
-        id: 'collection-limited',
-        handle: 'limited-editions',
-        title: 'Limited Editions',
-        image: art('limited'),
+        id: 'collection-wall-art',
+        handle: 'wall-art',
+        title: 'Wall Art',
+        image: art('wall-art'),
         products: {nodes: [release]},
       },
       {
@@ -46,21 +39,72 @@ function commerce(): HomepageCommerceInput {
         image: art('metal'),
         products: {nodes: [release]},
       },
+      {
+        id: 'collection-canvas',
+        handle: 'canvas-art',
+        title: 'Canvas Prints',
+        image: art('canvas'),
+        products: {nodes: [release]},
+      },
+      {
+        id: 'collection-posters',
+        handle: 'posters',
+        title: 'Posters',
+        image: art('posters'),
+        products: {nodes: [release]},
+      },
+      {
+        id: 'collection-nightmare',
+        handle: 'nightmare-lab-halloween-2026',
+        title: 'Nightmare Lab — Halloween 2026',
+        description: 'A seasonal cinematic horror collection.',
+        image: art('nightmare'),
+        products: {nodes: []},
+      },
+      {
+        id: 'collection-neon',
+        handle: 'neon-memento',
+        title: 'Neon Memento',
+        image: art('neon'),
+        products: {nodes: []},
+      },
+      {
+        id: 'collection-limited',
+        handle: 'limited-editions',
+        title: 'Limited Editions',
+        image: art('limited'),
+        products: {nodes: [release]},
+      },
     ],
   };
 }
 
 describe('homepage data normalization', () => {
-  it('normalizes Shopify collections into real category and feature URLs', () => {
+  it('normalizes format categories and curated series in merchandising order', () => {
     const data = normalizeHomepageData(commerce());
     expect(data.categories.map((category) => category.to)).toEqual([
-      '/collections/after-dark',
-      '/collections/limited-editions',
+      '/collections/wall-art',
       '/collections/metal-wall-art',
+      '/collections/canvas-art',
+      '/collections/posters',
     ]);
-    expect(data.featuredCollections[0]).toMatchObject({
-      title: 'After Dark',
-      to: '/collections/after-dark',
+    expect(data.featuredCollections.slice(0, 2).map((collection) => collection.to)).toEqual([
+      '/collections/nightmare-lab-halloween-2026',
+      '/collections/neon-memento',
+    ]);
+  });
+
+  it('uses a prioritized collection image for the hero even with no active products', () => {
+    const source = commerce();
+    const data = normalizeHomepageData({...source, products: []});
+    expect(data.hero).toMatchObject({
+      title: 'Nightmare Lab — Halloween 2026',
+      to: '/collections/nightmare-lab-halloween-2026',
+      productType: 'Collection',
+    });
+    expect(data.heroSecondaryCta).toEqual({
+      label: 'Explore Metal Art',
+      to: '/collections/metal-wall-art',
     });
   });
 
