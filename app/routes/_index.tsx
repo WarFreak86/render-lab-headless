@@ -11,7 +11,7 @@ import {
 import {DROP_CONFIGS} from '~/lib/drops';
 
 const HOME_DESCRIPTION =
-  'Discover Render-Lab art, collector editions, and visual objects across metal, canvas, print, digital, and apparel formats.';
+  'Discover Render-Lab wall art, collector editions, and apparel across metal, canvas, and poster formats.';
 
 export const meta: Route.MetaFunction = ({data}) => {
   const canonical = getProductionUrl('/');
@@ -68,7 +68,7 @@ const HOMEPAGE_QUERY = `#graphql
     $language: LanguageCode
   )
     @inContext(country: $country, language: $language) {
-    collections(first: 12, sortKey: UPDATED_AT, reverse: true) {
+    collections(first: 20, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         id
         handle
