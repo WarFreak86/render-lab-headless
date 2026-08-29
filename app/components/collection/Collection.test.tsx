@@ -4,6 +4,8 @@ import {createMemoryRouter, MemoryRouter, RouterProvider} from 'react-router';
 import {CollectionControls} from './CollectionControls';
 import {CollectionProductCard} from './CollectionProductCard';
 import {CollectionProductGrid} from './CollectionProductGrid';
+import {CollectionDirectoryView} from './CollectionDirectoryView';
+import {CollectionArtist} from './CollectionArtist';
 import type {
   CollectionFilterGroup,
   CollectionProductCardData,
@@ -42,7 +44,10 @@ const filters: CollectionFilterGroup[] = [
   },
 ];
 
-function renderDataRouter(element: React.ReactNode, entry = '/collections/metal') {
+function renderDataRouter(
+  element: React.ReactNode,
+  entry = '/collections/metal',
+) {
   return render(
     <RouterProvider
       router={createMemoryRouter([{path: '*', element}], {
@@ -77,7 +82,9 @@ describe('collection presentation', () => {
     await user.click(trigger);
     expect(screen.getByRole('dialog', {name: 'Filters'})).toBeInTheDocument();
     await user.keyboard('{Escape}');
-    expect(screen.queryByRole('dialog', {name: 'Filters'})).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('dialog', {name: 'Filters'}),
+    ).not.toBeInTheDocument();
     expect(trigger).toHaveFocus();
   });
 
@@ -116,6 +123,63 @@ describe('collection presentation', () => {
       </MemoryRouter>,
     );
     expect(screen.getByText('Artwork unavailable')).toBeInTheDocument();
-    expect(screen.getByRole('heading', {name: 'Real Artwork'})).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {name: 'Real Artwork'}),
+    ).toBeInTheDocument();
+  });
+
+  it('presents Wall Art as collection links instead of one product grid', () => {
+    render(
+      <MemoryRouter>
+        <CollectionDirectoryView
+          entries={[
+            {
+              id: 'collection-botanical',
+              handle: 'botanical-anomalies',
+              title: 'Botanical Anomalies',
+              description: 'Surreal botanical artwork.',
+              image: null,
+              to: '/collections/botanical-anomalies',
+            },
+          ]}
+          hero={{
+            title: 'Wall Art',
+            eyebrow: 'Wall art',
+            editorialHeading: 'Art built to change the room.',
+            image: null,
+          }}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole('heading', {name: 'Browse by collection'}),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', {name: /Botanical Anomalies/i}),
+    ).toHaveAttribute('href', '/collections/botanical-anomalies');
+    expect(screen.queryByText('$29.00')).not.toBeInTheDocument();
+  });
+
+  it('renders artist attribution only from supplied collection data', () => {
+    render(
+      <CollectionArtist
+        artist={{
+          id: 'artist-1',
+          handle: 'render-lab-studio',
+          name: 'Render-Lab Studio',
+          biography: 'Independent artists and art directors.',
+          image: null,
+          profileUrl: '/pages/artists/render-lab-studio',
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole('heading', {name: 'Render-Lab Studio'}),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', {name: /View artist profile/i}),
+    ).toHaveAttribute('href', '/pages/artists/render-lab-studio');
   });
 });

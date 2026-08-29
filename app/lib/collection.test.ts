@@ -106,6 +106,36 @@ describe('collection data and URL state', () => {
     });
   });
 
+  it('normalizes an optional collection artist metaobject reference', () => {
+    const page = normalizeCollectionPage({
+      ...rawCollection,
+      artist: {
+        reference: {
+          id: 'gid://shopify/Metaobject/1',
+          handle: 'render-lab-studio',
+          name: {value: 'Render-Lab Studio'},
+          biography: {value: 'Independent artists and art directors.'},
+          profileUrl: {value: '/pages/artists/render-lab-studio'},
+          photo: {
+            reference: {
+              image: {
+                url: 'https://cdn.shopify.com/artist.jpg',
+                altText: 'Render-Lab Studio artist portrait',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(page.artist).toMatchObject({
+      name: 'Render-Lab Studio',
+      biography: 'Independent artists and art directors.',
+      profileUrl: '/pages/artists/render-lab-studio',
+      image: {url: 'https://cdn.shopify.com/artist.jpg'},
+    });
+  });
+
   it('normalizes only filter groups returned by Shopify', () => {
     const page = normalizeCollectionPage(rawCollection);
     expect(page.filterGroups.map((group) => group.label)).toEqual([
@@ -139,7 +169,10 @@ describe('collection data and URL state', () => {
       'filter.v.availability=1&filter.v.price.lte=120&sort_by=newest&cursor=abc',
     );
     const page = normalizeCollectionPage(rawCollection);
-    const [availability] = getActiveCollectionFilters(params, page.filterGroups);
+    const [availability] = getActiveCollectionFilters(
+      params,
+      page.filterGroups,
+    );
     expect(removeActiveFilter(params, availability)).toBe(
       '?filter.v.price.lte=120&sort_by=newest',
     );
@@ -153,9 +186,9 @@ describe('collection data and URL state', () => {
   });
 
   it('uses supported Shopify sort keys and a safe featured default', () => {
-    expect(parseSortValue(new URLSearchParams('sort_by=price-descending'))).toBe(
-      'price-descending',
-    );
+    expect(
+      parseSortValue(new URLSearchParams('sort_by=price-descending')),
+    ).toBe('price-descending');
     expect(parseSortValue(new URLSearchParams('sort_by=unknown'))).toBe(
       'featured',
     );

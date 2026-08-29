@@ -88,18 +88,12 @@ describe('Header foundation', () => {
       'href',
       '/collections/bundles',
     );
-    expect(screen.getByRole('menuitem', {name: 'Apparel'})).toHaveAttribute(
-      'href',
-      '/collections/hoodies',
-    );
     expect(
       screen.getByRole('menuitem', {name: 'All Collections'}),
     ).toHaveAttribute('href', '/collections');
     expect(screen.queryByText('Digital Downloads')).not.toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'Drops'})).toHaveAttribute(
-      'href',
-      '/drops/marine-heavyweight-oversized-hoodie',
-    );
+    expect(screen.queryByText('Apparel')).not.toBeInTheDocument();
+    expect(screen.queryByText('Drops')).not.toBeInTheDocument();
     for (const absentLabel of [
       'Best Sellers',
       'New Arrivals',
@@ -175,10 +169,8 @@ describe('Header foundation', () => {
       '/collections/bundles',
     );
     expect(screen.queryByText('Digital Downloads')).not.toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'Drops'})).toHaveAttribute(
-      'href',
-      '/drops/marine-heavyweight-oversized-hoodie',
-    );
+    expect(screen.queryByText('Apparel')).not.toBeInTheDocument();
+    expect(screen.queryByText('Drops')).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Account'})).toHaveAttribute(
       'href',
       '/account',

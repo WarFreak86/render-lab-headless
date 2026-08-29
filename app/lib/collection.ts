@@ -36,6 +36,15 @@ export interface CollectionHeroData {
   image: CollectionImage | null;
 }
 
+export interface CollectionArtistData {
+  id: string;
+  handle: string;
+  name: string;
+  biography?: string;
+  image: CollectionImage | null;
+  profileUrl?: string;
+}
+
 export interface CollectionFilterOption {
   id: string;
   label: string;
@@ -65,6 +74,7 @@ export interface CollectionPageData {
   id: string;
   handle: string;
   hero: CollectionHeroData;
+  artist?: CollectionArtistData;
   products: CollectionProductCardData[];
   filterGroups: CollectionFilterGroup[];
 }
@@ -79,6 +89,17 @@ interface RawImage {
   altText?: string | null;
   width?: number | null;
   height?: number | null;
+}
+
+interface RawCollectionArtist {
+  id: string;
+  handle: string;
+  name?: {value?: string | null} | null;
+  biography?: {value?: string | null} | null;
+  profileUrl?: {value?: string | null} | null;
+  photo?: {
+    reference?: {image?: RawImage | null} | null;
+  } | null;
 }
 
 interface RawMoney {
@@ -121,6 +142,9 @@ export interface RawCollectionPage {
   editorialCopy?: {value?: string | null} | null;
   heroMedia?: {
     reference?: {image?: RawImage | null} | null;
+  } | null;
+  artist?: {
+    reference?: RawCollectionArtist | null;
   } | null;
   products: {
     nodes: RawCollectionProduct[];
@@ -202,6 +226,26 @@ function normalizeImage(
   };
 }
 
+function normalizeCollectionArtist(
+  artist: RawCollectionPage['artist'],
+): CollectionArtistData | undefined {
+  const reference = artist?.reference;
+  const name = cleanText(reference?.name?.value);
+  if (!reference || !name) return undefined;
+
+  return {
+    id: reference.id,
+    handle: reference.handle,
+    name,
+    biography: cleanText(reference.biography?.value),
+    image: normalizeImage(
+      reference.photo?.reference?.image,
+      `${name} portrait`,
+    ),
+    profileUrl: cleanText(reference.profileUrl?.value),
+  };
+}
+
 export function normalizeCollectionProduct(
   product: RawCollectionProduct,
 ): CollectionProductCardData {
@@ -251,7 +295,9 @@ export function normalizeCollectionFilters(
     }
 
     if (filter.id === 'filter.v.price' && filter.type === 'PRICE_RANGE') {
-      const range = filter.values.map((value) => parsePriceInput(value.input))[0];
+      const range = filter.values.map((value) =>
+        parsePriceInput(value.input),
+      )[0];
       if (range?.min == null || range.max == null) continue;
       groups.push({
         id: filter.id,
@@ -297,6 +343,7 @@ export function normalizeCollectionPage(
         firstProduct?.image ??
         null,
     },
+    artist: normalizeCollectionArtist(collection.artist),
     products,
     filterGroups: normalizeCollectionFilters(
       collection.products.filters,
@@ -323,7 +370,12 @@ export function parseProductFilters(
   const min = finiteNumber(searchParams.get('filter.v.price.gte'));
   const max = finiteNumber(searchParams.get('filter.v.price.lte'));
   if (min !== undefined || max !== undefined) {
-    filters.push({price: {...(min !== undefined ? {min} : {}), ...(max !== undefined ? {max} : {})}});
+    filters.push({
+      price: {
+        ...(min !== undefined ? {min} : {}),
+        ...(max !== undefined ? {max} : {}),
+      },
+    });
   }
   return filters;
 }
@@ -444,10 +496,7 @@ export function getActiveCollectionFilters(
     active.push({
       id: 'filter.v.price',
       label,
-      params: [
-        {name: 'filter.v.price.gte'},
-        {name: 'filter.v.price.lte'},
-      ],
+      params: [{name: 'filter.v.price.gte'}, {name: 'filter.v.price.lte'}],
     });
   }
   return active;

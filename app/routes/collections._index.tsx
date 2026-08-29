@@ -28,7 +28,8 @@ const COLLECTION_PRIORITY = [
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/collections');
   const title = 'Collections | Render-Lab';
-  const description = 'Explore Render-Lab wall art, curated series, and collector bundles.';
+  const description =
+    'Explore Render-Lab wall art, curated series, and collector bundles.';
   return [
     {title},
     {name: 'description', content: description},
@@ -42,7 +43,7 @@ export const meta: Route.MetaFunction = () => {
 
 export async function loader({context}: Route.LoaderArgs) {
   const {collections} = await context.storefront.query(COLLECTIONS_QUERY);
-  const rank = new Map(
+  const rank = new Map<string, number>(
     COLLECTION_PRIORITY.map((handle, index) => [handle, index]),
   );
   const visibleCollections = collections.nodes

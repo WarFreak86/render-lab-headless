@@ -2,6 +2,7 @@ import {CollectionHero} from './CollectionHero';
 import {CollectionControls} from './CollectionControls';
 import {CollectionFilterPanel} from './CollectionFilterPanel';
 import {CollectionProductGrid} from './CollectionProductGrid';
+import {CollectionArtist} from './CollectionArtist';
 import {
   getActiveCollectionFilters,
   type CollectionPageData,
@@ -43,7 +44,10 @@ export function CollectionView({
           }`.trim()}
         >
           {data.filterGroups.length ? (
-            <aside aria-label="Product filters" className="collection-filter-sidebar">
+            <aside
+              aria-label="Product filters"
+              className="collection-filter-sidebar"
+            >
               <h2>Refine</h2>
               <CollectionFilterPanel
                 groups={data.filterGroups}
@@ -59,6 +63,7 @@ export function CollectionView({
           />
         </div>
       </div>
+      {data.artist ? <CollectionArtist artist={data.artist} /> : null}
     </div>
   );
 }

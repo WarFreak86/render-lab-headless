@@ -233,8 +233,8 @@ describe('premium cart', () => {
       screen.getByRole('heading', {name: 'Your collection starts here.'}),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('link', {name: 'Explore collections'}),
-    ).toHaveAttribute('href', '/collections');
+      screen.getByRole('link', {name: 'Explore wall art'}),
+    ).toHaveAttribute('href', '/collections/wall-art');
     expect(
       screen.queryByRole('link', {name: 'Checkout'}),
     ).not.toBeInTheDocument();
