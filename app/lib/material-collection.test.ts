@@ -65,40 +65,69 @@ const variants = [
 ];
 
 describe('material-aware collection links and prices', () => {
-  it('preselects Poster and shows the poster-only price range', () => {
+  it('preselects a complete Poster variant and shows the poster-only price range', () => {
     const result = applyMaterialCollectionContext({
       product,
       collectionHandle: 'posters',
       variants,
     });
 
-    expect(result.to).toBe('/products/test-artwork?Material=Poster');
+    expect(result.to).toBe(
+      '/products/test-artwork?Material=Poster&Size=12%C3%9718',
+    );
     expect(result.minPrice.amount).toBe('29.00');
     expect(result.maxPrice.amount).toBe('49.00');
   });
 
-  it('preselects Canvas and shows the canvas-only price range', () => {
+  it('preselects a complete Canvas variant and shows the canvas-only price range', () => {
     const result = applyMaterialCollectionContext({
       product,
       collectionHandle: 'canvas-art',
       variants,
     });
 
-    expect(result.to).toBe('/products/test-artwork?Material=Canvas');
+    expect(result.to).toBe(
+      '/products/test-artwork?Material=Canvas&Size=12%C3%9718',
+    );
     expect(result.minPrice.amount).toBe('69.00');
     expect(result.maxPrice.amount).toBe('149.00');
   });
 
-  it('preselects Metal and shows the metal-only price range', () => {
+  it('preselects a complete Metal variant and shows the metal-only price range', () => {
     const result = applyMaterialCollectionContext({
       product,
       collectionHandle: 'metal-wall-art',
       variants,
     });
 
-    expect(result.to).toBe('/products/test-artwork?Material=Metal');
+    expect(result.to).toBe(
+      '/products/test-artwork?Material=Metal&Size=12%C3%9718',
+    );
     expect(result.minPrice.amount).toBe('89.00');
     expect(result.maxPrice.amount).toBe('169.00');
+  });
+
+  it('links to the first available matching variant when an earlier size is unavailable', () => {
+    const unavailableFirstCanvas = variants.map((variant) =>
+      variant.selectedOptions.some(
+        (option) => option.name === 'Material' && option.value === 'Canvas',
+      ) &&
+      variant.selectedOptions.some(
+        (option) => option.name === 'Size' && option.value === '12×18',
+      )
+        ? {...variant, availableForSale: false}
+        : variant,
+    );
+
+    const result = applyMaterialCollectionContext({
+      product,
+      collectionHandle: 'canvas-art',
+      variants: unavailableFirstCanvas,
+    });
+
+    expect(result.to).toBe(
+      '/products/test-artwork?Material=Canvas&Size=24%C3%9736',
+    );
   });
 
   it('keeps series collections on the premium first variant behavior', () => {
@@ -120,5 +149,21 @@ describe('material-aware collection links and prices', () => {
         variants: [],
       }),
     ).toEqual(legacy);
+  });
+
+  it('leaves a product unchanged when the requested material is unavailable', () => {
+    const metalOnly = variants.filter(
+      (variant) =>
+        variant.selectedOptions.find((option) => option.name === 'Material')
+          ?.value === 'Metal',
+    );
+
+    expect(
+      applyMaterialCollectionContext({
+        product,
+        collectionHandle: 'canvas-art',
+        variants: metalOnly,
+      }),
+    ).toEqual(product);
   });
 });
