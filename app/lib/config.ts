@@ -1,7 +1,8 @@
 export const SITE_NAME = 'Render-Lab';
 export const PRODUCTION_ORIGIN = 'https://render-lab.org';
-// Verified against the checkout URL returned by Shopify's Cart API.
-export const SHOPIFY_CHECKOUT_DOMAIN = 'render-lab-3.myshopify.com';
+// Fallback for preview/local environments when PUBLIC_CHECKOUT_DOMAIN is unavailable.
+// Production should use the matching Oxygen variable with this same host.
+export const SHOPIFY_CHECKOUT_DOMAIN = 'checkout.render-lab.org';
 
 export type StorefrontEnvironment = 'local' | 'preview' | 'production';
 
