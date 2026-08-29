@@ -1,8 +1,7 @@
 import {useLoaderData, Link} from 'react-router';
 import type {Route} from './+types/collections._index';
-import {getPaginationVariables, Image} from '@shopify/hydrogen';
+import {Image} from '@shopify/hydrogen';
 import type {CollectionFragment} from 'storefrontapi.generated';
-import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {getProductionUrl} from '~/lib/config';
 
 const HIDDEN_COLLECTION_HANDLES = new Set([
@@ -10,6 +9,21 @@ const HIDDEN_COLLECTION_HANDLES = new Set([
   'digital-downloads',
   'limited-edition-clothing',
 ]);
+
+const COLLECTION_PRIORITY = [
+  'wall-art',
+  'nightmare-lab-halloween-2026',
+  'neon-memento',
+  'metal-wall-art',
+  'canvas-art',
+  'posters',
+  'bundles',
+  'limited-editions',
+  'after-dark',
+  'neon-speed',
+  'alt-history',
+  'alt-timeline',
+] as const;
 
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/collections');
@@ -26,28 +40,24 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
-export async function loader(args: Route.LoaderArgs) {
-  const deferredData = loadDeferredData(args);
-  const criticalData = await loadCriticalData(args);
-  return {...deferredData, ...criticalData};
-}
+export async function loader({context}: Route.LoaderArgs) {
+  const {collections} = await context.storefront.query(COLLECTIONS_QUERY);
+  const rank = new Map(
+    COLLECTION_PRIORITY.map((handle, index) => [handle, index]),
+  );
+  const visibleCollections = collections.nodes
+    .filter(
+      (collection) =>
+        !HIDDEN_COLLECTION_HANDLES.has(collection.handle) &&
+        collection.products.nodes.length > 0,
+    )
+    .sort((left, right) => {
+      const leftRank = rank.get(left.handle) ?? Number.MAX_SAFE_INTEGER;
+      const rightRank = rank.get(right.handle) ?? Number.MAX_SAFE_INTEGER;
+      return leftRank - rightRank || left.title.localeCompare(right.title);
+    });
 
-async function loadCriticalData({context, request}: Route.LoaderArgs) {
-  const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8,
-  });
-
-  const [{collections}] = await Promise.all([
-    context.storefront.query(COLLECTIONS_QUERY, {
-      variables: paginationVariables,
-    }),
-  ]);
-
-  return {collections};
-}
-
-function loadDeferredData({context}: Route.LoaderArgs) {
-  return {};
+  return {collections: visibleCollections};
 }
 
 export default function Collections() {
@@ -56,21 +66,15 @@ export default function Collections() {
   return (
     <div className="collections">
       <h1>Collections</h1>
-      <PaginatedResourceSection<CollectionFragment>
-        connection={collections}
-        resourcesClassName="collections-grid"
-      >
-        {({node: collection, index}) =>
-          HIDDEN_COLLECTION_HANDLES.has(collection.handle) ||
-          collection.products.nodes.length === 0 ? null : (
-            <CollectionItem
-              key={collection.id}
-              collection={collection}
-              index={index}
-            />
-          )
-        }
-      </PaginatedResourceSection>
+      <div className="collections-grid">
+        {collections.map((collection, index) => (
+          <CollectionItem
+            key={collection.id}
+            collection={collection}
+            index={index}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -85,7 +89,6 @@ function CollectionItem({
   return (
     <Link
       className="collection-item"
-      key={collection.id}
       to={`/collections/${collection.handle}`}
       prefetch="intent"
     >
@@ -121,28 +124,11 @@ const COLLECTIONS_QUERY = `#graphql
       }
     }
   }
-  query StoreCollections(
-    $country: CountryCode
-    $endCursor: String
-    $first: Int
-    $language: LanguageCode
-    $last: Int
-    $startCursor: String
-  ) @inContext(country: $country, language: $language) {
-    collections(
-      first: $first,
-      last: $last,
-      before: $startCursor,
-      after: $endCursor
-    ) {
+  query StoreCollections($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    collections(first: 50) {
       nodes {
         ...Collection
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-        startCursor
-        endCursor
       }
     }
   }

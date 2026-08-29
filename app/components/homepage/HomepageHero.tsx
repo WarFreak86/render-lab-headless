@@ -8,14 +8,17 @@ import type {
 
 export function HomepageHero({
   editorial,
+  primaryCta,
   product,
   secondaryCta,
 }: {
   editorial?: HomepageEditorialConfig['hero'];
+  primaryCta: {label: string; to: string} | null;
   product: HomepageProductFeature | null;
   secondaryCta: {label: string; to: string} | null;
 }) {
   if (!editorial) return null;
+  const resolvedPrimaryCta = primaryCta ?? editorial.primaryCta;
 
   return (
     <section className="home-hero" aria-labelledby="home-hero-title">
@@ -36,8 +39,8 @@ export function HomepageHero({
           </h1>
           {editorial.description ? <p className="home-hero__copy">{editorial.description}</p> : null}
           <div className="home-hero__actions">
-            <ButtonLink prefetch="intent" to={editorial.primaryCta.to}>
-              {editorial.primaryCta.label}
+            <ButtonLink prefetch="intent" to={resolvedPrimaryCta.to}>
+              {resolvedPrimaryCta.label}
             </ButtonLink>
             {secondaryCta ? (
               <ButtonLink

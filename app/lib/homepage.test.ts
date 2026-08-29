@@ -17,7 +17,7 @@ function commerce(): HomepageCommerceInput {
     handle: 'real-release',
     title: 'Real Release',
     description: 'Printed on brushed aluminum. Additional product details follow.',
-    productType: 'Aluminum',
+    productType: 'Wall Art',
     availableForSale: true,
     featuredImage: art('release'),
     priceRange: {minVariantPrice: {amount: '80.0', currencyCode: 'USD'}},
@@ -59,14 +59,14 @@ function commerce(): HomepageCommerceInput {
         title: 'Nightmare Lab — Halloween 2026',
         description: 'A seasonal cinematic horror collection.',
         image: art('nightmare'),
-        products: {nodes: []},
+        products: {nodes: [release]},
       },
       {
         id: 'collection-neon',
         handle: 'neon-memento',
         title: 'Neon Memento',
         image: art('neon'),
-        products: {nodes: []},
+        products: {nodes: [release]},
       },
       {
         id: 'collection-limited',
@@ -80,10 +80,9 @@ function commerce(): HomepageCommerceInput {
 }
 
 describe('homepage data normalization', () => {
-  it('normalizes format categories and curated series in merchandising order', () => {
+  it('normalizes formats and curated series in merchandising order', () => {
     const data = normalizeHomepageData(commerce());
     expect(data.categories.map((category) => category.to)).toEqual([
-      '/collections/wall-art',
       '/collections/metal-wall-art',
       '/collections/canvas-art',
       '/collections/posters',
@@ -94,27 +93,41 @@ describe('homepage data normalization', () => {
     ]);
   });
 
-  it('uses a prioritized collection image for the hero even with no active products', () => {
-    const source = commerce();
-    const data = normalizeHomepageData({...source, products: []});
+  it('aligns hero CTAs to the featured series and all wall art', () => {
+    const data = normalizeHomepageData(commerce());
     expect(data.hero).toMatchObject({
       title: 'Nightmare Lab — Halloween 2026',
       to: '/collections/nightmare-lab-halloween-2026',
       productType: 'Collection',
     });
+    expect(data.heroPrimaryCta).toEqual({
+      label: 'Explore Nightmare Lab',
+      to: '/collections/nightmare-lab-halloween-2026',
+    });
     expect(data.heroSecondaryCta).toEqual({
-      label: 'Explore Metal Art',
-      to: '/collections/metal-wall-art',
+      label: 'Shop All Wall Art',
+      to: '/collections/wall-art',
     });
   });
 
-  it('uses a Shopify product for the featured release and real price', () => {
+  it('uses Limited Editions for a featured release when available', () => {
     const data = normalizeHomepageData(commerce());
     expect(data.featuredDrop).toMatchObject({
       title: 'Real Release',
       to: '/products/real-release',
       price: {amount: '80.0', currencyCode: 'USD'},
     });
+  });
+
+  it('does not mislabel an arbitrary active product as a featured release', () => {
+    const source = commerce();
+    const data = normalizeHomepageData({
+      products: source.products,
+      collections: source.collections.filter(
+        (collection) => collection.handle !== 'limited-editions',
+      ),
+    });
+    expect(data.featuredDrop).toBeNull();
   });
 
   it('handles missing optional release and commerce data safely', () => {
@@ -131,26 +144,7 @@ describe('homepage data normalization', () => {
     expect(copy).not.toMatch(/free worldwide shipping|30-day returns|lifetime guarantee/i);
   });
 
-  it('links a legitimately configured apparel release to the drop route', () => {
-    const source = commerce();
-    const marine = {
-      ...source.products[0],
-      id: 'product-marine',
-      handle: 'marine-heavyweight-oversized-hoodie',
-      title: 'Marine Heavyweight Oversized Hoodie',
-      featuredImage: art('marine'),
-    };
-    const data = normalizeHomepageData({
-      ...source,
-      products: [marine, ...source.products],
-    });
-    expect(data.featuredDrop).toMatchObject({
-      handle: 'marine-heavyweight-oversized-hoodie',
-      to: '/drops/marine-heavyweight-oversized-hoodie',
-    });
-  });
-
-  it('prioritizes an explicitly queried configured drop for the homepage release', () => {
+  it('prioritizes a configured drop when Shopify returns it', () => {
     const source = commerce();
     const marine = {
       ...source.products[0],
@@ -180,7 +174,6 @@ describe('homepage data normalization', () => {
     };
     const data = normalizeHomepageData({
       ...source,
-      products: [release],
       featuredDropProduct: release,
     });
     expect(data.featuredDrop?.description).toBe('Warm heavyweight cotton.');
