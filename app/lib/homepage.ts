@@ -98,6 +98,7 @@ export interface HomepageProductFeature {
 export interface HomepageData {
   editorial: HomepageEditorialConfig;
   hero: HomepageProductFeature | null;
+  heroPrimaryCta: {label: string; to: string} | null;
   heroSecondaryCta: {label: string; to: string} | null;
   categories: HomepageCategory[];
   featuredCollections: HomepageCollectionFeature[];
@@ -114,8 +115,8 @@ export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
     primaryCta: {label: 'Explore Wall Art', to: '/collections/wall-art'},
   },
   categories: {
-    eyebrow: 'Shop by format',
-    title: 'Choose your finish',
+    eyebrow: 'Formats & sets',
+    title: 'Choose a format or set',
   },
   featuredCollections: {
     eyebrow: 'Curated series',
@@ -144,13 +145,12 @@ export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
     },
   ],
   featuredDrop: {
-    eyebrow: 'Latest drop',
+    eyebrow: 'Featured release',
     ctaLabel: 'View release',
   },
 };
 
 const CATEGORY_PRIORITY = [
-  'wall-art',
   'metal-wall-art',
   'canvas-art',
   'posters',
@@ -267,6 +267,10 @@ function collectionImage(
   return candidates.find((image) => !usedUrls?.has(image.url)) ?? candidates[0] ?? null;
 }
 
+function shortCollectionTitle(title: string) {
+  return title.split(' — ')[0]?.trim() || title;
+}
+
 export function normalizeHomepageData(
   commerce: HomepageCommerceInput,
   editorial: HomepageEditorialConfig = HOMEPAGE_EDITORIAL_FALLBACK,
@@ -337,18 +341,26 @@ export function normalizeHomepageData(
       Boolean(getDropConfigForProduct(product.handle)),
     ) ??
     normalizeProduct(featuredDropCollection?.products.nodes[0]) ??
-    normalizedProducts.find((product) => product !== hero) ??
     null;
 
-  const heroSecondaryCta = merchandisableCollections.some(
-    (collection) => collection.handle === 'metal-wall-art',
-  )
-    ? {label: 'Explore Metal Art', to: '/collections/metal-wall-art'}
+  const heroPrimaryCta = heroCollection
+    ? {
+        label: `Explore ${shortCollectionTitle(heroCollection.title)}`,
+        to: `/collections/${heroCollection.handle}`,
+      }
     : null;
+  const heroSecondaryCta = heroCollection
+    ? {label: 'Shop All Wall Art', to: '/collections/wall-art'}
+    : merchandisableCollections.some(
+          (collection) => collection.handle === 'metal-wall-art',
+        )
+      ? {label: 'Explore Metal Art', to: '/collections/metal-wall-art'}
+      : null;
 
   return {
     editorial,
     hero,
+    heroPrimaryCta,
     heroSecondaryCta,
     categories,
     featuredCollections,
