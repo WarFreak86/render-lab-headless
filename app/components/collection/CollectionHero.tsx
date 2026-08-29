@@ -3,6 +3,7 @@ import type {CollectionHeroData} from '~/lib/collection';
 
 export function CollectionHero({hero}: {hero: CollectionHeroData}) {
   const heading = hero.editorialHeading ?? hero.title;
+  const eyebrow = hero.eyebrow ?? (hero.editorialHeading ? hero.title : undefined);
 
   return (
     <header
@@ -10,9 +11,7 @@ export function CollectionHero({hero}: {hero: CollectionHeroData}) {
     >
       <div className="container container--wide collection-hero__inner">
         <div className="collection-hero__copy">
-          {hero.editorialHeading ? (
-            <p className="collection-hero__eyebrow">{hero.title}</p>
-          ) : null}
+          {eyebrow ? <p className="collection-hero__eyebrow">{eyebrow}</p> : null}
           <h1>{heading}</h1>
           {hero.description ? <p>{hero.description}</p> : null}
         </div>
