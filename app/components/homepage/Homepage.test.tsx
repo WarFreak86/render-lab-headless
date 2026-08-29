@@ -31,9 +31,10 @@ const product = {
 const data: HomepageData = {
   editorial: HOMEPAGE_EDITORIAL_FALLBACK,
   hero: product,
-  heroSecondaryCta: {label: 'Explore Metal Art', to: '/collections/metal-wall-art'},
+  heroPrimaryCta: {label: 'Explore Neon Memento', to: '/collections/neon-memento'},
+  heroSecondaryCta: {label: 'Shop All Wall Art', to: '/collections/wall-art'},
   categories: [
-    {id: 'category-1', title: 'Wall Art', to: '/collections/wall-art', image},
+    {id: 'category-1', title: 'Metal Wall Art', to: '/collections/metal-wall-art', image},
   ],
   featuredCollections: [
     {
@@ -55,26 +56,26 @@ function renderHomepage(homepage = data) {
 }
 
 describe('homepage presentation', () => {
-  it('renders the editorial hero structure and both configured CTAs', () => {
+  it('renders contextual hero CTAs', () => {
     renderHomepage();
     expect(
       screen.getByRole('heading', {level: 1, name: 'Collect the Chaos.'}),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'Explore Wall Art'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Explore Neon Memento'})).toHaveAttribute(
+      'href',
+      '/collections/neon-memento',
+    );
+    expect(screen.getByRole('link', {name: 'Shop All Wall Art'})).toHaveAttribute(
       'href',
       '/collections/wall-art',
-    );
-    expect(screen.getByRole('link', {name: 'Explore Metal Art'})).toHaveAttribute(
-      'href',
-      '/collections/metal-wall-art',
     );
   });
 
-  it('renders Shopify-backed categories and featured collection destinations', () => {
+  it('renders Shopify-backed format and featured collection destinations', () => {
     renderHomepage();
-    expect(screen.getByRole('link', {name: 'Wall Art'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Metal Wall Art'})).toHaveAttribute(
       'href',
-      '/collections/wall-art',
+      '/collections/metal-wall-art',
     );
     expect(screen.getByRole('link', {name: 'Neon Memento'})).toHaveAttribute(
       'href',
@@ -90,7 +91,12 @@ describe('homepage presentation', () => {
   it('renders without throwing when optional editorial hero data is absent', () => {
     render(
       <MemoryRouter>
-        <HomepageHero editorial={undefined} product={product} secondaryCta={null} />
+        <HomepageHero
+          editorial={undefined}
+          primaryCta={null}
+          product={product}
+          secondaryCta={null}
+        />
       </MemoryRouter>,
     );
     expect(screen.queryByRole('heading', {level: 1})).not.toBeInTheDocument();
@@ -103,17 +109,14 @@ describe('homepage presentation', () => {
       configurable: true,
       value: scrollBy,
     });
-    vi.stubGlobal(
-      'matchMedia',
-      vi.fn().mockReturnValue({matches: true}),
-    );
+    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({matches: true}));
 
     render(
       <MemoryRouter>
-        <CategoryRail categories={data.categories} title="Choose your finish" />
+        <CategoryRail categories={data.categories} title="Choose a format or set" />
       </MemoryRouter>,
     );
-    expect(screen.getByRole('link', {name: 'Wall Art'})).toBeVisible();
+    expect(screen.getByRole('link', {name: 'Metal Wall Art'})).toBeVisible();
     await user.click(screen.getByRole('button', {name: 'Next categories'}));
     expect(scrollBy).toHaveBeenCalledWith(expect.objectContaining({behavior: 'auto'}));
     vi.unstubAllGlobals();
