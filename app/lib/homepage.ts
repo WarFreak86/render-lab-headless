@@ -110,7 +110,7 @@ export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
     headline: ['Collect the', 'Chaos.'],
     accentLine: 1,
     description:
-      'Limited-run artwork for walls and wardrobes. Choose the finish, size, and format that fits your space.',
+      'Limited-run artwork for the wall. Choose the finish and size that fit your space.',
     primaryCta: {label: 'Explore Wall Art', to: '/collections/wall-art'},
   },
   categories: {
@@ -155,7 +155,6 @@ const CATEGORY_PRIORITY = [
   'canvas-art',
   'posters',
   'bundles',
-  'hoodies',
 ] as const;
 
 const FEATURED_COLLECTION_PRIORITY = [
@@ -272,15 +271,15 @@ export function normalizeHomepageData(
   commerce: HomepageCommerceInput,
   editorial: HomepageEditorialConfig = HOMEPAGE_EDITORIAL_FALLBACK,
 ): HomepageData {
-  const collectionsWithImages = commerce.collections.filter((collection) =>
-    collectionImage(collection),
+  const merchandisableCollections = commerce.collections.filter(
+    (collection) => collection.products.nodes.length > 0 && collectionImage(collection),
   );
   const categoryCollections = prioritizedCollections(
-    collectionsWithImages,
+    merchandisableCollections,
     CATEGORY_PRIORITY,
   );
   const featuredCandidates = prioritizedCollections(
-    collectionsWithImages,
+    merchandisableCollections,
     FEATURED_COLLECTION_PRIORITY,
   );
   const usedFeatureImages = new Set<string>();
@@ -312,7 +311,7 @@ export function normalizeHomepageData(
     return normalized ? [normalized] : [];
   });
   const heroCollection = prioritizedCollections(
-    collectionsWithImages,
+    merchandisableCollections,
     HERO_COLLECTION_PRIORITY,
   )[0];
   const hero =
@@ -326,7 +325,7 @@ export function normalizeHomepageData(
     normalizedProducts[0] ??
     null;
 
-  const featuredDropCollection = commerce.collections.find(
+  const featuredDropCollection = merchandisableCollections.find(
     (collection) => collection.handle === 'limited-editions',
   );
   const featuredDrop =
@@ -341,7 +340,7 @@ export function normalizeHomepageData(
     normalizedProducts.find((product) => product !== hero) ??
     null;
 
-  const heroSecondaryCta = commerce.collections.some(
+  const heroSecondaryCta = merchandisableCollections.some(
     (collection) => collection.handle === 'metal-wall-art',
   )
     ? {label: 'Explore Metal Art', to: '/collections/metal-wall-art'}

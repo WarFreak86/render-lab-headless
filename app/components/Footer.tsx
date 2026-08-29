@@ -20,7 +20,8 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}: Foote
         </div>
         <FooterLinkGroup title="Explore">
           <NavLink to="/collections">Collections</NavLink>
-          <NavLink to="/collections/hoodies">Apparel</NavLink>
+          <NavLink to="/collections/wall-art">Wall Art</NavLink>
+          <NavLink to="/collections/bundles">Bundles</NavLink>
         </FooterLinkGroup>
         <FooterLinkGroup title="Support">
           <NavLink to="/account">Account</NavLink>

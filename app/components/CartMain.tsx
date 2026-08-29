@@ -135,23 +135,23 @@ function CartEmpty() {
       <p className="cart-empty__eyebrow">Your cart is quiet</p>
       <h3>Your collection starts here.</h3>
       <p>
-        Explore original wall art and apparel, then return when something earns
+        Explore original wall art and curated sets, then return when something earns
         its place.
       </p>
       <div className="cart-empty__actions">
         <Link
           className="button button--primary"
           onClick={close}
-          to="/collections"
+          to="/collections/wall-art"
         >
-          Explore collections
+          Explore wall art
         </Link>
         <Link
           className="button button--secondary"
           onClick={close}
-          to="/collections/hoodies"
+          to="/collections/bundles"
         >
-          Shop apparel
+          Shop bundles
         </Link>
       </div>
     </div>
