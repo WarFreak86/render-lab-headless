@@ -9,10 +9,7 @@ export const COLLECTION_NAV_ITEMS: ReadonlyArray<NavigationItem> = [
   {title: 'Canvas Prints', url: '/collections/canvas-art'},
   {title: 'Posters', url: '/collections/posters'},
   {title: 'Bundles', url: '/collections/bundles'},
-  {title: 'Apparel', url: '/collections/hoodies'},
   {title: 'All Collections', url: '/collections'},
 ];
 
-export const PRIMARY_NAV_ITEMS: ReadonlyArray<NavigationItem> = [
-  {title: 'Drops', url: '/drops/marine-heavyweight-oversized-hoodie'},
-];
+export const PRIMARY_NAV_ITEMS: ReadonlyArray<NavigationItem> = [];
