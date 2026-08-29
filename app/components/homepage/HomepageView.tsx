@@ -10,8 +10,14 @@ export function HomepageView({data}: {data: HomepageData}) {
     <div className="home homepage">
       <HomepageHero
         editorial={data.editorial?.hero}
+        primaryCta={data.heroPrimaryCta}
         product={data.hero}
         secondaryCta={data.heroSecondaryCta}
+      />
+      <FeaturedCollections
+        collections={data.featuredCollections}
+        eyebrow={data.editorial?.featuredCollections.eyebrow}
+        title={data.editorial?.featuredCollections.title ?? 'Collections'}
       />
       <FeaturedDrop
         editorial={data.editorial?.featuredDrop}
@@ -21,11 +27,6 @@ export function HomepageView({data}: {data: HomepageData}) {
         categories={data.categories}
         eyebrow={data.editorial?.categories.eyebrow}
         title={data.editorial?.categories.title ?? 'Explore'}
-      />
-      <FeaturedCollections
-        collections={data.featuredCollections}
-        eyebrow={data.editorial?.featuredCollections.eyebrow}
-        title={data.editorial?.featuredCollections.title ?? 'Collections'}
       />
       <BenefitStrip benefits={data.editorial?.benefits ?? []} />
     </div>
