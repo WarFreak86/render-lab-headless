@@ -12,4 +12,9 @@ export const COLLECTION_NAV_ITEMS: ReadonlyArray<NavigationItem> = [
   {title: 'All Collections', url: '/collections'},
 ];
 
-export const PRIMARY_NAV_ITEMS: ReadonlyArray<NavigationItem> = [];
+export const PRIMARY_NAV_ITEMS: ReadonlyArray<NavigationItem> = [
+  {title: 'Art Prints', url: '/collections/wall-art'},
+  {title: 'Metal Prints', url: '/collections/metal-wall-art'},
+  {title: 'Canvas Prints', url: '/collections/canvas-art'},
+  {title: 'Posters', url: '/collections/posters'},
+];

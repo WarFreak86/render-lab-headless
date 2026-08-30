@@ -62,7 +62,7 @@ export interface HomepageEditorialConfig {
   categories: {eyebrow?: string; title: string};
   featuredCollections: {eyebrow?: string; title: string};
   benefits: ReadonlyArray<{
-    icon: 'material' | 'edition' | 'checkout' | 'details';
+    icon: 'material' | 'edition' | 'checkout' | 'details' | 'collection';
     title: string;
     description: string;
   }>;
@@ -77,6 +77,7 @@ export interface HomepageCategory {
   title: string;
   to: string;
   image: HomepageImage;
+  meta?: string;
 }
 
 export interface HomepageCollectionFeature extends HomepageCategory {
@@ -107,50 +108,54 @@ export interface HomepageData {
 
 export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
   hero: {
-    eyebrow: 'Render-Lab / Limited Art Drops',
-    headline: ['Collect the', 'Chaos.'],
+    eyebrow: 'Art that hits different',
+    headline: ['Vision. Chaos.', 'Mastered.'],
     accentLine: 1,
     description:
-      'Limited-run artwork for the wall. Choose the finish and size that fit your space.',
-    primaryCta: {label: 'Explore Wall Art', to: '/collections/wall-art'},
+      'Premium metal, canvas, and poster art designed to transform your space and ignite your imagination.',
+    primaryCta: {label: 'Explore Collections', to: '/collections/wall-art'},
   },
   categories: {
-    eyebrow: 'Formats & sets',
-    title: 'Choose a format or set',
+    title: 'Explore by category',
   },
   featuredCollections: {
-    eyebrow: 'Curated series',
-    title: 'Enter the collection',
+    title: 'Featured collections',
   },
   benefits: [
     {
       icon: 'material',
-      title: 'Material options',
-      description: 'Choose metal, canvas, or poster finishes for your space.',
+      title: 'Premium quality',
+      description: 'Gallery-grade material options.',
     },
     {
       icon: 'edition',
       title: 'Curated editions',
-      description: 'Distinct visual stories organized for discovery.',
+      description: 'Distinct visual stories for collectors.',
+    },
+    {
+      icon: 'collection',
+      title: 'Multiple formats',
+      description: 'Metal, canvas, and poster options.',
     },
     {
       icon: 'checkout',
       title: 'Secure checkout',
-      description: 'Checkout is completed securely with Shopify.',
+      description: 'Checkout powered securely by Shopify.',
     },
     {
       icon: 'details',
-      title: 'Product details',
-      description: 'Materials and production notes live with each work.',
+      title: 'Clear details',
+      description: 'Materials and sizing listed with each work.',
     },
   ],
   featuredDrop: {
-    eyebrow: 'Featured release',
+    eyebrow: 'Limited drop',
     ctaLabel: 'View release',
   },
 };
 
 const CATEGORY_PRIORITY = [
+  'wall-art',
   'metal-wall-art',
   'canvas-art',
   'posters',
@@ -159,12 +164,21 @@ const CATEGORY_PRIORITY = [
 
 const FEATURED_COLLECTION_PRIORITY = [
   'nightmare-lab-halloween-2026',
+  'botanical-anomalies',
   'neon-memento',
   'after-dark',
   'limited-editions',
   'neon-speed',
   'alt-history',
 ] as const;
+
+const CATEGORY_META: Readonly<Record<string, string>> = {
+  'wall-art': 'Curated series',
+  'metal-wall-art': 'Gallery-grade finish',
+  'canvas-art': 'Textured depth',
+  posters: 'Accessible editions',
+  bundles: 'Coordinated sets',
+};
 
 const HERO_COLLECTION_PRIORITY = [
   'nightmare-lab-halloween-2026',
@@ -291,9 +305,33 @@ export function normalizeHomepageData(
   const categories = categoryCollections.flatMap((collection) => {
     const image = collectionImage(collection);
     return image
-      ? [{id: collection.id, title: collection.title, to: `/collections/${collection.handle}`, image}]
+      ? [
+          {
+            id: collection.id,
+            title: collection.title,
+            to: `/collections/${collection.handle}`,
+            image,
+            meta: CATEGORY_META[collection.handle] ?? 'Explore artwork',
+          },
+        ]
       : [];
   });
+
+  const allCollectionsSource =
+    prioritizedCollections(merchandisableCollections, HERO_COLLECTION_PRIORITY)[0] ??
+    merchandisableCollections[0];
+  const allCollectionsImage = allCollectionsSource
+    ? collectionImage(allCollectionsSource)
+    : null;
+  if (allCollectionsImage) {
+    categories.push({
+      id: 'homepage-all-collections',
+      title: 'All Collections',
+      to: '/collections',
+      image: allCollectionsImage,
+      meta: 'Browse every series',
+    });
+  }
 
   const featuredCollections = featuredCandidates.flatMap((collection) => {
     const image = collectionImage(collection, usedFeatureImages);

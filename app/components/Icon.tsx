@@ -6,6 +6,12 @@ export type IconName =
   | 'chevron-down'
   | 'close'
   | 'checkout'
+  | 'collection'
+  | 'frame'
+  | 'metal'
+  | 'canvas'
+  | 'poster'
+  | 'bundle'
   | 'details'
   | 'edition'
   | 'material'
@@ -77,6 +83,50 @@ export function Icon({
           <path d="M7 10V7a5 5 0 0 1 10 0v3" />
           <rect x="4.5" y="10" width="15" height="10" rx="1.5" />
           <path d="M12 14v2.5" />
+        </svg>
+      );
+    case 'collection':
+      return (
+        <svg {...shared}>
+          <rect x="3.5" y="5" width="7" height="7" />
+          <rect x="13.5" y="5" width="7" height="7" />
+          <rect x="3.5" y="15" width="7" height="4" />
+          <rect x="13.5" y="15" width="7" height="4" />
+        </svg>
+      );
+    case 'frame':
+      return (
+        <svg {...shared}>
+          <rect x="4" y="3.5" width="16" height="17" />
+          <path d="M7 17l3.2-4 2.6 2.6 2.2-3 2 2.4M8 8.5h.01" />
+        </svg>
+      );
+    case 'metal':
+      return (
+        <svg {...shared}>
+          <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z" />
+          <path d="m4 7.5 8 4.5 8-4.5M12 12v9" />
+        </svg>
+      );
+    case 'canvas':
+      return (
+        <svg {...shared}>
+          <path d="M5 4h14v13H5zM3 20h18M8 17l-2 3M16 17l2 3" />
+        </svg>
+      );
+    case 'poster':
+      return (
+        <svg {...shared}>
+          <path d="M6 3h12v18H6z" />
+          <path d="M9 7h6M9 11h6M9 15h4" />
+        </svg>
+      );
+    case 'bundle':
+      return (
+        <svg {...shared}>
+          <path d="M4 8.5 12 4l8 4.5-8 4.5z" />
+          <path d="M4 8.5v7L12 20l8-4.5v-7M12 13v7" />
+          <path d="M9.5 5.5 17.5 10v4" />
         </svg>
       );
     case 'details':

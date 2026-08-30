@@ -43,7 +43,7 @@ export function Header({isLoggedIn, cart}: HeaderProps) {
           prefetch="intent"
           to="/"
         >
-          RENDER<span aria-hidden="true">·</span>LAB
+          RENDER<span aria-hidden="true">-</span>LAB
         </NavLink>
         <HeaderMenu viewport="desktop" />
         <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
@@ -56,6 +56,10 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
   const {close, open} = useAside();
 
   if (viewport === 'mobile') {
+    const collectionUrls = new Set(COLLECTION_NAV_ITEMS.map((item) => item.url));
+    const mobilePrimaryItems = PRIMARY_NAV_ITEMS.filter(
+      (item) => !collectionUrls.has(item.url),
+    );
     return (
       <nav
         aria-label="Mobile navigation"
@@ -76,7 +80,7 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
             ))}
           </div>
         </Accordion>
-        {PRIMARY_NAV_ITEMS.map((item) => (
+        {mobilePrimaryItems.map((item) => (
           <NavLink
             className={({isActive}) => (isActive ? 'is-active' : undefined)}
             key={item.title}
@@ -103,7 +107,6 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
 
   return (
     <nav aria-label="Primary" className="header-menu header-menu--desktop">
-      <CollectionsDropdown onNavigate={close} />
       {PRIMARY_NAV_ITEMS.map((item) => (
         <NavLink
           className={({isActive}) => (isActive ? 'is-active' : undefined)}
@@ -115,6 +118,7 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
           {item.title}
         </NavLink>
       ))}
+      <CollectionsDropdown onNavigate={close} />
     </nav>
   );
 }

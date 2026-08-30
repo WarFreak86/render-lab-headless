@@ -18,11 +18,20 @@ export function HomepageHero({
   secondaryCta: {label: string; to: string} | null;
 }) {
   if (!editorial) return null;
-  const resolvedPrimaryCta = primaryCta ?? editorial.primaryCta;
+  const resolvedPrimaryCta = primaryCta
+    ? {...primaryCta, label: editorial.primaryCta.label}
+    : editorial.primaryCta;
+  const resolvedSecondaryCta = secondaryCta
+    ? {...secondaryCta, label: 'Shop wall art'}
+    : null;
 
   return (
     <section className="home-hero" aria-labelledby="home-hero-title">
       <div className="home-hero__inner">
+        <div className="home-hero__progress" aria-hidden="true">
+          <span className="is-active">01</span>
+          <span>03</span>
+        </div>
         <div className="home-hero__content">
           {editorial.eyebrow ? (
             <p className="home-eyebrow home-hero__eyebrow">{editorial.eyebrow}</p>
@@ -42,16 +51,27 @@ export function HomepageHero({
             <ButtonLink prefetch="intent" to={resolvedPrimaryCta.to}>
               {resolvedPrimaryCta.label}
             </ButtonLink>
-            {secondaryCta ? (
+            {resolvedSecondaryCta ? (
               <ButtonLink
                 icon={<Icon name="arrow-right" size={17} />}
                 prefetch="intent"
-                to={secondaryCta.to}
+                to={resolvedSecondaryCta.to}
                 variant="text"
               >
-                {secondaryCta.label}
+                {resolvedSecondaryCta.label}
               </ButtonLink>
             ) : null}
+          </div>
+          <div className="home-hero__proof" aria-label="Available art formats">
+            <span className="home-hero__format-stack" aria-hidden="true">
+              <i>M</i>
+              <i>C</i>
+              <i>P</i>
+            </span>
+            <span>
+              <strong>Metal · Canvas · Poster</strong>
+              <small>Made for collectors</small>
+            </span>
           </div>
         </div>
         {product ? (
@@ -63,10 +83,9 @@ export function HomepageHero({
               loading="eager"
               sizes="(max-width: 767px) 100vw, 60vw"
             />
-            <div className="home-hero__caption" aria-hidden="true">
-              <span>{product.title}</span>
-              {product.productType ? <span>{product.productType}</span> : null}
-            </div>
+            <span className="home-hero__scroll-cue" aria-hidden="true">
+              Scroll to explore
+            </span>
           </div>
         ) : null}
       </div>

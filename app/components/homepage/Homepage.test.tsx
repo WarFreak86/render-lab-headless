@@ -56,16 +56,16 @@ function renderHomepage(homepage = data) {
 }
 
 describe('homepage presentation', () => {
-  it('renders contextual hero CTAs', () => {
+  it('renders the approved hero copy while preserving contextual destinations', () => {
     renderHomepage();
     expect(
-      screen.getByRole('heading', {level: 1, name: 'Collect the Chaos.'}),
+      screen.getByRole('heading', {level: 1, name: 'Vision. Chaos. Mastered.'}),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'Explore Neon Memento'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Explore Collections'})).toHaveAttribute(
       'href',
       '/collections/neon-memento',
     );
-    expect(screen.getByRole('link', {name: 'Shop All Wall Art'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Shop wall art'})).toHaveAttribute(
       'href',
       '/collections/wall-art',
     );
@@ -83,9 +83,16 @@ describe('homepage presentation', () => {
     );
   });
 
-  it('omits the featured release without optional product data', () => {
+  it('renders a transparent coming-soon drop state without optional product data', () => {
     renderHomepage({...data, featuredDrop: null});
     expect(screen.queryByRole('heading', {name: 'Real Work', level: 2})).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {name: 'Next limited drop', level: 2}),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', {name: 'Explore current work'})).toHaveAttribute(
+      'href',
+      '/collections/wall-art',
+    );
   });
 
   it('renders without throwing when optional editorial hero data is absent', () => {

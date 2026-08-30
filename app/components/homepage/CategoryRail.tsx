@@ -2,6 +2,7 @@ import {useRef} from 'react';
 import {Image} from '@shopify/hydrogen';
 import {Link} from 'react-router';
 import {IconButton} from '~/components/IconButton';
+import {Icon, type IconName} from '~/components/Icon';
 import type {HomepageCategory} from '~/lib/homepage';
 import {SectionHeading} from './SectionHeading';
 
@@ -23,6 +24,15 @@ export function CategoryRail({
       left: direction * Math.max(280, railRef.current.clientWidth * 0.72),
       behavior: reduceMotion ? 'auto' : 'smooth',
     });
+  };
+
+  const iconFor = (to: string): IconName => {
+    if (to.includes('metal-wall-art')) return 'metal';
+    if (to.includes('canvas-art')) return 'canvas';
+    if (to.includes('posters')) return 'poster';
+    if (to.includes('bundles')) return 'bundle';
+    if (to === '/collections') return 'collection';
+    return 'frame';
   };
 
   return (
@@ -57,7 +67,15 @@ export function CategoryRail({
               sizes="(max-width: 639px) 72vw, (max-width: 1023px) 38vw, 18vw"
             />
             <span className="category-card__shade" aria-hidden="true" />
-            <span className="category-card__title">{category.title}</span>
+            <span className="category-card__content">
+              <span className="category-card__icon" aria-hidden="true">
+                <Icon name={iconFor(category.to)} size={24} />
+              </span>
+              <span>
+                <strong>{category.title}</strong>
+                <small>{category.meta ?? 'Explore artwork'}</small>
+              </span>
+            </span>
           </Link>
         ))}
       </div>

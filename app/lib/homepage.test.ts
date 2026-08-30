@@ -83,9 +83,11 @@ describe('homepage data normalization', () => {
   it('normalizes formats and curated series in merchandising order', () => {
     const data = normalizeHomepageData(commerce());
     expect(data.categories.map((category) => category.to)).toEqual([
+      '/collections/wall-art',
       '/collections/metal-wall-art',
       '/collections/canvas-art',
       '/collections/posters',
+      '/collections',
     ]);
     expect(data.featuredCollections.slice(0, 2).map((collection) => collection.to)).toEqual([
       '/collections/nightmare-lab-halloween-2026',
