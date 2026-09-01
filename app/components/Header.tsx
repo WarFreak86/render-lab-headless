@@ -62,7 +62,7 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
         aria-label="Mobile navigation"
         className="header-menu header-menu--mobile"
       >
-        <Accordion title="Explore">
+        <Accordion title="Shop">
           <div className="header-menu__mobile-mega">
             {EXPLORE_NAV_GROUPS.map((group) => (
               <section className="header-menu__mobile-group" key={group.title}>
@@ -217,11 +217,11 @@ function ExploreMegaMenu({onNavigate}: {onNavigate: () => void}) {
         ref={triggerRef}
         type="button"
       >
-        Explore
+        Shop
         <Icon name="chevron-down" size={12} />
       </button>
       <div
-        aria-label="Explore menu"
+        aria-label="Shop menu"
         className="header-menu__mega-panel"
         data-open={open || undefined}
         hidden={!open}
