@@ -11,7 +11,7 @@ import {Icon} from '~/components/Icon';
 import {IconButton} from '~/components/IconButton';
 import {useAside} from '~/components/Aside';
 import {SITE_NAME} from '~/lib/config';
-import {COLLECTION_NAV_ITEMS, PRIMARY_NAV_ITEMS} from '~/lib/navigation';
+import {EXPLORE_NAV_GROUPS, PRIMARY_NAV_ITEMS} from '~/lib/navigation';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -46,6 +46,7 @@ export function Header({isLoggedIn, cart}: HeaderProps) {
           RENDER<span aria-hidden="true">-</span>LAB
         </NavLink>
         <HeaderMenu viewport="desktop" />
+        <HeaderSearch />
         <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
       </div>
     </header>
@@ -56,31 +57,36 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
   const {close, open} = useAside();
 
   if (viewport === 'mobile') {
-    const collectionUrls = new Set(COLLECTION_NAV_ITEMS.map((item) => item.url));
-    const mobilePrimaryItems = PRIMARY_NAV_ITEMS.filter(
-      (item) => !collectionUrls.has(item.url),
-    );
     return (
       <nav
         aria-label="Mobile navigation"
         className="header-menu header-menu--mobile"
       >
-        <Accordion title="Collections">
-          <div className="header-menu__mobile-links">
-            {COLLECTION_NAV_ITEMS.map((item) => (
-              <NavLink
-                className={({isActive}) => (isActive ? 'is-active' : undefined)}
-                key={item.title}
-                onClick={close}
-                prefetch="intent"
-                to={item.url}
-              >
-                {item.title}
-              </NavLink>
+        <Accordion title="Explore">
+          <div className="header-menu__mobile-mega">
+            {EXPLORE_NAV_GROUPS.map((group) => (
+              <section className="header-menu__mobile-group" key={group.title}>
+                <p>{group.title}</p>
+                <div className="header-menu__mobile-links">
+                  {group.items.map((item) => (
+                    <NavLink
+                      className={({isActive}) =>
+                        isActive ? 'is-active' : undefined
+                      }
+                      key={item.title}
+                      onClick={close}
+                      prefetch="intent"
+                      to={item.url}
+                    >
+                      {item.title}
+                    </NavLink>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         </Accordion>
-        {mobilePrimaryItems.map((item) => (
+        {PRIMARY_NAV_ITEMS.map((item) => (
           <NavLink
             className={({isActive}) => (isActive ? 'is-active' : undefined)}
             key={item.title}
@@ -107,6 +113,7 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
 
   return (
     <nav aria-label="Primary" className="header-menu header-menu--desktop">
+      <ExploreMegaMenu onNavigate={close} />
       {PRIMARY_NAV_ITEMS.map((item) => (
         <NavLink
           className={({isActive}) => (isActive ? 'is-active' : undefined)}
@@ -118,12 +125,11 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
           {item.title}
         </NavLink>
       ))}
-      <CollectionsDropdown onNavigate={close} />
     </nav>
   );
 }
 
-function CollectionsDropdown({onNavigate}: {onNavigate: () => void}) {
+function ExploreMegaMenu({onNavigate}: {onNavigate: () => void}) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -134,7 +140,7 @@ function CollectionsDropdown({onNavigate}: {onNavigate: () => void}) {
     () =>
       Array.from(
         containerRef.current?.querySelectorAll<HTMLAnchorElement>(
-          '[role="menuitem"]',
+          '[data-mega-item="true"]',
         ) ?? [],
       ),
     [],
@@ -170,7 +176,7 @@ function CollectionsDropdown({onNavigate}: {onNavigate: () => void}) {
     };
   }, [closeMenu, open]);
 
-  const handleMenuKeyDown = (event: React.KeyboardEvent<HTMLUListElement>) => {
+  const handleMenuKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
     event.preventDefault();
     const items = getMenuItems();
@@ -191,7 +197,7 @@ function CollectionsDropdown({onNavigate}: {onNavigate: () => void}) {
 
   return (
     <div
-      className="header-menu__group"
+      className="header-menu__group header-menu__group--mega"
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={closeMenu}
       ref={containerRef}
@@ -201,7 +207,7 @@ function CollectionsDropdown({onNavigate}: {onNavigate: () => void}) {
         aria-expanded={open}
         aria-haspopup="menu"
         className="header-menu__trigger"
-        onClick={() => setOpen(true)}
+        onClick={() => setOpen((current) => !current)}
         onKeyDown={(event) => {
           if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
             event.preventDefault();
@@ -211,36 +217,72 @@ function CollectionsDropdown({onNavigate}: {onNavigate: () => void}) {
         ref={triggerRef}
         type="button"
       >
-        Collections
+        Explore
         <Icon name="chevron-down" size={12} />
       </button>
       <div
-        aria-label="Collections menu"
-        className="header-menu__panel"
+        aria-label="Explore menu"
+        className="header-menu__mega-panel"
         data-open={open || undefined}
         hidden={!open}
         id={panelId}
+        onKeyDown={handleMenuKeyDown}
+        role="menu"
       >
-        <ul onKeyDown={handleMenuKeyDown} role="menu">
-          {COLLECTION_NAV_ITEMS.map((item) => (
-            <li key={item.title} role="none">
-              <NavLink
-                className={({isActive}) => (isActive ? 'is-active' : undefined)}
-                onClick={() => {
-                  closeMenu();
-                  onNavigate();
-                }}
-                prefetch="intent"
-                role="menuitem"
-                to={item.url}
+        <div className="header-menu__mega-inner">
+          {EXPLORE_NAV_GROUPS.map((group, groupIndex) => {
+            const headingId = `${panelId}-group-${groupIndex}`;
+            return (
+              <section
+                aria-labelledby={headingId}
+                className="header-menu__mega-group"
+                key={group.title}
+                role="none"
               >
-                {item.title}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+                <h2 id={headingId}>{group.title}</h2>
+                <ul role="group">
+                  {group.items.map((item) => (
+                    <li key={item.title} role="none">
+                      <NavLink
+                        className={({isActive}) =>
+                          isActive ? 'is-active' : undefined
+                        }
+                        data-mega-item="true"
+                        onClick={() => {
+                          closeMenu();
+                          onNavigate();
+                        }}
+                        prefetch="intent"
+                        role="menuitem"
+                        to={item.url}
+                      >
+                        {item.title}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+          })}
+        </div>
       </div>
     </div>
+  );
+}
+
+function HeaderSearch() {
+  const {open} = useAside();
+
+  return (
+    <button
+      aria-label="Search Render-Lab"
+      className="header-search"
+      onClick={() => open('search')}
+      type="button"
+    >
+      <Icon name="search" />
+      <span>Search art, collections, and formats</span>
+    </button>
   );
 }
 
