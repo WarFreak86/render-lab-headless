@@ -33,6 +33,7 @@ export const EXPLORE_NAV_GROUPS: ReadonlyArray<NavigationGroup> = [
     title: 'Artists',
     items: [
       {title: 'Nico Vale', url: '/artists/nico-vale'},
+      {title: 'Mara Voss', url: '/artists/mara-voss'},
       {title: 'View All Artists', url: '/artists'},
     ],
   },
