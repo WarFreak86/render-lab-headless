@@ -268,9 +268,9 @@ const COLLECTION_QUERY = `#graphql
             id
             handle
             name: field(key: "name") { value }
-            biography: field(key: "biography") { value }
-            profileUrl: field(key: "profile_url") { value }
-            photo: field(key: "photo") {
+            biography: field(key: "bio") { value }
+            profileUrl: field(key: "profile_link") { value }
+            photo: field(key: "profile_image") {
               reference {
                 ... on MediaImage {
                   image {
