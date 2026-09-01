@@ -34,15 +34,25 @@ export const meta: Route.MetaFunction = ({data}) => {
 };
 
 export async function loader({context}: Route.LoaderArgs) {
-  const {collections, products, featuredDropProduct} =
+  const {collections, echoesOfWar, products, featuredDropProduct} =
     await context.storefront.query(HOMEPAGE_QUERY, {
       variables: {dropHandle: DROP_CONFIGS[0].productHandle},
     });
+
+  const homepageCollections = echoesOfWar
+    ? [
+        echoesOfWar,
+        ...collections.nodes.filter(
+          (collection) => collection.id !== echoesOfWar.id,
+        ),
+      ]
+    : collections.nodes;
+
   return {
     isShopLinked: Boolean(context.env.PUBLIC_STORE_DOMAIN),
     homepage: normalizeHomepageData(
       {
-        collections: collections.nodes,
+        collections: homepageCollections,
         products: products.nodes,
         featuredDropProduct,
       },
@@ -62,34 +72,41 @@ export default function Homepage() {
 }
 
 const HOMEPAGE_QUERY = `#graphql
+  fragment HomepageCollection on Collection {
+    id
+    handle
+    title
+    description
+    image {
+      id
+      url
+      altText
+      width
+      height
+    }
+    products(first: 6) {
+      nodes {
+        ...ProductCard
+        description
+        descriptionHtml
+        productType
+        availableForSale
+      }
+    }
+  }
+
   query Homepage(
     $country: CountryCode
     $dropHandle: String!
     $language: LanguageCode
   )
     @inContext(country: $country, language: $language) {
+    echoesOfWar: collection(handle: "echoes-of-war") {
+      ...HomepageCollection
+    }
     collections(first: 20, sortKey: UPDATED_AT, reverse: true) {
       nodes {
-        id
-        handle
-        title
-        description
-        image {
-          id
-          url
-          altText
-          width
-          height
-        }
-        products(first: 6) {
-          nodes {
-            ...ProductCard
-            description
-            descriptionHtml
-            productType
-            availableForSale
-          }
-        }
+        ...HomepageCollection
       }
     }
     products(first: 12, sortKey: UPDATED_AT, reverse: true) {
