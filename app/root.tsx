@@ -25,6 +25,7 @@ import resetStyles from '~/styles/reset.css?url';
 import tokenStyles from '~/styles/tokens.css?url';
 import appStyles from '~/styles/app.css?url';
 import navigationStyles from '~/styles/navigation.css?url';
+import artistStyles from '~/styles/artists.css?url';
 import homeStyles from '~/styles/home.css?url';
 import collectionStyles from '~/styles/collection.css?url';
 import productStyles from '~/styles/product.css?url';
@@ -189,6 +190,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={tokenStyles}></link>
         <link rel="stylesheet" href={appStyles}></link>
         <link rel="stylesheet" href={navigationStyles}></link>
+        <link rel="stylesheet" href={artistStyles}></link>
         <link rel="stylesheet" href={homeStyles}></link>
         <link rel="stylesheet" href={collectionStyles}></link>
         <link rel="stylesheet" href={productStyles}></link>
