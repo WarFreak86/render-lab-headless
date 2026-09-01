@@ -31,15 +31,13 @@ export const EXPLORE_NAV_GROUPS: ReadonlyArray<NavigationGroup> = [
       {title: 'Quiet Horizons', url: '/collections/quiet-horizons'},
       {title: 'Botanical Anomalies', url: '/collections/botanical-anomalies'},
       {title: 'Nightmare Lab', url: '/collections/nightmare-lab'},
-      {title: 'Neon Memento', url: '/collections/neon-memento'},
     ],
   },
   {
     title: 'More Collections',
     items: [
+      {title: 'Neon Memento', url: '/collections/neon-memento'},
       {title: 'After Dark', url: '/collections/after-dark'},
-      {title: 'Alt History', url: '/collections/alt-history'},
-      {title: 'Alt Timeline', url: '/collections/alt-timeline'},
     ],
   },
 ];
