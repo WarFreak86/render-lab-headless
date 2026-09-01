@@ -8,11 +8,12 @@ const HIDDEN_COLLECTION_HANDLES = new Set([
   'frontpage',
   'digital-downloads',
   'limited-edition-clothing',
+  'nightmare-lab-halloween-2026',
 ]);
 
 const COLLECTION_PRIORITY = [
   'wall-art',
-  'nightmare-lab-halloween-2026',
+  'echoes-of-war',
   'neon-memento',
   'metal-wall-art',
   'canvas-art',
