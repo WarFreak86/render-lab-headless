@@ -163,7 +163,7 @@ const CATEGORY_PRIORITY = [
 ] as const;
 
 const FEATURED_COLLECTION_PRIORITY = [
-  'nightmare-lab-halloween-2026',
+  'echoes-of-war',
   'botanical-anomalies',
   'neon-memento',
   'after-dark',
