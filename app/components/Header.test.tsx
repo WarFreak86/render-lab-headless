@@ -65,6 +65,10 @@ describe('Header foundation', () => {
     renderDesktopMenu();
     const explore = screen.getByRole('button', {name: /explore/i});
 
+    expect(screen.getByRole('link', {name: 'Artists'})).toHaveAttribute(
+      'href',
+      '/artists',
+    );
     expect(explore).toHaveAttribute('aria-expanded', 'false');
     expect(explore).toHaveAttribute('aria-controls');
     await user.click(explore);
@@ -93,6 +97,13 @@ describe('Header foundation', () => {
     expect(
       screen.getByRole('menuitem', {name: 'Nightmare Lab'}),
     ).toHaveAttribute('href', '/collections/nightmare-lab');
+    expect(screen.getByRole('menuitem', {name: 'Nico Vale'})).toHaveAttribute(
+      'href',
+      '/artists/nico-vale',
+    );
+    expect(
+      screen.getByRole('menuitem', {name: 'View All Artists'}),
+    ).toHaveAttribute('href', '/artists');
     expect(
       screen.getByRole('menuitem', {name: 'All Collections'}),
     ).toHaveAttribute('href', '/collections');
@@ -158,6 +169,18 @@ describe('Header foundation', () => {
     expect(screen.getByRole('link', {name: 'Metal Prints'})).toHaveAttribute(
       'href',
       '/collections/metal-wall-art',
+    );
+    expect(screen.getByRole('link', {name: 'Nico Vale'})).toHaveAttribute(
+      'href',
+      '/artists/nico-vale',
+    );
+    expect(screen.getByRole('link', {name: 'View All Artists'})).toHaveAttribute(
+      'href',
+      '/artists',
+    );
+    expect(screen.getByRole('link', {name: 'Artists'})).toHaveAttribute(
+      'href',
+      '/artists',
     );
     expect(screen.getByRole('link', {name: 'Account'})).toHaveAttribute(
       'href',
