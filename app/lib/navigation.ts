@@ -31,13 +31,15 @@ export const EXPLORE_NAV_GROUPS: ReadonlyArray<NavigationGroup> = [
       {title: 'Quiet Horizons', url: '/collections/quiet-horizons'},
       {title: 'Botanical Anomalies', url: '/collections/botanical-anomalies'},
       {title: 'Nightmare Lab', url: '/collections/nightmare-lab'},
+      {title: 'Neon Memento', url: '/collections/neon-memento'},
+      {title: 'After Dark', url: '/collections/after-dark'},
     ],
   },
   {
-    title: 'More Collections',
+    title: 'Shop by Artists',
     items: [
-      {title: 'Neon Memento', url: '/collections/neon-memento'},
-      {title: 'After Dark', url: '/collections/after-dark'},
+      {title: 'Nico Vale', url: '/artists/nico-vale'},
+      {title: 'View All Artists', url: '/artists'},
     ],
   },
 ];
@@ -45,5 +47,6 @@ export const EXPLORE_NAV_GROUPS: ReadonlyArray<NavigationGroup> = [
 export const PRIMARY_NAV_ITEMS: ReadonlyArray<NavigationItem> = [
   {title: 'Wall Art', url: '/collections/wall-art'},
   {title: 'Collections', url: '/collections'},
+  {title: 'Artists', url: '/artists'},
   {title: 'Bundles', url: '/collections/bundles'},
 ];
