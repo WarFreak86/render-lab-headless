@@ -60,15 +60,15 @@ describe('Header foundation', () => {
     ).toBeInTheDocument();
   });
 
-  it('opens Collections by click and exposes only legitimate routes', async () => {
+  it('opens Explore as a mega menu and exposes legitimate store routes', async () => {
     const user = userEvent.setup();
     renderDesktopMenu();
-    const collections = screen.getByRole('button', {name: /collections/i});
+    const explore = screen.getByRole('button', {name: /explore/i});
 
-    expect(collections).toHaveAttribute('aria-expanded', 'false');
-    expect(collections).toHaveAttribute('aria-controls');
-    await user.click(collections);
-    expect(collections).toHaveAttribute('aria-expanded', 'true');
+    expect(explore).toHaveAttribute('aria-expanded', 'false');
+    expect(explore).toHaveAttribute('aria-controls');
+    await user.click(explore);
+    expect(explore).toHaveAttribute('aria-expanded', 'true');
 
     expect(screen.getByRole('menuitem', {name: 'Wall Art'})).toHaveAttribute(
       'href',
@@ -84,57 +84,48 @@ describe('Header foundation', () => {
       'href',
       '/collections/posters',
     );
-    expect(screen.getByRole('menuitem', {name: 'Bundles'})).toHaveAttribute(
-      'href',
-      '/collections/bundles',
-    );
+    expect(
+      screen.getByRole('menuitem', {name: 'Quiet Horizons'}),
+    ).toHaveAttribute('href', '/collections/quiet-horizons');
+    expect(
+      screen.getByRole('menuitem', {name: 'Botanical Anomalies'}),
+    ).toHaveAttribute('href', '/collections/botanical-anomalies');
+    expect(
+      screen.getByRole('menuitem', {name: 'Nightmare Lab'}),
+    ).toHaveAttribute('href', '/collections/nightmare-lab');
     expect(
       screen.getByRole('menuitem', {name: 'All Collections'}),
     ).toHaveAttribute('href', '/collections');
-    expect(screen.queryByText('Digital Downloads')).not.toBeInTheDocument();
-    expect(screen.queryByText('Apparel')).not.toBeInTheDocument();
-    expect(screen.queryByText('Drops')).not.toBeInTheDocument();
-    for (const absentLabel of [
-      'Best Sellers',
-      'New Arrivals',
-      'Journal',
-      'About',
-    ]) {
-      expect(screen.queryByText(absentLabel)).not.toBeInTheDocument();
-    }
   });
 
-  it('opens with the keyboard, supports arrow navigation, and restores focus on Escape', async () => {
+  it('opens Explore with the keyboard, supports arrow navigation, and restores focus on Escape', async () => {
     const user = userEvent.setup();
     renderDesktopMenu();
-    const collections = screen.getByRole('button', {name: /collections/i});
+    const explore = screen.getByRole('button', {name: /explore/i});
 
-    collections.focus();
+    explore.focus();
     await user.keyboard('{Enter}');
-    expect(collections).toHaveAttribute('aria-expanded', 'true');
+    expect(explore).toHaveAttribute('aria-expanded', 'true');
     await user.keyboard('{ArrowDown}');
     await waitFor(() =>
       expect(screen.getByRole('menuitem', {name: 'Wall Art'})).toHaveFocus(),
     );
     await user.keyboard('{ArrowDown}');
-    expect(screen.getByRole('menuitem', {name: 'Metal Prints'})).toHaveFocus();
+    expect(screen.getByRole('menuitem', {name: 'All Collections'})).toHaveFocus();
     await user.keyboard('{Escape}');
-    expect(collections).toHaveAttribute('aria-expanded', 'false');
-    expect(collections).toHaveFocus();
-
-    await user.keyboard(' ');
-    expect(collections).toHaveAttribute('aria-expanded', 'true');
+    expect(explore).toHaveAttribute('aria-expanded', 'false');
+    expect(explore).toHaveFocus();
   });
 
-  it('keeps the Collections panel open while the pointer moves into it', async () => {
+  it('keeps the Explore panel open while the pointer moves into it', async () => {
     const user = userEvent.setup();
     renderDesktopMenu();
-    const collections = screen.getByRole('button', {name: /collections/i});
+    const explore = screen.getByRole('button', {name: /explore/i});
 
-    await user.hover(collections);
-    expect(collections).toHaveAttribute('aria-expanded', 'true');
-    await user.hover(screen.getByRole('menuitem', {name: 'Wall Art'}));
-    expect(collections).toHaveAttribute('aria-expanded', 'true');
+    await user.hover(explore);
+    expect(explore).toHaveAttribute('aria-expanded', 'true');
+    await user.hover(screen.getByRole('menuitem', {name: 'Quiet Horizons'}));
+    expect(explore).toHaveAttribute('aria-expanded', 'true');
   });
 
   it('renders the equivalent mobile hierarchy and preserves drawer focus restoration', async () => {
@@ -156,21 +147,18 @@ describe('Header foundation', () => {
     const menuToggle = screen.getByRole('button', {name: 'Open menu'});
     await user.click(menuToggle);
     expect(screen.getByRole('dialog', {name: 'MENU'})).toBeInTheDocument();
-    const collections = screen.getByRole('button', {name: 'Collections'});
-    expect(collections).toHaveAttribute('aria-expanded', 'false');
-    await user.click(collections);
-    expect(collections).toHaveAttribute('aria-expanded', 'true');
-    expect(screen.getByRole('link', {name: 'Canvas Prints'})).toHaveAttribute(
+    const explore = screen.getByRole('button', {name: 'Explore'});
+    expect(explore).toHaveAttribute('aria-expanded', 'false');
+    await user.click(explore);
+    expect(explore).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('link', {name: 'Quiet Horizons'})).toHaveAttribute(
       'href',
-      '/collections/canvas-art',
+      '/collections/quiet-horizons',
     );
-    expect(screen.getByRole('link', {name: 'Bundles'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Metal Prints'})).toHaveAttribute(
       'href',
-      '/collections/bundles',
+      '/collections/metal-wall-art',
     );
-    expect(screen.queryByText('Digital Downloads')).not.toBeInTheDocument();
-    expect(screen.queryByText('Apparel')).not.toBeInTheDocument();
-    expect(screen.queryByText('Drops')).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Account'})).toHaveAttribute(
       'href',
       '/account',
