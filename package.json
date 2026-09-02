@@ -31,10 +31,10 @@
     "@eslint/compat": "^1.2.5",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
-    "@graphql-codegen/cli": "5.0.2",
+    "@graphql-codegen/cli": "7.4.0",
     "@react-router/dev": "7.16.0",
     "@react-router/fs-routes": "7.16.0",
-    "@shopify/cli": "3.93.2",
+    "@shopify/cli": "4.7.1",
     "@shopify/hydrogen-codegen": "0.3.3",
     "@shopify/mini-oxygen": "4.2.2",
     "@shopify/oxygen-workers-types": "^4.1.6",
@@ -71,6 +71,10 @@
   "allowScripts": {
     "esbuild@0.27.4": true,
     "unrs-resolver@1.12.2": true,
-    "workerd@1.20250310.0": true
+    "workerd@1.20250310.0": true,
+    "esbuild@0.28.1": true
+  },
+  "overrides": {
+    "lodash": "4.18.1"
   }
 }

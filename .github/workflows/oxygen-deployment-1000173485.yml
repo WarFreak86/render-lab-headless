@@ -35,6 +35,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Surface known advisories on every deploy without hiding vendor-blocked updates.
+      - name: Production dependency audit inventory
+        continue-on-error: true
+        run: npm audit --omit=dev
+
+      - name: Full dependency audit inventory
+        continue-on-error: true
+        run: npm audit
+
       - name: Lint
         run: npm run lint
 
