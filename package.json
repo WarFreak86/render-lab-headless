@@ -9,7 +9,7 @@
     "dev": "shopify hydrogen dev --codegen",
     "preview": "shopify hydrogen preview --build",
     "lint": "eslint --no-error-on-unmatched-pattern .",
-    "typecheck": "react-router typegen && tsc --noEmit",
+    "typecheck": "shopify hydrogen codegen && react-router typegen && tsc --noEmit",
     "codegen": "shopify hydrogen codegen && react-router typegen",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -58,7 +58,7 @@
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.1.0",
     "globals": "^15.14.0",
-    "graphql-config": "^5.0.3",
+    "graphql-config": "5.0.3",
     "jsdom": "^29.1.1",
     "prettier": "^3.4.2",
     "typescript": "^5.9.2",
