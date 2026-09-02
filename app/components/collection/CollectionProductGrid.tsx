@@ -1,6 +1,9 @@
 import {Pagination} from '@shopify/hydrogen';
 import {ButtonLink} from '~/components/Button';
-import {CollectionProductCard} from './CollectionProductCard';
+import {
+  CollectionProductCard,
+  type CollectionProductCardContext,
+} from './CollectionProductCard';
 import {
   clearCollectionFilters,
   type CollectionProductCardData,
@@ -18,10 +21,12 @@ interface ProductConnection {
 
 export function CollectionProductGrid({
   connection,
+  context,
   hasActiveFilters,
   searchParams,
 }: {
   connection: ProductConnection;
+  context?: CollectionProductCardContext;
   hasActiveFilters: boolean;
   searchParams: URLSearchParams;
 }) {
@@ -57,8 +62,9 @@ export function CollectionProductGrid({
           <section aria-label="Collection products" className="collection-product-grid">
             {nodes.map((product, index) => (
               <CollectionProductCard
+                context={context}
                 key={product.id}
-                loading={index < 4 ? 'eager' : 'lazy'}
+                loading={index < 3 ? 'eager' : 'lazy'}
                 product={product}
               />
             ))}

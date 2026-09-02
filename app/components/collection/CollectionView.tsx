@@ -1,4 +1,5 @@
 import '~/styles/collection-storytelling.css';
+import '~/styles/catalog-cards.css';
 import {CollectionHero} from './CollectionHero';
 import {CollectionStatement} from './CollectionStatement';
 import {CollectionControls} from './CollectionControls';
@@ -70,6 +71,10 @@ export function CollectionView({
           ) : null}
           <CollectionProductGrid
             connection={connection}
+            context={{
+              artistName: data.artist?.name,
+              collectionTitle: data.hero.title,
+            }}
             hasActiveFilters={activeFilters.length > 0}
             searchParams={searchParams}
           />
