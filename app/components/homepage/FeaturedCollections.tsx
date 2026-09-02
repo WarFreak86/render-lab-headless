@@ -13,13 +13,15 @@ export function FeaturedCollections({
   title: string;
   eyebrow?: string;
 }) {
-  const visibleCollections = collections.slice(0, 5);
-  const placeholders = Array.from(
-    {length: Math.max(0, 5 - visibleCollections.length)},
-    (_, index) => index,
-  );
+  const visibleCollections = collections.slice(0, 3);
+
+  if (visibleCollections.length === 0) return null;
+
   return (
-    <section className="home-featured section" aria-labelledby="home-featured-title">
+    <section
+      className="home-featured home-featured--editorial section"
+      aria-labelledby="home-featured-title"
+    >
       <div className="container container--wide">
         <SectionHeading
           action={
@@ -31,11 +33,19 @@ export function FeaturedCollections({
           id="home-featured-title"
           title={title}
         />
-        <div className="featured-collections-grid">
-          {visibleCollections.map((collection) => (
+
+        <div
+          className="featured-collections-grid featured-collections-grid--mosaic"
+          data-count={visibleCollections.length}
+        >
+          {visibleCollections.map((collection, index) => (
             <Link
               aria-label={collection.title}
-              className="collection-feature-card"
+              className={`collection-feature-card collection-feature-card--editorial ${
+                index === 0
+                  ? 'collection-feature-card--lead'
+                  : 'collection-feature-card--support'
+              }`}
               key={collection.id}
               prefetch="intent"
               to={collection.to}
@@ -43,34 +53,25 @@ export function FeaturedCollections({
               <div className="collection-feature-card__media">
                 <Image
                   alt={collection.image.altText}
-                  aspectRatio="4/5"
                   data={collection.image}
                   loading="lazy"
-                  sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 20vw"
+                  sizes={
+                    index === 0
+                      ? '(max-width: 767px) 100vw, 66vw'
+                      : '(max-width: 767px) 100vw, 34vw'
+                  }
                 />
                 <span className="collection-feature-card__shade" aria-hidden="true" />
-                <span className="collection-feature-card__badge">Collection</span>
+                <span className="collection-feature-card__badge">Curated series</span>
+                <span className="collection-feature-card__content">
+                  <strong>{collection.title}</strong>
+                  {collection.description ? <small>{collection.description}</small> : null}
+                  <span className="collection-feature-card__action" aria-hidden="true">
+                    Explore series <Icon name="arrow-right" size={15} />
+                  </span>
+                </span>
               </div>
-              <span className="collection-feature-card__content">
-                <strong>{collection.title}</strong>
-                {collection.description ? <small>{collection.description}</small> : null}
-              </span>
             </Link>
-          ))}
-          {placeholders.map((placeholder) => (
-            <article
-              aria-label="Upcoming collection"
-              className="collection-feature-card collection-feature-card--placeholder"
-              key={`featured-placeholder-${placeholder}`}
-            >
-              <div className="collection-feature-card__media" data-placeholder={placeholder + 1}>
-                <span className="collection-feature-card__badge">Coming soon</span>
-              </div>
-              <span className="collection-feature-card__content">
-                <strong>New collection</strong>
-                <small>Artwork currently in development</small>
-              </span>
-            </article>
           ))}
         </div>
       </div>
