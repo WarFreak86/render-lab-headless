@@ -7,13 +7,14 @@ export function CollectionHero({hero}: {hero: CollectionHeroData}) {
 
   return (
     <header
-      className={`collection-hero ${hero.image ? '' : 'collection-hero--text-only'}`.trim()}
+      className={`collection-hero collection-hero--story ${
+        hero.image ? 'collection-hero--story-image' : 'collection-hero--text-only'
+      }`.trim()}
     >
       <div className="container container--wide collection-hero__inner">
         <div className="collection-hero__copy">
           {eyebrow ? <p className="collection-hero__eyebrow">{eyebrow}</p> : null}
           <h1>{heading}</h1>
-          {hero.description ? <p>{hero.description}</p> : null}
         </div>
         {hero.image ? (
           <div className="collection-hero__media">
@@ -22,7 +23,7 @@ export function CollectionHero({hero}: {hero: CollectionHeroData}) {
               aspectRatio="16/9"
               data={hero.image}
               loading="eager"
-              sizes="(min-width: 64rem) 58vw, 100vw"
+              sizes="100vw"
             />
           </div>
         ) : null}

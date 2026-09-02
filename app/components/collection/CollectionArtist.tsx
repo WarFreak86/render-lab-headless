@@ -1,14 +1,18 @@
 import {Image} from '@shopify/hydrogen';
+import {Link} from 'react-router';
 import type {CollectionArtistData} from '~/lib/collection';
 
 export function CollectionArtist({artist}: {artist: CollectionArtistData}) {
+  const profileUrl = artist.profileUrl ?? `/artists/${artist.handle}`;
+  const isInternalProfile = profileUrl.startsWith('/');
+
   return (
     <section
       aria-labelledby="collection-artist-heading"
-      className="collection-artist"
+      className="collection-artist collection-artist--story"
     >
       <div className="container container--wide collection-artist__inner">
-        <p className="collection-artist__label">Artist</p>
+        <p className="collection-artist__label">Artist behind the series</p>
         <div
           className={`collection-artist__layout ${
             artist.image ? '' : 'collection-artist__layout--text-only'
@@ -20,19 +24,24 @@ export function CollectionArtist({artist}: {artist: CollectionArtistData}) {
                 alt={artist.image.altText}
                 aspectRatio="4/5"
                 data={artist.image}
-                sizes="(min-width: 48rem) 14rem, 38vw"
+                sizes="(min-width: 64rem) 24rem, (min-width: 48rem) 34vw, 92vw"
               />
             </div>
           ) : null}
           <div className="collection-artist__copy">
             <h2 id="collection-artist-heading">{artist.name}</h2>
             {artist.biography ? <p>{artist.biography}</p> : null}
-            {artist.profileUrl ? (
-              <a className="collection-artist__link" href={artist.profileUrl}>
+            {isInternalProfile ? (
+              <Link className="collection-artist__link" to={profileUrl}>
+                View artist profile
+                <ArrowIcon />
+              </Link>
+            ) : (
+              <a className="collection-artist__link" href={profileUrl}>
                 View artist profile
                 <ArrowIcon />
               </a>
-            ) : null}
+            )}
           </div>
         </div>
       </div>
