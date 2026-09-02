@@ -1,0 +1,183 @@
+.collection-product-grid {
+  gap: clamp(1.5rem, 2.6vw, 2.75rem) clamp(1rem, 2vw, 2rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.collection-product-card {
+  contain-intrinsic-size: auto 36rem;
+}
+
+.collection-product-card > a {
+  display: block;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  transition: opacity var(--duration-ui) var(--ease-standard);
+}
+
+.collection-product-card > a:hover {
+  border-color: transparent;
+  background: transparent;
+}
+
+.collection-product-card > a:focus-visible {
+  outline: 0;
+}
+
+.collection-product-card > a:focus-visible .collection-product-card__media {
+  box-shadow: var(--shadow-focus);
+}
+
+.collection-product-card__media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  border: 0;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.025), transparent 55%),
+    #070707;
+}
+
+.collection-product-card__media--apparel {
+  aspect-ratio: 4 / 3;
+}
+
+.collection-product-card__media::after {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  content: '';
+  pointer-events: none;
+}
+
+.collection-product-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    transform var(--duration-editorial) var(--ease-standard),
+    filter var(--duration-ui) var(--ease-standard);
+}
+
+.collection-product-card__media--contain img {
+  object-fit: contain;
+  padding: clamp(0.8rem, 1.3vw, 1.25rem);
+}
+
+.collection-product-card > a:hover .collection-product-card__media img {
+  filter: brightness(1.035);
+  transform: scale(1.018);
+}
+
+.collection-product-card__details {
+  min-height: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem 0 1.5rem;
+}
+
+.collection-product-card__attribution {
+  overflow: hidden;
+  margin: 0 0 0.45rem;
+  color: var(--color-text-muted);
+  font-size: 0.61rem;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.095em;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.collection-product-card h2 {
+  display: block;
+  min-height: 0;
+  overflow: visible;
+  font-family: var(--font-display);
+  font-size: clamp(1.02rem, 0.92rem + 0.28vw, 1.3rem);
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  line-height: 1.14;
+  text-transform: none;
+  -webkit-line-clamp: unset;
+}
+
+.collection-product-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.28rem;
+  margin-top: 0.7rem;
+  color: var(--color-text);
+  font-family: var(--font-interface);
+  font-size: 0.78rem;
+  font-weight: var(--weight-medium);
+}
+
+.collection-product-card__price > span:first-child {
+  color: var(--color-text-muted);
+  font-size: 0.57rem;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.collection-product-card__availability {
+  position: absolute;
+  z-index: 2;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: inline-flex;
+  min-height: 1.75rem;
+  align-items: center;
+  margin: 0;
+  border: 1px solid rgba(245, 242, 234, 0.2);
+  background: rgba(4, 4, 4, 0.84);
+  padding: 0.35rem 0.55rem;
+  color: rgba(245, 242, 234, 0.75);
+  font-size: 0.52rem;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 90rem) {
+  .collection-product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 47.9375rem) {
+  .collection-product-grid {
+    gap: clamp(1.4rem, 5vw, 2rem) clamp(0.75rem, 3vw, 1.25rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .collection-product-card__details {
+    padding-top: 0.85rem;
+  }
+}
+
+@media (max-width: 34.999rem) {
+  .collection-product-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .collection-product-card__details {
+    padding: 0.9rem 0 1.75rem;
+  }
+
+  .collection-product-card h2 {
+    font-size: clamp(1.1rem, 5vw, 1.35rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collection-product-card__media img,
+  .collection-product-card > a {
+    transition: none;
+  }
+
+  .collection-product-card > a:hover .collection-product-card__media img {
+    transform: none;
+  }
+}
