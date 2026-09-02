@@ -1,3 +1,4 @@
+import '~/styles/mobile-commerce.css';
 import {Await, Link} from 'react-router';
 import {Suspense, useId} from 'react';
 import {useOptimisticCart} from '@shopify/hydrogen';
