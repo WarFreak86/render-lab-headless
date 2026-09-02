@@ -7,7 +7,7 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy to Oxygen
+    name: Quality gate and deploy to Oxygen
     timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
@@ -34,6 +34,21 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Restore generated type artifacts
+        run: git checkout -- storefrontapi.generated.d.ts customer-accountapi.generated.d.ts
+
+      - name: Verify clean working tree
+        run: git diff --exit-code
 
       - name: Build and Publish to Oxygen
         run: npx shopify hydrogen deploy

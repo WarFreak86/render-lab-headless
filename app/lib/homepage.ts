@@ -1,4 +1,5 @@
 import {getDropConfigForProduct} from './drops';
+import {isSuppressedMerchandisingAssetUrl} from './merchandising';
 
 export interface HomepageImage {
   url: string;
@@ -193,7 +194,7 @@ function normalizeImage(
   image: HomepageCollectionInput['image'] | HomepageProductInput['featuredImage'],
   fallbackAlt: string,
 ): HomepageImage | null {
-  if (!image?.url) return null;
+  if (!image?.url || isSuppressedMerchandisingAssetUrl(image.url)) return null;
   return {
     url: image.url,
     altText: imageAlt(image.altText, fallbackAlt),

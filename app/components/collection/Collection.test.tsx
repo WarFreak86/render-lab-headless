@@ -163,16 +163,18 @@ describe('collection presentation', () => {
 
   it('renders artist attribution only from supplied collection data', () => {
     render(
-      <CollectionArtist
-        artist={{
-          id: 'artist-1',
-          handle: 'render-lab-studio',
-          name: 'Render-Lab Studio',
-          biography: 'Independent artists and art directors.',
-          image: null,
-          profileUrl: '/pages/artists/render-lab-studio',
-        }}
-      />,
+      <MemoryRouter>
+        <CollectionArtist
+          artist={{
+            id: 'artist-1',
+            handle: 'render-lab-studio',
+            name: 'Render-Lab Studio',
+            biography: 'Independent artists and art directors.',
+            image: null,
+            profileUrl: '/pages/artists/render-lab-studio',
+          }}
+        />
+      </MemoryRouter>,
     );
 
     expect(

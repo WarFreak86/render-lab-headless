@@ -3,12 +3,15 @@ import type {Route} from './+types/collections._index';
 import {Image} from '@shopify/hydrogen';
 import type {CollectionFragment} from 'storefrontapi.generated';
 import {getProductionUrl} from '~/lib/config';
+import {
+  isSuppressedCollection,
+  isSuppressedMerchandisingAssetUrl,
+} from '~/lib/merchandising';
 
 const HIDDEN_COLLECTION_HANDLES = new Set([
   'frontpage',
   'digital-downloads',
   'limited-edition-clothing',
-  'nightmare-lab-halloween-2026',
 ]);
 
 const COLLECTION_PRIORITY = [
@@ -51,6 +54,7 @@ export async function loader({context}: Route.LoaderArgs) {
     .filter(
       (collection) =>
         !HIDDEN_COLLECTION_HANDLES.has(collection.handle) &&
+        !isSuppressedCollection(collection) &&
         collection.products.nodes.length > 0,
     )
     .sort((left, right) => {
@@ -59,7 +63,22 @@ export async function loader({context}: Route.LoaderArgs) {
       return leftRank - rightRank || left.title.localeCompare(right.title);
     });
 
-  return {collections: visibleCollections};
+  const safeFallbackImage = visibleCollections
+    .map((collection) => collection.image)
+    .find(
+      (image) =>
+        image?.url && !isSuppressedMerchandisingAssetUrl(image.url),
+    );
+  const displayCollections = visibleCollections.map((collection) => ({
+    ...collection,
+    image:
+      collection.image?.url &&
+      !isSuppressedMerchandisingAssetUrl(collection.image.url)
+        ? collection.image
+        : safeFallbackImage ?? null,
+  }));
+
+  return {collections: displayCollections};
 }
 
 export default function Collections() {

@@ -9,6 +9,7 @@ import {
   normalizeHomepageData,
 } from '~/lib/homepage';
 import {DROP_CONFIGS} from '~/lib/drops';
+import {isSuppressedCollection} from '~/lib/merchandising';
 
 const HOME_DESCRIPTION =
   'Discover Render-Lab wall art, collector editions, and apparel across metal, canvas, and poster formats.';
@@ -39,14 +40,16 @@ export async function loader({context}: Route.LoaderArgs) {
       variables: {dropHandle: DROP_CONFIGS[0].productHandle},
     });
 
-  const homepageCollections = echoesOfWar
-    ? [
-        echoesOfWar,
-        ...collections.nodes.filter(
-          (collection) => collection.id !== echoesOfWar.id,
-        ),
-      ]
-    : collections.nodes;
+  const homepageCollections = (
+    echoesOfWar
+      ? [
+          echoesOfWar,
+          ...collections.nodes.filter(
+            (collection) => collection.id !== echoesOfWar.id,
+          ),
+        ]
+      : collections.nodes
+  ).filter((collection) => !isSuppressedCollection(collection));
 
   return {
     isShopLinked: Boolean(context.env.PUBLIC_STORE_DOMAIN),
