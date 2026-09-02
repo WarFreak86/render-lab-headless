@@ -44,6 +44,12 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Restore generated type artifacts
+        run: git checkout -- storefrontapi.generated.d.ts customer-accountapi.generated.d.ts
+
+      - name: Verify clean working tree
+        run: git diff --exit-code
+
       - name: Build and Publish to Oxygen
         run: npx shopify hydrogen deploy
         env:
