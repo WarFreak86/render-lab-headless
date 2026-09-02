@@ -71,6 +71,10 @@
   "allowScripts": {
     "esbuild@0.27.4": true,
     "unrs-resolver@1.12.2": true,
-    "workerd@1.20250310.0": true
+    "workerd@1.20250310.0": true,
+    "esbuild@0.28.1": true
+  },
+  "overrides": {
+    "lodash": "4.18.1"
   }
 }
