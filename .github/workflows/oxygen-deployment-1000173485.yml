@@ -35,17 +35,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Update patched React Router 7 dependencies
-        id: router-update
+      - name: Apply safe production dependency fixes
+        id: dependency-fix
         if: github.ref_name == 'dependency-security-maintenance'
         run: |
-          npm install --save-exact react-router@7.18.3 react-router-dom@7.18.3
-          npm install --save-dev --save-exact @react-router/dev@7.18.3 @react-router/fs-routes@7.18.3
+          npm audit fix --omit=dev || true
           if ! git diff --quiet -- package.json package-lock.json; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add package.json package-lock.json
-            git commit -m "Update React Router security patches"
+            git commit -m "Apply safe production dependency fixes"
             git push origin HEAD:dependency-security-maintenance
             echo "updated=true" >> "$GITHUB_OUTPUT"
           else
@@ -76,7 +75,7 @@ jobs:
         run: git diff --exit-code
 
       - name: Build and Publish to Oxygen
-        if: steps.router-update.outputs.updated != 'true'
+        if: steps.dependency-fix.outputs.updated != 'true'
         run: npx shopify hydrogen deploy
         env:
           SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000173485 }}
