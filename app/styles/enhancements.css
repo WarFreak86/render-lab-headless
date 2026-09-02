@@ -414,3 +414,226 @@
     -webkit-line-clamp: 2;
   }
 }
+
+/* Step 4: global editorial typography and spacing rhythm. */
+body {
+  font-size: var(--text-base);
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+.button {
+  min-height: 3.125rem;
+  border-radius: 0;
+  padding-inline: clamp(1.25rem, 1.7vw, 1.7rem);
+  letter-spacing: 0.11em;
+}
+
+.button--text {
+  min-height: 2.5rem;
+  border-bottom: 1px solid rgba(245, 242, 234, 0.22);
+  padding-inline: 0;
+}
+
+.homepage .home-eyebrow {
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+}
+
+.homepage .home-section-heading {
+  align-items: flex-end;
+  margin-bottom: clamp(2.25rem, 4vw, 4rem);
+}
+
+.homepage .home-section-heading h2 {
+  max-width: 13ch;
+  font-size: clamp(2.7rem, 4.2vw, 5rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 0.92;
+  text-transform: none;
+}
+
+.homepage .home-section-heading .home-eyebrow {
+  margin-bottom: clamp(0.7rem, 1.2vw, 1rem);
+}
+
+.homepage .home-text-link {
+  min-height: 2.25rem;
+  color: rgba(245, 242, 234, 0.72);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+}
+
+.homepage .home-categories {
+  border-bottom: 0;
+  background: #020202;
+  padding-block: clamp(5rem, 8vw, 8.5rem);
+}
+
+.homepage .home-categories .home-section-heading {
+  position: static;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.homepage .home-categories .home-section-heading__action {
+  position: static;
+}
+
+.homepage .category-rail {
+  gap: clamp(0.85rem, 1.2vw, 1.3rem);
+}
+
+.homepage .category-card {
+  border: 0;
+  background: #080808;
+}
+
+.homepage .category-card__content {
+  right: clamp(1rem, 1.5vw, 1.5rem);
+  bottom: clamp(1rem, 1.5vw, 1.5rem);
+  left: clamp(1rem, 1.5vw, 1.5rem);
+}
+
+.homepage .category-card__content strong {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 1.8vw, 2.15rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-transform: none;
+}
+
+.homepage .category-card__content small {
+  margin-top: 0.35rem;
+  color: rgba(245, 242, 234, 0.62);
+  font-size: 0.56rem;
+  letter-spacing: 0.13em;
+}
+
+.homepage .home-featured--editorial {
+  padding-block: clamp(6rem, 9vw, 9.5rem);
+}
+
+.homepage .home-benefits {
+  border-block: 0;
+  border-top: var(--border-thin);
+  background: #020202;
+  padding-block: clamp(1.2rem, 2vw, 2rem);
+}
+
+.homepage .home-benefits__grid {
+  max-width: var(--container-wide);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  gap: clamp(1rem, 2vw, 2.25rem);
+}
+
+.homepage .benefit-item {
+  gap: var(--space-4);
+  padding: clamp(1rem, 1.8vw, 1.6rem) 0;
+}
+
+.homepage .benefit-item + .benefit-item {
+  border-left: 0;
+}
+
+.homepage .benefit-item__icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.homepage .benefit-item strong {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+}
+
+.homepage .benefit-item small {
+  margin-top: 0.3rem;
+  font-size: 0.64rem;
+  line-height: 1.55;
+}
+
+.homepage .home-drop {
+  background: #020202;
+  padding-block: clamp(5.5rem, 8vw, 8.5rem);
+}
+
+.homepage .featured-drop {
+  min-height: clamp(20rem, 28vw, 27rem);
+  border: 0;
+  background: #060606;
+}
+
+.homepage .featured-drop__intro,
+.homepage .featured-drop__content {
+  padding: clamp(2rem, 3vw, 3.25rem);
+}
+
+.homepage .featured-drop__intro h2 {
+  max-width: 10ch;
+  margin-top: var(--space-4);
+  font-size: clamp(2.7rem, 4.2vw, 5rem);
+  letter-spacing: -0.035em;
+  line-height: 0.92;
+  text-transform: none;
+}
+
+.homepage .featured-drop__description {
+  max-width: 31rem;
+  margin-top: var(--space-5);
+  font-size: clamp(0.82rem, 0.9vw, 0.95rem);
+  line-height: 1.75;
+}
+
+.homepage .featured-drop__content {
+  border-left-color: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 767px) {
+  .homepage .home-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+  }
+
+  .homepage .home-section-heading h2 {
+    max-width: 11ch;
+    font-size: clamp(2.4rem, 12vw, 3.6rem);
+  }
+
+  .homepage .home-categories {
+    padding-block: var(--space-section);
+  }
+
+  .homepage .home-featured--editorial {
+    padding-block: var(--space-section);
+  }
+
+  .homepage .category-card__content strong {
+    font-size: clamp(1.45rem, 7vw, 2.1rem);
+  }
+
+  .homepage .home-benefits__grid {
+    padding-inline: var(--gutter);
+  }
+
+  .homepage .home-drop {
+    padding-block: var(--space-section);
+  }
+
+  .homepage .featured-drop__intro h2 {
+    font-size: clamp(2.5rem, 12vw, 3.75rem);
+  }
+}
