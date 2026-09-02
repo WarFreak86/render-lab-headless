@@ -1,3 +1,5 @@
+import {isSuppressedCollection} from './merchandising';
+
 export const COLLECTION_DIRECTORY_HANDLES = [
   'wall-art',
   'metal-wall-art',
@@ -171,6 +173,7 @@ export function buildCollectionDirectoryEntries(
     .filter(
       (collection) =>
         !NON_SERIES_HANDLES.has(collection.handle) &&
+        !isSuppressedCollection(collection) &&
         collection.products.nodes.length > 0 &&
         belongsToDirectory(collection, directoryHandle),
     )

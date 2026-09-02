@@ -98,8 +98,8 @@ describe('Header foundation', () => {
       screen.getByRole('menuitem', {name: 'Botanical Anomalies'}),
     ).toHaveAttribute('href', '/collections/botanical-anomalies');
     expect(
-      screen.getByRole('menuitem', {name: 'Nightmare Lab'}),
-    ).toHaveAttribute('href', '/collections/nightmare-lab');
+      screen.queryByRole('menuitem', {name: 'Nightmare Lab'}),
+    ).not.toBeInTheDocument();
     expect(screen.getByRole('menuitem', {name: 'Nico Vale'})).toHaveAttribute(
       'href',
       '/artists/nico-vale',
@@ -177,6 +177,7 @@ describe('Header foundation', () => {
       'href',
       '/collections/metal-wall-art',
     );
+    expect(screen.queryByRole('link', {name: 'Nightmare Lab'})).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Nico Vale'})).toHaveAttribute(
       'href',
       '/artists/nico-vale',

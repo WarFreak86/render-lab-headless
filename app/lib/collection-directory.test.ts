@@ -34,7 +34,7 @@ describe('collection directories', () => {
     });
   });
 
-  it('turns active editorial collections into alphabetical directory entries', () => {
+  it('turns active editorial collections into alphabetical directory entries while suppressed collections stay hidden', () => {
     const entries = buildCollectionDirectoryEntries(
       [
         collection({
@@ -58,7 +58,6 @@ describe('collection directories', () => {
 
     expect(entries.map((entry) => entry.title)).toEqual([
       'Botanical Anomalies',
-      'Nightmare Lab — Halloween 2026',
     ]);
     expect(entries[0]).toMatchObject({
       description: 'Surreal botanical artwork.',
@@ -66,14 +65,14 @@ describe('collection directories', () => {
     });
   });
 
-  it('uses directory_groups when a collection has explicit placement', () => {
+  it('keeps suppressed collections out even when directory_groups explicitly places them', () => {
     const item = collection({
       handle: 'nightmare-lab',
       title: 'Nightmare Lab',
       directoryGroups: {value: '["wall-art","posters"]'},
     });
 
-    expect(buildCollectionDirectoryEntries([item], 'posters')).toHaveLength(1);
+    expect(buildCollectionDirectoryEntries([item], 'posters')).toHaveLength(0);
     expect(
       buildCollectionDirectoryEntries([item], 'metal-wall-art'),
     ).toHaveLength(0);
