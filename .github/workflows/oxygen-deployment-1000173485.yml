@@ -35,16 +35,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Apply safe production dependency fixes
-        id: dependency-fix
+      - name: Update Shopify CLI security patches
+        id: dependency-update
         if: github.ref_name == 'dependency-security-maintenance'
         run: |
-          npm audit fix --omit=dev || true
+          npm install --save-dev --save-exact @shopify/cli@4.7.1
           if ! git diff --quiet -- package.json package-lock.json; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add package.json package-lock.json
-            git commit -m "Apply safe production dependency fixes"
+            git commit -m "Update Shopify CLI security patches"
             git push origin HEAD:dependency-security-maintenance
             echo "updated=true" >> "$GITHUB_OUTPUT"
           else
@@ -75,7 +75,7 @@ jobs:
         run: git diff --exit-code
 
       - name: Build and Publish to Oxygen
-        if: steps.dependency-fix.outputs.updated != 'true'
+        if: steps.dependency-update.outputs.updated != 'true'
         run: npx shopify hydrogen deploy
         env:
           SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000173485 }}
