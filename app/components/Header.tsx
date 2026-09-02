@@ -207,7 +207,7 @@ function ExploreMegaMenu({onNavigate}: {onNavigate: () => void}) {
         aria-expanded={open}
         aria-haspopup="menu"
         className="header-menu__trigger"
-        onClick={() => setOpen((current) => !current)}
+        onClick={() => setOpen(true)}
         onKeyDown={(event) => {
           if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
             event.preventDefault();
