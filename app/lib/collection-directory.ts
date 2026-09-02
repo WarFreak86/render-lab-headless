@@ -1,4 +1,7 @@
-import {isSuppressedCollection} from './merchandising';
+import {
+  isSuppressedCollection,
+  isSuppressedMerchandisingAssetUrl,
+} from './merchandising';
 
 export const COLLECTION_DIRECTORY_HANDLES = [
   'wall-art',
@@ -154,7 +157,12 @@ function belongsToDirectory(
 function normalizeImage(
   collection: RawCollectionDirectoryEntry,
 ): CollectionDirectoryImage | null {
-  if (!collection.image?.url) return null;
+  if (
+    !collection.image?.url ||
+    isSuppressedMerchandisingAssetUrl(collection.image.url)
+  ) {
+    return null;
+  }
   return {
     url: collection.image.url,
     altText:

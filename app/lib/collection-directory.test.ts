@@ -78,6 +78,25 @@ describe('collection directories', () => {
     ).toHaveLength(0);
   });
 
+  it('keeps an active collection visible but drops a suppressed merchandising image', () => {
+    const entries = buildCollectionDirectoryEntries(
+      [
+        collection({
+          handle: 'botanical-anomalies',
+          title: 'Botanical Anomalies',
+          image: {
+            url: 'https://cdn.shopify.com/collections/nightmare-lab-nl-001.png',
+            altText: 'Old collection image',
+          },
+        }),
+      ],
+      'wall-art',
+    );
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]?.image).toBeNull();
+  });
+
   it('keeps bundles product-led until bundle subcollections exist', () => {
     expect(
       buildCollectionDirectoryEntries(

@@ -103,6 +103,28 @@ describe('homepage data normalization', () => {
     ]);
   });
 
+  it('replaces a suppressed collection image with a safe product image', () => {
+    const source = commerce();
+    const collections = source.collections.map((collection) =>
+      collection.handle === 'wall-art'
+        ? {
+            ...collection,
+            image: {
+              ...art('nightmare-lab-nl-001-the-experiment'),
+              url: 'https://cdn.shopify.com/collections/nightmare-lab-nl-001-the-experiment.png',
+            },
+          }
+        : collection,
+    );
+    const data = normalizeHomepageData({...source, collections});
+    const wallArt = data.categories.find(
+      (category) => category.to === '/collections/wall-art',
+    );
+
+    expect(wallArt?.image.url).toBe('https://cdn.shopify.com/release.jpg');
+    expect(wallArt?.image.url).not.toContain('nightmare-lab');
+  });
+
   it('uses Echoes of War for the hero while Nightmare Lab stays out of homepage priority', () => {
     const data = normalizeHomepageData(commerce());
     expect(data.hero).toMatchObject({

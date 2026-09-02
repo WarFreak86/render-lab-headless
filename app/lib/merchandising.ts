@@ -8,6 +8,8 @@ const SUPPRESSED_COLLECTION_HANDLES = new Set([
   'nightmare-lab-halloween-2026',
 ]);
 
+const SUPPRESSED_ASSET_MARKERS = ['nightmare-lab'];
+
 export function isSuppressedCollection(
   collection: MerchandisableCollectionIdentity,
 ) {
@@ -20,4 +22,10 @@ export function isSuppressedCollection(
     title.startsWith('nightmare lab —') ||
     title.startsWith('nightmare lab -')
   );
+}
+
+export function isSuppressedMerchandisingAssetUrl(url?: string | null) {
+  if (!url) return false;
+  const normalized = url.toLocaleLowerCase();
+  return SUPPRESSED_ASSET_MARKERS.some((marker) => normalized.includes(marker));
 }
