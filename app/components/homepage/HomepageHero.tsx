@@ -18,20 +18,17 @@ export function HomepageHero({
   secondaryCta: {label: string; to: string} | null;
 }) {
   if (!editorial) return null;
+
   const resolvedPrimaryCta = primaryCta
     ? {...primaryCta, label: editorial.primaryCta.label}
     : editorial.primaryCta;
   const resolvedSecondaryCta = secondaryCta
-    ? {...secondaryCta, label: 'Shop wall art'}
+    ? {...secondaryCta, label: 'View all wall art'}
     : null;
 
   return (
     <section className="home-hero" aria-labelledby="home-hero-title">
       <div className="home-hero__inner">
-        <div className="home-hero__progress" aria-hidden="true">
-          <span className="is-active">01</span>
-          <span>03</span>
-        </div>
         <div className="home-hero__content">
           {editorial.eyebrow ? (
             <p className="home-eyebrow home-hero__eyebrow">{editorial.eyebrow}</p>
@@ -46,7 +43,9 @@ export function HomepageHero({
               </span>
             ))}
           </h1>
-          {editorial.description ? <p className="home-hero__copy">{editorial.description}</p> : null}
+          {editorial.description ? (
+            <p className="home-hero__copy">{editorial.description}</p>
+          ) : null}
           <div className="home-hero__actions">
             <ButtonLink prefetch="intent" to={resolvedPrimaryCta.to}>
               {resolvedPrimaryCta.label}
@@ -62,26 +61,14 @@ export function HomepageHero({
               </ButtonLink>
             ) : null}
           </div>
-          <div className="home-hero__proof" aria-label="Available art formats">
-            <span className="home-hero__format-stack" aria-hidden="true">
-              <i>M</i>
-              <i>C</i>
-              <i>P</i>
-            </span>
-            <span>
-              <strong>Metal · Canvas · Poster</strong>
-              <small>Made for collectors</small>
-            </span>
-          </div>
         </div>
         {product ? (
           <div className="home-hero__media">
             <Image
               alt={product.image.altText}
-              aspectRatio="16/10"
               data={product.image}
               loading="eager"
-              sizes="(max-width: 767px) 100vw, 60vw"
+              sizes="(max-width: 767px) 100vw, 66vw"
             />
             <span className="home-hero__scroll-cue" aria-hidden="true">
               Scroll to explore

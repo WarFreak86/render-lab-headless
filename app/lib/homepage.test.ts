@@ -54,6 +54,14 @@ function commerce(): HomepageCommerceInput {
         products: {nodes: [release]},
       },
       {
+        id: 'collection-echoes',
+        handle: 'echoes-of-war',
+        title: 'Echoes of War',
+        description: 'History carried in the silhouette.',
+        image: art('echoes'),
+        products: {nodes: [release]},
+      },
+      {
         id: 'collection-nightmare',
         handle: 'nightmare-lab-halloween-2026',
         title: 'Nightmare Lab — Halloween 2026',
@@ -90,26 +98,29 @@ describe('homepage data normalization', () => {
       '/collections',
     ]);
     expect(data.featuredCollections.slice(0, 2).map((collection) => collection.to)).toEqual([
-      '/collections/nightmare-lab-halloween-2026',
+      '/collections/echoes-of-war',
       '/collections/neon-memento',
     ]);
   });
 
-  it('aligns hero CTAs to the featured series and all wall art', () => {
+  it('uses Echoes of War for the hero while Nightmare Lab stays out of homepage priority', () => {
     const data = normalizeHomepageData(commerce());
     expect(data.hero).toMatchObject({
-      title: 'Nightmare Lab — Halloween 2026',
-      to: '/collections/nightmare-lab-halloween-2026',
+      title: 'Echoes of War',
+      to: '/collections/echoes-of-war',
       productType: 'Collection',
     });
     expect(data.heroPrimaryCta).toEqual({
-      label: 'Explore Nightmare Lab',
-      to: '/collections/nightmare-lab-halloween-2026',
+      label: 'Explore Echoes of War',
+      to: '/collections/echoes-of-war',
     });
     expect(data.heroSecondaryCta).toEqual({
       label: 'Shop All Wall Art',
       to: '/collections/wall-art',
     });
+    expect(data.featuredCollections.map((collection) => collection.to)).not.toContain(
+      '/collections/nightmare-lab-halloween-2026',
+    );
   });
 
   it('uses Limited Editions for a featured release when available', () => {

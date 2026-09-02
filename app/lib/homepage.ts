@@ -108,12 +108,12 @@ export interface HomepageData {
 
 export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
   hero: {
-    eyebrow: 'Art that hits different',
-    headline: ['Vision. Chaos.', 'Mastered.'],
+    eyebrow: 'Featured series',
+    headline: ['Echoes', 'of War'],
     accentLine: 1,
     description:
-      'Premium metal, canvas, and poster art designed to transform your space and ignite your imagination.',
-    primaryCta: {label: 'Explore Collections', to: '/collections/wall-art'},
+      'History carried in the silhouette. A cross-era military art collection built around soldiers, memory and the landscapes of conflict.',
+    primaryCta: {label: 'Explore Echoes of War', to: '/collections/echoes-of-war'},
   },
   categories: {
     title: 'Explore by category',
@@ -180,10 +180,7 @@ const CATEGORY_META: Readonly<Record<string, string>> = {
   bundles: 'Coordinated sets',
 };
 
-const HERO_COLLECTION_PRIORITY = [
-  'nightmare-lab-halloween-2026',
-  'neon-memento',
-] as const;
+const HERO_COLLECTION_PRIORITY = ['echoes-of-war', 'neon-memento'] as const;
 
 const UUID_LIKE_ALT = /^[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12}$/i;
 
