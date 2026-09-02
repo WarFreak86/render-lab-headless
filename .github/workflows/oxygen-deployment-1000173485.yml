@@ -2,7 +2,7 @@ name: Storefront 1000173485
 on: [push]
 
 permissions:
-  contents: read
+  contents: write
   deployments: write
 
 jobs:
@@ -35,6 +35,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Update GraphQL Codegen security baseline
+        id: dependency-update
+        if: github.ref_name == 'dependency-security-maintenance'
+        run: |
+          npm install --save-dev --save-exact @graphql-codegen/cli@7.4.0
+          if ! git diff --quiet -- package.json package-lock.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package.json package-lock.json
+            git commit -m "Update GraphQL Codegen security baseline"
+            git push origin HEAD:dependency-security-maintenance
+            echo "updated=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Production dependency audit inventory
         continue-on-error: true
         run: npm audit --omit=dev
@@ -59,6 +75,7 @@ jobs:
         run: git diff --exit-code
 
       - name: Build and Publish to Oxygen
+        if: steps.dependency-update.outputs.updated != 'true'
         run: npx shopify hydrogen deploy
         env:
           SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000173485 }}
