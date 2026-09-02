@@ -10,6 +10,7 @@ import {
   type RawCollectionPage,
 } from '~/lib/collection';
 import {PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
+import {isSuppressedProduct} from '~/lib/merchandising';
 
 const ALL_ART_DESCRIPTION = 'Browse all available Render-Lab art and objects.';
 
@@ -34,6 +35,17 @@ export async function loader({context, request}: Route.LoaderArgs) {
   const {products} = await context.storefront.query(CATALOG_QUERY, {
     variables: {...pagination, ...sort},
   });
+  const visibleProducts = {
+    ...products,
+    nodes: products.nodes.filter(
+      (product) =>
+        !isSuppressedProduct({
+          handle: product.handle,
+          title: product.title,
+          imageUrl: product.featuredImage?.url,
+        }),
+    ),
+  };
 
   const collectionPage = normalizeCollectionPage(
     {
@@ -42,7 +54,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
       title: 'All Art',
       description: null,
       image: null,
-      products,
+      products: visibleProducts,
     } satisfies RawCollectionPage,
     {allArt: true},
   );
