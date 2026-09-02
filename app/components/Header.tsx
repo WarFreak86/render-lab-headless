@@ -228,19 +228,20 @@ function ExploreMegaMenu({onNavigate}: {onNavigate: () => void}) {
         id={panelId}
         onKeyDown={handleMenuKeyDown}
         role="menu"
+        tabIndex={-1}
       >
         <div className="header-menu__mega-inner">
           {EXPLORE_NAV_GROUPS.map((group, groupIndex) => {
             const headingId = `${panelId}-group-${groupIndex}`;
             return (
-              <section
+              <div
                 aria-labelledby={headingId}
                 className="header-menu__mega-group"
                 key={group.title}
-                role="none"
+                role="group"
               >
                 <h2 id={headingId}>{group.title}</h2>
-                <ul role="group">
+                <ul role="none">
                   {group.items.map((item) => (
                     <li key={item.title} role="none">
                       <NavLink
@@ -261,7 +262,7 @@ function ExploreMegaMenu({onNavigate}: {onNavigate: () => void}) {
                     </li>
                   ))}
                 </ul>
-              </section>
+              </div>
             );
           })}
         </div>
