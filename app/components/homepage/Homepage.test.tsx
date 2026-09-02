@@ -31,7 +31,7 @@ const product = {
 const data: HomepageData = {
   editorial: HOMEPAGE_EDITORIAL_FALLBACK,
   hero: product,
-  heroPrimaryCta: {label: 'Explore Neon Memento', to: '/collections/neon-memento'},
+  heroPrimaryCta: {label: 'Explore Echoes of War', to: '/collections/echoes-of-war'},
   heroSecondaryCta: {label: 'Shop All Wall Art', to: '/collections/wall-art'},
   categories: [
     {id: 'category-1', title: 'Metal Wall Art', to: '/collections/metal-wall-art', image},
@@ -39,8 +39,8 @@ const data: HomepageData = {
   featuredCollections: [
     {
       id: 'collection-1',
-      title: 'Neon Memento',
-      to: '/collections/neon-memento',
+      title: 'Echoes of War',
+      to: '/collections/echoes-of-war',
       image,
     },
   ],
@@ -56,16 +56,16 @@ function renderHomepage(homepage = data) {
 }
 
 describe('homepage presentation', () => {
-  it('renders the approved hero copy while preserving contextual destinations', () => {
+  it('renders the Echoes hero copy while preserving contextual destinations', () => {
     renderHomepage();
     expect(
-      screen.getByRole('heading', {level: 1, name: 'Vision. Chaos. Mastered.'}),
+      screen.getByRole('heading', {level: 1, name: 'Echoes of War'}),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'Explore Collections'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Explore Echoes of War'})).toHaveAttribute(
       'href',
-      '/collections/neon-memento',
+      '/collections/echoes-of-war',
     );
-    expect(screen.getByRole('link', {name: 'Shop wall art'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'View all wall art'})).toHaveAttribute(
       'href',
       '/collections/wall-art',
     );
@@ -77,9 +77,9 @@ describe('homepage presentation', () => {
       'href',
       '/collections/metal-wall-art',
     );
-    expect(screen.getByRole('link', {name: 'Neon Memento'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Echoes of War'})).toHaveAttribute(
       'href',
-      '/collections/neon-memento',
+      '/collections/echoes-of-war',
     );
   });
 
