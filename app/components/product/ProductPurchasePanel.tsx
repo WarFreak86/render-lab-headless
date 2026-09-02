@@ -8,6 +8,12 @@ import {Button} from '~/components/Button';
 import {Icon} from '~/components/Icon';
 import {ProductPrice} from '~/components/ProductPrice';
 import {getOptionState} from '~/lib/product';
+import {
+  getProductContext,
+  isGenericCatalogLabel,
+  parseProductSizeDimensions,
+  splitProductIdentity,
+} from '~/lib/product-presentation';
 
 type SelectedVariant = ProductFragment['selectedOrFirstAvailableVariant'];
 
@@ -140,6 +146,7 @@ function ProductAddToCart({
 export function ProductPurchasePanel({
   auxiliaryAction,
   badge,
+  collectionTitle,
   disabledLabel,
   presentation = 'standard',
   product,
@@ -151,6 +158,7 @@ export function ProductPurchasePanel({
 }: {
   auxiliaryAction?: ReactNode;
   badge?: string;
+  collectionTitle?: string;
   disabledLabel?: string;
   presentation?: 'standard' | 'drop';
   product: {handle: string; productType?: string | null; title: string};
@@ -172,6 +180,22 @@ export function ProductPurchasePanel({
     .find((option) => option.name.toLowerCase() === 'material')
     ?.optionValues.find((value) => value.selected)
     ?.name.toLowerCase();
+  const selectedOptions = visibleOptions.flatMap((option) => {
+    const selected = option.optionValues.find((value) => value.selected);
+    return selected ? [{name: option.name, value: selected.name}] : [];
+  });
+  const selectedSize = selectedOptions.find(
+    (option) => option.name.toLowerCase() === 'size',
+  );
+  const sizeDimensions = parseProductSizeDimensions(selectedSize?.value);
+  const identity = splitProductIdentity(product.title);
+  const context = getProductContext(product.title, collectionTitle);
+  const isStandard = presentation === 'standard';
+  const identityLabel = context
+    ? `Series / ${context}`
+    : product.productType && !isGenericCatalogLabel(product.productType)
+      ? product.productType
+      : undefined;
 
   return (
     <section
@@ -182,10 +206,12 @@ export function ProductPurchasePanel({
       {badge ? <p className="product-purchase__badge">{badge}</p> : null}
       {showIdentity ? (
         <>
-          {product.productType ? (
-            <p className="product-purchase__type">{product.productType}</p>
+          {identityLabel ? (
+            <p className="product-purchase__type">{identityLabel}</p>
           ) : null}
-          <h1 id="product-title">{product.title}</h1>
+          <h1 id="product-title">
+            {isStandard ? identity.artworkTitle : product.title}
+          </h1>
         </>
       ) : null}
       <ProductPrice
@@ -271,6 +297,36 @@ export function ProductPurchasePanel({
         </div>
       ) : null}
 
+      {isStandard && selectedOptions.length > 0 ? (
+        <div className="product-purchase__selection-summary">
+          <dl>
+            {selectedOptions.map((option) => (
+              <div key={option.name}>
+                <dt>{option.name}</dt>
+                <dd>{option.value}</dd>
+              </div>
+            ))}
+          </dl>
+          {selectedSize && sizeDimensions ? (
+            <div
+              aria-label={`Selected proportion ${selectedSize.value}`}
+              className="product-purchase__proportion"
+            >
+              <span
+                aria-hidden="true"
+                style={{
+                  aspectRatio: `${sizeDimensions.width} / ${sizeDimensions.height}`,
+                }}
+              />
+              <div>
+                <small>Selected proportion</small>
+                <strong>{selectedSize.value}</strong>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
       {auxiliaryAction}
 
       <div className="product-purchase__status" aria-live="polite">
@@ -292,10 +348,27 @@ export function ProductPurchasePanel({
         selectedVariant={selectedVariant}
       />
 
-      <p className="product-purchase__checkout">
-        <Icon name="checkout" size={17} />
-        Checkout secured by Shopify
-      </p>
+      {isStandard ? (
+        <ul className="product-purchase__assurances" aria-label="Purchase information">
+          <li>
+            <span>Made to order</span>
+            <small>Produced after purchase</small>
+          </li>
+          <li>
+            <span>Shipping</span>
+            <small>Calculated at checkout</small>
+          </li>
+          <li>
+            <span>Checkout</span>
+            <small>Secured by Shopify</small>
+          </li>
+        </ul>
+      ) : (
+        <p className="product-purchase__checkout">
+          <Icon name="checkout" size={17} />
+          Checkout secured by Shopify
+        </p>
+      )}
     </section>
   );
 }
