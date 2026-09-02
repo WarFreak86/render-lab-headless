@@ -1,4 +1,6 @@
+import '~/styles/collection-storytelling.css';
 import {CollectionHero} from './CollectionHero';
+import {CollectionStatement} from './CollectionStatement';
 import {CollectionControls} from './CollectionControls';
 import {CollectionFilterPanel} from './CollectionFilterPanel';
 import {CollectionProductGrid} from './CollectionProductGrid';
@@ -31,9 +33,19 @@ export function CollectionView({
   );
 
   return (
-    <div className="collection-experience">
+    <div className="collection-experience collection-experience--storytelling">
       <CollectionHero hero={data.hero} />
+      <CollectionStatement hero={data.hero} hasArtist={Boolean(data.artist)} />
+      {data.artist ? <CollectionArtist artist={data.artist} /> : null}
+
       <div className="container container--wide collection-browser">
+        <header className="collection-catalog-intro">
+          <p className="collection-catalog-intro__eyebrow">
+            {data.artist ? 'Works in this series' : 'The collection'}
+          </p>
+          <h2>Explore {data.hero.title}</h2>
+        </header>
+
         <CollectionControls
           filterGroups={data.filterGroups}
           searchParams={searchParams}
@@ -63,7 +75,6 @@ export function CollectionView({
           />
         </div>
       </div>
-      {data.artist ? <CollectionArtist artist={data.artist} /> : null}
     </div>
   );
 }
