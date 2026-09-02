@@ -35,6 +35,8 @@ const data: HomepageData = {
   heroSecondaryCta: {label: 'Shop All Wall Art', to: '/collections/wall-art'},
   categories: [
     {id: 'category-1', title: 'Metal Wall Art', to: '/collections/metal-wall-art', image},
+    {id: 'category-2', title: 'Canvas Prints', to: '/collections/canvas-art', image},
+    {id: 'category-3', title: 'Posters', to: '/collections/posters', image},
   ],
   featuredCollections: [
     {
@@ -81,6 +83,26 @@ describe('homepage presentation', () => {
       'href',
       '/collections/echoes-of-war',
     );
+  });
+
+  it('renders physical format studies for metal, canvas, and poster', () => {
+    renderHomepage();
+    expect(
+      screen.getByRole('heading', {level: 2, name: 'Built to live on a wall.'}),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', {name: /explore metal/i})).toHaveAttribute(
+      'href',
+      '/collections/metal-wall-art',
+    );
+    expect(screen.getByRole('link', {name: /explore canvas/i})).toHaveAttribute(
+      'href',
+      '/collections/canvas-art',
+    );
+    expect(screen.getByRole('link', {name: /explore poster/i})).toHaveAttribute(
+      'href',
+      '/collections/posters',
+    );
+    expect(screen.getByText('Made to order')).toBeInTheDocument();
   });
 
   it('renders a transparent coming-soon drop state without optional product data', () => {
