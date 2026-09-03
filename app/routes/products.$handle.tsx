@@ -76,6 +76,7 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
 
   const [{product}] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {
+      cache: storefront.CacheShort(),
       variables: {handle, selectedOptions: getSelectedProductOptions(request)},
     }),
   ]);
