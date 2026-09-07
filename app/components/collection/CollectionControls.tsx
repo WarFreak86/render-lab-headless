@@ -14,7 +14,7 @@ import {
 
 function PreservedFilterInputs({searchParams}: {searchParams: URLSearchParams}) {
   return Array.from(searchParams.entries()).flatMap(([name, value]) =>
-    name.startsWith('filter.') ? (
+    name.startsWith('filter.') || name === 'material' ? (
       <input key={`${name}-${value}`} name={name} type="hidden" value={value} />
     ) : (
       []

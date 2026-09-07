@@ -60,19 +60,16 @@ describe('Header foundation', () => {
     ).toBeInTheDocument();
   });
 
-  it('opens Shop as a mega menu without redundant primary destinations', async () => {
+  it('opens Collections as a mega menu without redundant primary destinations', async () => {
     const user = userEvent.setup();
     renderDesktopMenu();
-    const shop = screen.getByRole('button', {name: /shop/i});
+    const shop = screen.getByRole('button', {name: /collections/i});
 
     expect(screen.getByRole('link', {name: 'Artists'})).toHaveAttribute(
       'href',
       '/artists',
     );
-    expect(screen.getByRole('link', {name: 'Bundles'})).toHaveAttribute(
-      'href',
-      '/collections/bundles',
-    );
+    expect(screen.queryByRole('link', {name: 'Bundles'})).not.toBeInTheDocument();
     expect(shop).toHaveAttribute('aria-expanded', 'false');
     expect(shop).toHaveAttribute('aria-controls');
     await user.click(shop);
@@ -82,7 +79,7 @@ describe('Header foundation', () => {
       screen.getByRole('menuitem', {name: 'All Wall Art'}),
     ).toHaveAttribute('href', '/collections/wall-art');
     expect(
-      screen.getByRole('menuitem', {name: 'Metal Prints'}),
+      screen.getByRole('menuitem', {name: 'Metal Wall Art'}),
     ).toHaveAttribute('href', '/collections/metal-wall-art');
     expect(
       screen.getByRole('menuitem', {name: 'Canvas Prints'}),
@@ -112,10 +109,10 @@ describe('Header foundation', () => {
     ).toHaveAttribute('href', '/collections');
   });
 
-  it('opens Shop with the keyboard, supports arrow navigation, and restores focus on Escape', async () => {
+  it('opens Collections with the keyboard, supports arrow navigation, and restores focus on Escape', async () => {
     const user = userEvent.setup();
     renderDesktopMenu();
-    const shop = screen.getByRole('button', {name: /shop/i});
+    const shop = screen.getByRole('button', {name: /collections/i});
 
     shop.focus();
     await user.keyboard('{Enter}');
@@ -125,16 +122,16 @@ describe('Header foundation', () => {
       expect(screen.getByRole('menuitem', {name: 'All Wall Art'})).toHaveFocus(),
     );
     await user.keyboard('{ArrowDown}');
-    expect(screen.getByRole('menuitem', {name: 'Metal Prints'})).toHaveFocus();
+    expect(screen.getByRole('menuitem', {name: 'Metal Wall Art'})).toHaveFocus();
     await user.keyboard('{Escape}');
     expect(shop).toHaveAttribute('aria-expanded', 'false');
     expect(shop).toHaveFocus();
   });
 
-  it('keeps the Shop panel open while the pointer moves into it', async () => {
+  it('keeps the Collections panel open while the pointer moves into it', async () => {
     const user = userEvent.setup();
     renderDesktopMenu();
-    const shop = screen.getByRole('button', {name: /shop/i});
+    const shop = screen.getByRole('button', {name: /collections/i});
 
     await user.hover(shop);
     expect(shop).toHaveAttribute('aria-expanded', 'true');
@@ -161,11 +158,9 @@ describe('Header foundation', () => {
     const menuToggle = screen.getByRole('button', {name: 'Open menu'});
     await user.click(menuToggle);
     expect(screen.getByRole('dialog', {name: 'MENU'})).toBeInTheDocument();
-    const shop = screen.getByRole('button', {name: 'Shop'});
-    expect(shop).toHaveAttribute('aria-expanded', 'false');
-    await user.click(shop);
+    const shop = screen.getByRole('button', {name: 'Collections'});
     expect(shop).toHaveAttribute('aria-expanded', 'true');
-    expect(screen.getByRole('link', {name: 'All Wall Art'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Wall Art'})).toHaveAttribute(
       'href',
       '/collections/wall-art',
     );
@@ -173,27 +168,16 @@ describe('Header foundation', () => {
       'href',
       '/collections/quiet-horizons',
     );
-    expect(screen.getByRole('link', {name: 'Metal Prints'})).toHaveAttribute(
-      'href',
-      '/collections/metal-wall-art',
-    );
     expect(screen.queryByRole('link', {name: 'Nightmare Lab'})).not.toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'Nico Vale'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Materials'})).toHaveAttribute(
       'href',
-      '/artists/nico-vale',
-    );
-    expect(screen.getByRole('link', {name: 'View All Artists'})).toHaveAttribute(
-      'href',
-      '/artists',
+      '/materials',
     );
     expect(screen.getByRole('link', {name: 'Artists'})).toHaveAttribute(
       'href',
       '/artists',
     );
-    expect(screen.getByRole('link', {name: 'Bundles'})).toHaveAttribute(
-      'href',
-      '/collections/bundles',
-    );
+    expect(screen.queryByRole('link', {name: 'Bundles'})).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Account'})).toHaveAttribute(
       'href',
       '/account',

@@ -1,4 +1,5 @@
 import type {CollectionHeroData} from '~/lib/collection';
+import {editorialText} from '~/lib/editorial-text';
 
 export function CollectionStatement({
   hero,
@@ -23,7 +24,7 @@ export function CollectionStatement({
         </div>
         <div className="collection-statement__copy">
           <h2 id="collection-statement-heading">{heading}</h2>
-          <p>{hero.description}</p>
+          <p>{editorialText(hero.description)}</p>
         </div>
       </div>
     </section>

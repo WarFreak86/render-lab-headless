@@ -14,7 +14,7 @@ import {
   type RawCollectionPage,
 } from '~/lib/collection';
 import {PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
-import {applyMaterialCollectionContext} from '~/lib/material-collection';
+import {applyMaterialCollectionContext, MATERIAL_BY_COLLECTION_HANDLE} from '~/lib/material-collection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {
   buildCollectionDirectoryEntries,
@@ -99,7 +99,9 @@ export async function loader({context, params, request}: Route.LoaderArgs) {
   const products = normalizedPage.products.map((product, index) =>
     applyMaterialCollectionContext({
       product,
-      collectionHandle: collection.handle,
+      collectionHandle: Object.entries(MATERIAL_BY_COLLECTION_HANDLE).find(
+        ([, material]) => material.toLowerCase() === url.searchParams.get('material')?.toLowerCase(),
+      )?.[0] ?? collection.handle,
       variants: collection.products.nodes[index]?.variants?.nodes ?? [],
     }),
   );

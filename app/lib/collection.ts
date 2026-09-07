@@ -26,6 +26,7 @@ export interface CollectionProductCardData {
   image: CollectionImage | null;
   minPrice: CollectionMoney;
   maxPrice: CollectionMoney;
+  priceMaterial?: string;
 }
 
 export interface CollectionHeroData {

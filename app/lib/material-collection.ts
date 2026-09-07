@@ -6,7 +6,7 @@ export type MaterialCollectionVariant = {
   selectedOptions: Array<{name: string; value: string}>;
 };
 
-const MATERIAL_BY_COLLECTION_HANDLE: Record<string, string> = {
+export const MATERIAL_BY_COLLECTION_HANDLE: Record<string, string> = {
   posters: 'Poster',
   'canvas-art': 'Canvas',
   'metal-wall-art': 'Metal',
@@ -14,7 +14,7 @@ const MATERIAL_BY_COLLECTION_HANDLE: Record<string, string> = {
 
 function selectedMaterial(variant: MaterialCollectionVariant) {
   return variant.selectedOptions.find(
-    (option) => option.name.toLowerCase() === 'material',
+    (option) => /^(material|finish)$/i.test(option.name),
   )?.value;
 }
 
@@ -45,7 +45,7 @@ export function applyMaterialCollectionContext({
 
   // Legacy single-material products and bundle products do not expose a Material
   // option. Leave those URLs and prices untouched.
-  if (!preferredMaterial || product.productType !== 'Wall Art') return product;
+  if (!preferredMaterial) return product;
 
   const matchingVariants = variants.filter(
     (variant) =>
@@ -54,14 +54,16 @@ export function applyMaterialCollectionContext({
 
   if (!matchingVariants.length) return product;
 
-  const prices = matchingVariants.map((variant) => variant.price).sort(compareMoney);
-  const linkedVariant =
-    matchingVariants.find((variant) => Boolean(variant.availableForSale)) ??
-    matchingVariants[0];
+  const availableVariants = matchingVariants.filter((variant) => variant.availableForSale);
+  const pricedVariants = (availableVariants.length ? availableVariants : matchingVariants)
+    .slice().sort((a, b) => compareMoney(a.price, b.price));
+  const prices = pricedVariants.map((variant) => variant.price);
+  const linkedVariant = pricedVariants[0];
   const params = variantSearchParams(linkedVariant);
 
   return {
     ...product,
+    priceMaterial: preferredMaterial,
     // A product route must receive a complete variant selection. Passing only
     // Material leaves Size unresolved, allowing Shopify to fall back to the first
     // Metal variant and making the server/client initial render disagree.

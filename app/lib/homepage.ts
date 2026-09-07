@@ -164,9 +164,10 @@ const CATEGORY_PRIORITY = [
 ] as const;
 
 const FEATURED_COLLECTION_PRIORITY = [
-  'echoes-of-war',
   'botanical-anomalies',
+  'quiet-horizons',
   'neon-memento',
+  'echoes-of-war',
   'after-dark',
   'limited-editions',
   'neon-speed',

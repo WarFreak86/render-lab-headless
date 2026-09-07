@@ -75,10 +75,9 @@ export function CollectionProductCard({
           {product.image ? (
             <Image
               alt={product.image.altText}
-              aspectRatio={isApparel ? '4/3' : '3/4'}
               data={product.image}
               loading={loading}
-              sizes="(min-width: 90rem) 26vw, (min-width: 64rem) 30vw, (min-width: 48rem) 46vw, 92vw"
+              sizes="(min-width: 48rem) 30vw, 46vw"
             />
           ) : (
             <span className="collection-product-card__placeholder">
@@ -97,7 +96,7 @@ export function CollectionProductCard({
           ) : null}
           <h2>{artworkTitle}</h2>
           <div className="collection-product-card__price">
-            <span>From </span>
+            <span>{product.priceMaterial ? `${product.priceMaterial} from ` : 'From '}</span>
             <Money data={product.minPrice} />
           </div>
         </div>

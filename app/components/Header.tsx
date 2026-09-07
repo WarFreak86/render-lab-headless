@@ -62,9 +62,10 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
         aria-label="Mobile navigation"
         className="header-menu header-menu--mobile"
       >
-        <Accordion title="Shop">
+        <NavLink onClick={close} to="/collections/wall-art">Wall Art</NavLink>
+        <Accordion title="Collections" defaultOpen>
           <div className="header-menu__mobile-mega">
-            {EXPLORE_NAV_GROUPS.map((group) => (
+            {EXPLORE_NAV_GROUPS.filter((group) => group.title === 'Collections').map((group) => (
               <section className="header-menu__mobile-group" key={group.title}>
                 <p>{group.title}</p>
                 <div className="header-menu__mobile-links">
@@ -86,7 +87,7 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
             ))}
           </div>
         </Accordion>
-        {PRIMARY_NAV_ITEMS.map((item) => (
+        {PRIMARY_NAV_ITEMS.filter((item) => item.title !== 'Wall Art').map((item) => (
           <NavLink
             className={({isActive}) => (isActive ? 'is-active' : undefined)}
             key={item.title}
@@ -113,7 +114,6 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
 
   return (
     <nav aria-label="Primary" className="header-menu header-menu--desktop">
-      <ExploreMegaMenu onNavigate={close} />
       {PRIMARY_NAV_ITEMS.map((item) => (
         <NavLink
           className={({isActive}) => (isActive ? 'is-active' : undefined)}
@@ -125,6 +125,7 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
           {item.title}
         </NavLink>
       ))}
+      <ExploreMegaMenu onNavigate={close} />
     </nav>
   );
 }
@@ -217,11 +218,11 @@ function ExploreMegaMenu({onNavigate}: {onNavigate: () => void}) {
         ref={triggerRef}
         type="button"
       >
-        Shop
+        Collections
         <Icon name="chevron-down" size={12} />
       </button>
       <div
-        aria-label="Shop menu"
+        aria-label="Collections menu"
         className="header-menu__mega-panel"
         data-open={open || undefined}
         hidden={!open}

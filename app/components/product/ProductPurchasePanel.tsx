@@ -1,7 +1,7 @@
 import {CartForm, Money, type MappedProductOptions} from '@shopify/hydrogen';
 import type {FetcherWithComponents} from 'react-router';
 import {Link, useNavigate} from 'react-router';
-import {useEffect, useRef, type ReactNode} from 'react';
+import {useEffect, useRef, useState, type ReactNode} from 'react';
 import type {ProductFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {Button} from '~/components/Button';
@@ -11,7 +11,6 @@ import {getOptionState} from '~/lib/product';
 import {
   getProductContext,
   isGenericCatalogLabel,
-  parseProductSizeDimensions,
   splitProductIdentity,
 } from '~/lib/product-presentation';
 
@@ -44,10 +43,19 @@ function AddToCartControl({
   purchaseAllowed: boolean;
   selectedVariant: SelectedVariant;
 }) {
-  const {open} = useAside();
+  const {open, type: asideType} = useAside();
+  const mainControl = useRef<HTMLDivElement>(null);
+  const [showSticky, setShowSticky] = useState(false);
   const submittedRef = useRef(false);
   const loading = fetcher.state !== 'idle';
   const error = getCartErrorMessage(fetcher.data);
+
+  useEffect(() => {
+    if (!mainControl.current || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(([entry]) => setShowSticky(!entry.isIntersecting));
+    observer.observe(mainControl.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (loading) {
@@ -66,6 +74,7 @@ function AddToCartControl({
 
   return (
     <>
+      <div ref={mainControl}>
       <Button
         className="product-purchase__add"
         disabled={!available}
@@ -83,6 +92,18 @@ function AddToCartControl({
           disabledLabel || 'Sold out'
         )}
       </Button>
+      </div>
+      {showSticky && asideType === 'closed' ? (
+        <div className="product-purchase__sticky" aria-label="Quick purchase">
+          <div aria-live="polite">
+            {selectedVariant ? <Money data={selectedVariant.price} /> : null}
+            <small>{selectedVariant?.selectedOptions.map((option) => option.value).join(' · ')}</small>
+          </div>
+          <Button disabled={!available} loading={loading} type="submit">
+            {loading ? 'Adding…' : available ? 'Add to cart' : disabledLabel || 'Sold out'}
+          </Button>
+        </div>
+      ) : null}
       <div className="product-purchase__message" aria-live="polite">
         {error ? <p role="alert">{error}</p> : null}
       </div>
@@ -177,17 +198,9 @@ export function ProductPurchasePanel({
       ),
   );
   const selectedMaterial = productOptions
-    .find((option) => option.name.toLowerCase() === 'material')
+    .find((option) => /^(material|finish)$/i.test(option.name))
     ?.optionValues.find((value) => value.selected)
     ?.name.toLowerCase();
-  const selectedOptions = visibleOptions.flatMap((option) => {
-    const selected = option.optionValues.find((value) => value.selected);
-    return selected ? [{name: option.name, value: selected.name}] : [];
-  });
-  const selectedSize = selectedOptions.find(
-    (option) => option.name.toLowerCase() === 'size',
-  );
-  const sizeDimensions = parseProductSizeDimensions(selectedSize?.value);
   const identity = splitProductIdentity(product.title);
   const context = getProductContext(product.title, collectionTitle);
   const isStandard = presentation === 'standard';
@@ -223,9 +236,9 @@ export function ProductPurchasePanel({
         <div className="product-purchase__options">
           {visibleOptions.map((option) => (
             <fieldset className="product-option" key={option.name}>
-              <legend>{option.name}</legend>
+              <legend>{/^(material|finish)$/i.test(option.name) ? 'Material' : /^size$/i.test(option.name) ? 'Size (inches)' : option.name}</legend>
               <div className="product-option__values">
-                {option.optionValues.map((value, index) => {
+                {option.optionValues.map((value) => {
                   const state = getOptionState(value);
                   const stateLabel =
                     state === 'impossible'
@@ -233,18 +246,9 @@ export function ProductPurchasePanel({
                       : state === 'sold-out' || state === 'selected-sold-out'
                         ? 'Sold out'
                         : undefined;
-                  const isBestValue =
-                    product.productType === 'Wall Art' &&
-                    option.name.toLowerCase() === 'size' &&
-                    selectedMaterial === 'metal' &&
-                    option.optionValues.length >= 3 &&
-                    index === 1;
                   const content = (
                     <>
                       <span>{value.name}</span>
-                      {isBestValue ? (
-                        <span className="product-option__value-badge">Best value</span>
-                      ) : null}
                       {stateLabel ? (
                         <span className="product-option__state">
                           {stateLabel}
@@ -292,38 +296,13 @@ export function ProductPurchasePanel({
                   );
                 })}
               </div>
+              {/^(material|finish)$/i.test(option.name) && selectedMaterial ? (
+                <Link className="product-purchase__guide" to={`/materials#${selectedMaterial}`}>
+                  Explore {selectedMaterial} <Icon name="arrow-right" size={14} />
+                </Link>
+              ) : null}
             </fieldset>
           ))}
-        </div>
-      ) : null}
-
-      {isStandard && selectedOptions.length > 0 ? (
-        <div className="product-purchase__selection-summary">
-          <dl>
-            {selectedOptions.map((option) => (
-              <div key={option.name}>
-                <dt>{option.name}</dt>
-                <dd>{option.value}</dd>
-              </div>
-            ))}
-          </dl>
-          {selectedSize && sizeDimensions ? (
-            <div
-              aria-label={`Selected proportion ${selectedSize.value}`}
-              className="product-purchase__proportion"
-            >
-              <span
-                aria-hidden="true"
-                style={{
-                  aspectRatio: `${sizeDimensions.width} / ${sizeDimensions.height}`,
-                }}
-              />
-              <div>
-                <small>Selected proportion</small>
-                <strong>{selectedSize.value}</strong>
-              </div>
-            </div>
-          ) : null}
         </div>
       ) : null}
 
@@ -338,7 +317,6 @@ export function ProductPurchasePanel({
           (selectedVariant?.availableForSale
             ? 'Available'
             : 'Currently unavailable')}
-        {selectedVariant?.sku ? <span>SKU {selectedVariant.sku}</span> : null}
       </div>
 
       <ProductAddToCart
@@ -349,6 +327,7 @@ export function ProductPurchasePanel({
       />
 
       {isStandard ? (
+        <>
         <ul className="product-purchase__assurances" aria-label="Purchase information">
           <li>
             <span>Made to order</span>
@@ -363,6 +342,10 @@ export function ProductPurchasePanel({
             <small>Secured by Shopify</small>
           </li>
         </ul>
+        {selectedMaterial === 'metal' || selectedMaterial === 'canvas' ? <p className="product-purchase__guide">Mounting hardware included by the manufacturer.</p> : null}
+        <a className="product-purchase__guide" href="mailto:render.lab.art@gmail.com">Questions? Contact Render-Lab <Icon name="arrow-right" size={14} /></a>
+        {selectedVariant?.sku ? <details className="product-purchase__reference"><summary>Product reference</summary><p>SKU {selectedVariant.sku}</p></details> : null}
+        </>
       ) : (
         <p className="product-purchase__checkout">
           <Icon name="checkout" size={17} />

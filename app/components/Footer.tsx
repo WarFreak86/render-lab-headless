@@ -21,12 +21,14 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}: Foote
         <FooterLinkGroup title="Explore">
           <NavLink to="/collections">Collections</NavLink>
           <NavLink to="/collections/wall-art">Wall Art</NavLink>
-          <NavLink to="/collections/bundles">Bundles</NavLink>
+          <NavLink to="/artists">Artists</NavLink>
         </FooterLinkGroup>
         <FooterLinkGroup title="Support">
           <NavLink to="/account">Account</NavLink>
           <NavLink to="/cart">Cart</NavLink>
           <NavLink to="/search">Search</NavLink>
+          <NavLink to="/materials">Materials guide</NavLink>
+          <a href="mailto:render.lab.art@gmail.com">Contact Render-Lab</a>
         </FooterLinkGroup>
         <div>
           <h2 className="site-footer__heading">Policies</h2>
@@ -83,7 +85,7 @@ function FooterMenu({footer, header, publicStoreDomain}: {
   return (
     <nav className="site-footer__links site-footer__links--policy-menu" aria-label="Store policies">
       {footer.menu.items.map((item) => {
-        if (!item.url) return null;
+        if (!item.url || new URL(item.url, 'https://render-lab.org').pathname === '/search') return null;
         const url =
           item.url.includes('myshopify.com') ||
           item.url.includes(publicStoreDomain) ||

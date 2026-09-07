@@ -2,6 +2,8 @@ import {
   isSuppressedCollection,
   isSuppressedMerchandisingAssetUrl,
 } from './merchandising';
+import {MATERIAL_BY_COLLECTION_HANDLE} from './material-collection';
+import {editorialTeaser} from './editorial-text';
 
 export const COLLECTION_DIRECTORY_HANDLES = [
   'wall-art',
@@ -189,9 +191,10 @@ export function buildCollectionDirectoryEntries(
       id: collection.id,
       handle: collection.handle,
       title: collection.title,
-      description: cleanText(collection.description),
+      description: editorialTeaser(collection.description),
       image: normalizeImage(collection),
-      to: `/collections/${collection.handle}`,
+      to: `/collections/${collection.handle}${MATERIAL_BY_COLLECTION_HANDLE[directoryHandle]
+        ? `?material=${encodeURIComponent(MATERIAL_BY_COLLECTION_HANDLE[directoryHandle])}` : ''}`,
     }))
     .sort((left, right) => left.title.localeCompare(right.title));
 }

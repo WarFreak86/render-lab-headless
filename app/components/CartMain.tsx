@@ -149,9 +149,9 @@ function CartEmpty() {
         <Link
           className="button button--secondary"
           onClick={close}
-          to="/collections/bundles"
+          to="/collections"
         >
-          Shop bundles
+          Explore collections
         </Link>
       </div>
     </div>

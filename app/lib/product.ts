@@ -1,3 +1,6 @@
+import {isGenericCatalogLabel, splitProductIdentity} from './product-presentation';
+import {isCollectionDirectoryHandle} from './collection-directory';
+
 export interface ProductImageData {
   id: string;
   url: string;
@@ -132,7 +135,13 @@ export function normalizeProductPage(product: RawProductPage): ProductPageData {
   const roomImages = (product.roomMockups?.references?.nodes ?? [])
     .map((node) => normalizeImage(node?.image, product.title, node?.id))
     .filter((image): image is ProductImageData => Boolean(image));
-  const breadcrumb = product.collections?.nodes?.find(Boolean) ?? undefined;
+  const series = splitProductIdentity(product.title).seriesTitle?.toLowerCase();
+  const collections = (product.collections?.nodes ?? []).filter(
+    (collection) => collection && !isCollectionDirectoryHandle(collection.handle) &&
+      !isGenericCatalogLabel(collection.title) && collection.handle !== 'frontpage',
+  );
+  const breadcrumb = collections.find((collection) => collection?.title.toLowerCase() === series)
+    ?? collections[0] ?? undefined;
 
   return {
     breadcrumb: breadcrumb

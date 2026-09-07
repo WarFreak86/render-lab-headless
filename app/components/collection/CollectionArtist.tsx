@@ -3,7 +3,7 @@ import {Link} from 'react-router';
 import type {CollectionArtistData} from '~/lib/collection';
 
 export function CollectionArtist({artist}: {artist: CollectionArtistData}) {
-  const profileUrl = artist.profileUrl ?? `/artists/${artist.handle}`;
+  const profileUrl = (artist.profileUrl ?? `/artists/${artist.handle}`).replace(/^https?:\/\/(?:www\.)?render-lab\.org(?=\/)/i, '');
   const isInternalProfile = profileUrl.startsWith('/');
 
   return (

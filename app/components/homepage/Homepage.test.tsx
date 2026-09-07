@@ -75,7 +75,7 @@ describe('homepage presentation', () => {
 
   it('renders Shopify-backed format and featured collection destinations', () => {
     renderHomepage();
-    expect(screen.getByRole('link', {name: 'Metal Wall Art'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Explore metal'})).toHaveAttribute(
       'href',
       '/collections/metal-wall-art',
     );
@@ -105,16 +105,12 @@ describe('homepage presentation', () => {
     expect(screen.getByText('Made to order')).toBeInTheDocument();
   });
 
-  it('renders a transparent coming-soon drop state without optional product data', () => {
+  it('omits the unfinished drop section without optional product data', () => {
     renderHomepage({...data, featuredDrop: null});
     expect(screen.queryByRole('heading', {name: 'Real Work', level: 2})).not.toBeInTheDocument();
     expect(
-      screen.getByRole('heading', {name: 'Next limited drop', level: 2}),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'Explore current work'})).toHaveAttribute(
-      'href',
-      '/collections/wall-art',
-    );
+      screen.queryByRole('heading', {name: 'Next limited drop', level: 2}),
+    ).not.toBeInTheDocument();
   });
 
   it('renders without throwing when optional editorial hero data is absent', () => {

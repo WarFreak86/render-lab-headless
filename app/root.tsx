@@ -32,6 +32,7 @@ import productStyles from '~/styles/product.css?url';
 import cartStyles from '~/styles/cart.css?url';
 import dropStyles from '~/styles/drop.css?url';
 import enhancementStyles from '~/styles/enhancements.css?url';
+import galleryStyles from '~/styles/gallery-evolution.css?url';
 import {PageLayout} from './components/PageLayout';
 
 import '@fontsource/cormorant-garamond/latin-500.css';
@@ -197,6 +198,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={cartStyles}></link>
         <link rel="stylesheet" href={dropStyles}></link>
         <link rel="stylesheet" href={enhancementStyles}></link>
+        <link rel="stylesheet" href={galleryStyles}></link>
         {rootData?.robots ? (
           <meta name="robots" content={rootData.robots} />
         ) : null}

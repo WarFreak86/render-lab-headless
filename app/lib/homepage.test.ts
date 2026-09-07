@@ -98,8 +98,8 @@ describe('homepage data normalization', () => {
       '/collections',
     ]);
     expect(data.featuredCollections.slice(0, 2).map((collection) => collection.to)).toEqual([
-      '/collections/echoes-of-war',
       '/collections/neon-memento',
+      '/collections/echoes-of-war',
     ]);
   });
 

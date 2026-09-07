@@ -3,6 +3,7 @@ import {Link} from 'react-router';
 import {Icon} from '~/components/Icon';
 import type {HomepageCollectionFeature} from '~/lib/homepage';
 import {SectionHeading} from './SectionHeading';
+import {editorialTeaser} from '~/lib/editorial-text';
 
 export function FeaturedCollections({
   collections,
@@ -62,10 +63,9 @@ export function FeaturedCollections({
                   }
                 />
                 <span className="collection-feature-card__shade" aria-hidden="true" />
-                <span className="collection-feature-card__badge">Curated series</span>
                 <span className="collection-feature-card__content">
                   <strong>{collection.title}</strong>
-                  {collection.description ? <small>{collection.description}</small> : null}
+                  {collection.description ? <small>{editorialTeaser(collection.description)}</small> : null}
                   <span className="collection-feature-card__action" aria-hidden="true">
                     Explore series <Icon name="arrow-right" size={15} />
                   </span>

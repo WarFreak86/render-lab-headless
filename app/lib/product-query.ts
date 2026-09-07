@@ -85,7 +85,7 @@ export const PRODUCT_FRAGMENT = `#graphql
         }
       }
     }
-    collections(first: 1) {
+    collections(first: 20) {
       nodes {
         handle
         title

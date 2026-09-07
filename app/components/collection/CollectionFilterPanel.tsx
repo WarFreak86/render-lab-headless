@@ -7,7 +7,10 @@ import {clearCollectionFilters} from '~/lib/collection';
 
 function PreservedSort({searchParams}: {searchParams: URLSearchParams}) {
   const sort = searchParams.get('sort_by');
-  return sort ? <input type="hidden" name="sort_by" value={sort} /> : null;
+  return <>
+    {sort ? <input type="hidden" name="sort_by" value={sort} /> : null}
+    {searchParams.get('material') ? <input type="hidden" name="material" value={searchParams.get('material')!} /> : null}
+  </>;
 }
 
 function ListFilter({

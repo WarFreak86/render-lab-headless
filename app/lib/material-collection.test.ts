@@ -65,6 +65,14 @@ const variants = [
 ];
 
 describe('material-aware collection links and prices', () => {
+  it('preserves Finish as the real option key and links the lowest available price', () => {
+    const result = applyMaterialCollectionContext({product, collectionHandle: 'canvas-art',
+      variants: [...variants].reverse().map((variant) => ({...variant, selectedOptions: variant.selectedOptions.map((option) => ({...option, name: option.name === 'Material' ? 'Finish' : option.name}))})),
+    });
+    expect(result.to).toBe('/products/test-artwork?Finish=Canvas&Size=12%C3%9718');
+    expect(result.priceMaterial).toBe('Canvas');
+    expect(result.minPrice.amount).toBe('69.00');
+  });
   it('preselects a complete Poster variant and shows the poster-only price range', () => {
     const result = applyMaterialCollectionContext({
       product,

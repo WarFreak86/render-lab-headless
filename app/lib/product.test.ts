@@ -23,6 +23,13 @@ const variants = [
 ];
 
 describe('product data and variant state', () => {
+  it('uses the artwork series rather than a format directory in breadcrumbs', () => {
+    const page = normalizeProductPage({title: 'Fields of Memory — Echoes of War', collections: {nodes: [
+      {handle: 'canvas-art', title: 'Canvas Prints'},
+      {handle: 'echoes-of-war', title: 'Echoes of War'},
+    ]}});
+    expect(page.breadcrumb).toEqual({handle: 'echoes-of-war', title: 'Echoes of War'});
+  });
   it('resolves a valid available variant from its complete selection', () => {
     expect(
       resolveVariant(variants, {

@@ -13,7 +13,7 @@ export const EXPLORE_NAV_GROUPS: ReadonlyArray<NavigationGroup> = [
     title: 'Wall Art',
     items: [
       {title: 'All Wall Art', url: '/collections/wall-art'},
-      {title: 'Metal Prints', url: '/collections/metal-wall-art'},
+      {title: 'Metal Wall Art', url: '/collections/metal-wall-art'},
       {title: 'Canvas Prints', url: '/collections/canvas-art'},
       {title: 'Posters', url: '/collections/posters'},
     ],
@@ -24,7 +24,8 @@ export const EXPLORE_NAV_GROUPS: ReadonlyArray<NavigationGroup> = [
       {title: 'Quiet Horizons', url: '/collections/quiet-horizons'},
       {title: 'Botanical Anomalies', url: '/collections/botanical-anomalies'},
       {title: 'Neon Memento', url: '/collections/neon-memento'},
-      {title: 'After Dark', url: '/collections/after-dark'},
+      {title: 'Echoes of War', url: '/collections/echoes-of-war'},
+      {title: 'Urban Icon', url: '/collections/urban-icon'},
       {title: 'View All Collections', url: '/collections'},
     ],
   },
@@ -39,6 +40,7 @@ export const EXPLORE_NAV_GROUPS: ReadonlyArray<NavigationGroup> = [
 ];
 
 export const PRIMARY_NAV_ITEMS: ReadonlyArray<NavigationItem> = [
+  {title: 'Wall Art', url: '/collections/wall-art'},
+  {title: 'Materials', url: '/materials'},
   {title: 'Artists', url: '/artists'},
-  {title: 'Bundles', url: '/collections/bundles'},
 ];
