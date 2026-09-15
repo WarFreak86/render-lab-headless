@@ -1,3 +1,4 @@
+import '~/styles/product-gallery-fit.css';
 import {Image} from '@shopify/hydrogen';
 import {useEffect, useRef, useState} from 'react';
 import {Drawer} from '~/components/Drawer';
