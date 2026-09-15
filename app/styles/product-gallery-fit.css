@@ -1,0 +1,70 @@
+/* Product media must always display the complete artwork/mockup rather than crop it.
+   These rules intentionally override the older fixed-height gallery evolution rules. */
+.product-detail.product-detail--editorial .product-gallery__stage {
+  overflow: visible;
+}
+
+.product-detail.product-detail--editorial .product-gallery__strip {
+  overflow: hidden;
+}
+
+.product-detail.product-detail--editorial .product-gallery__slide {
+  display: none;
+  width: 100%;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  place-items: center;
+  overflow: hidden;
+  background: #070707;
+}
+
+.product-detail.product-detail--editorial .product-gallery__slide[data-active] {
+  display: grid;
+}
+
+.product-detail.product-detail--editorial .product-gallery__slide img {
+  display: block;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: min(78vh, 56rem) !important;
+  margin: auto;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+.product-detail.product-detail--editorial .product-gallery__thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+@media (max-width: 63.99rem) {
+  .product-detail.product-detail--editorial .product-gallery__slide {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .product-detail.product-detail--editorial .product-gallery__slide img {
+    max-height: min(74vh, 46rem) !important;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .product-detail.product-detail--editorial .product-gallery__slide {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+
+  .product-detail.product-detail--editorial .product-gallery__slide img {
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
+    max-height: 72vh !important;
+  }
+}
