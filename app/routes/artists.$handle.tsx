@@ -37,7 +37,7 @@ export async function loader({context, params}: Route.LoaderArgs) {
     ARTIST_PROFILE_QUERY,
     {
       variables: {handle: {type: 'artist', handle}},
-      cache: context.storefront.CacheLong(),
+      cache: context.storefront.CacheNone(),
     },
   );
 
