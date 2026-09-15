@@ -120,11 +120,6 @@ export function ProductGallery({
               >
                 <Image
                   alt={image.altText}
-                  aspectRatio={
-                    image.width && image.height
-                      ? `${image.width}/${image.height}`
-                      : '1/1'
-                  }
                   data={image}
                   loading={index === 0 ? 'eager' : 'lazy'}
                   sizes="(min-width: 80rem) 52rem, (min-width: 48rem) 60vw, 100vw"
