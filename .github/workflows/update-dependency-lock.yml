@@ -1,11 +1,11 @@
-name: Update dependency lockfile
+name: Apply safe dependency fixes
 
 on:
   push:
     branches:
       - chore/dependency-security-cleanup
     paths:
-      - package.json
+      - .github/workflows/update-dependency-lock.yml
 
 permissions:
   contents: write
@@ -22,8 +22,14 @@ jobs:
           node-version: "24"
           check-latest: true
 
-      - name: Regenerate package lock
-        run: npm install --package-lock-only --ignore-scripts
+      - name: Apply non-breaking audit fixes to lockfile
+        run: npm audit fix --package-lock-only || true
+
+      - name: Show production audit after safe fixes
+        run: npm audit --omit=dev || true
+
+      - name: Show full audit after safe fixes
+        run: npm audit || true
 
       - name: Commit updated lockfile
         run: |
@@ -31,8 +37,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add package-lock.json
           if git diff --cached --quiet; then
-            echo "No lockfile changes to commit."
+            echo "No safe lockfile changes to commit."
             exit 0
           fi
-          git commit -m "Regenerate lockfile for React Router security update"
+          git commit -m "Apply safe dependency audit fixes"
           git push origin HEAD:chore/dependency-security-cleanup
