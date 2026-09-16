@@ -1,4 +1,5 @@
 import '~/styles/home-v2.css';
+import '~/styles/home-v2-width-fix.css';
 import {HomepageHero} from './HomepageHero';
 import {FeaturedCollections} from './FeaturedCollections';
 import {
