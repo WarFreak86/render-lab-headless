@@ -8,6 +8,7 @@ import {
   HOMEPAGE_EDITORIAL_FALLBACK,
   type HomepageData,
 } from '~/lib/homepage';
+import type {ArtistSpotlightItem} from './HomepageCinematicSections';
 
 const image = {
   url: 'https://cdn.shopify.com/art.jpg',
@@ -27,6 +28,37 @@ const product = {
   image,
   price: {amount: '80.0', currencyCode: 'USD'},
 };
+
+const artists: ArtistSpotlightItem[] = [
+  {
+    id: 'artist-1',
+    handle: 'nico-vale',
+    name: 'Nico Vale',
+    biography: 'Coastlines and cinematic light.',
+    image: {...image, altText: 'Nico Vale portrait'},
+  },
+  {
+    id: 'artist-2',
+    handle: 'mara-voss',
+    name: 'Mara Voss',
+    biography: 'Botanical unease and synthetic life.',
+    image: {...image, altText: 'Mara Voss portrait'},
+  },
+  {
+    id: 'artist-3',
+    handle: 'dante-mercer',
+    name: 'Dante Mercer',
+    biography: 'Street portraiture and urban mythology.',
+    image: {...image, altText: 'Dante Mercer portrait'},
+  },
+  {
+    id: 'artist-4',
+    handle: 'fourth-artist',
+    name: 'Fourth Artist',
+    biography: 'A newly added Shopify artist.',
+    image: {...image, altText: 'Fourth Artist portrait'},
+  },
+];
 
 const data: HomepageData = {
   editorial: HOMEPAGE_EDITORIAL_FALLBACK,
@@ -49,10 +81,13 @@ const data: HomepageData = {
   featuredDrop: product,
 };
 
-function renderHomepage(homepage = data) {
+function renderHomepage(
+  homepage = data,
+  homepageArtists: ReadonlyArray<ArtistSpotlightItem> = artists,
+) {
   return render(
     <MemoryRouter>
-      <HomepageView data={homepage} />
+      <HomepageView artists={homepageArtists} data={homepage} />
     </MemoryRouter>,
   );
 }
@@ -99,8 +134,14 @@ describe('homepage presentation', () => {
     );
   });
 
-  it('keeps the existing Shopify artist profiles and destinations', () => {
+  it('renders the Shopify artist roster without a fixed artist count', () => {
     renderHomepage();
+    expect(
+      screen.getByRole('heading', {level: 2, name: 'Distinct visions.'}),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', {level: 2, name: 'Three distinct visions.'}),
+    ).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'View Nico Vale'})).toHaveAttribute(
       'href',
       '/artists/nico-vale',
@@ -113,20 +154,19 @@ describe('homepage presentation', () => {
       'href',
       '/artists/dante-mercer',
     );
-    expect(
-      screen.getByAltText(
-        'Portrait of Render-Lab house artist Nico Vale in a coastal-inspired studio',
-      ),
-    ).toHaveAttribute('src', expect.stringContaining('nico-vale-artist-profile.png'));
-    expect(
-      screen.getByAltText(
-        'Portrait of Render-Lab house artist Mara Voss in a botanical studio',
-      ),
-    ).toHaveAttribute('src', expect.stringContaining('mara-voss-artist-portrait.jpg'));
-    expect(screen.getByAltText('Dante Mercer fictional artist profile portrait')).toHaveAttribute(
-      'src',
-      expect.stringContaining('dante-mercer-artist-profile-realistic.png'),
+    expect(screen.getByRole('link', {name: 'View Fourth Artist'})).toHaveAttribute(
+      'href',
+      '/artists/fourth-artist',
     );
+    expect(screen.getByRole('link', {name: 'View all artists'})).toHaveAttribute(
+      'href',
+      '/artists',
+    );
+  });
+
+  it('omits the artist spotlight cleanly when Shopify has no artists', () => {
+    renderHomepage(data, []);
+    expect(screen.queryByText('Meet the artists')).not.toBeInTheDocument();
   });
 
   it('finishes with a cinematic wall-art call to action', () => {
