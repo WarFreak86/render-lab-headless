@@ -55,11 +55,22 @@ const collections = [
   },
 ];
 
+const artists = [
+  {id: 'artist-nico', handle: 'nico-vale', name: {value: 'Nico Vale'}},
+  {id: 'artist-mara', handle: 'mara-voss', name: {value: 'Mara Voss'}},
+  {id: 'artist-dante', handle: 'dante-mercer', name: {value: 'Dante Mercer'}},
+  {id: 'artist-four', handle: 'fourth-artist', name: {value: 'Fourth Artist'}},
+];
+
 function renderDesktopMenu() {
   return render(
     <MemoryRouter>
       <Aside.Provider>
-        <HeaderMenu collections={collections} viewport="desktop" />
+        <HeaderMenu
+          artists={artists}
+          collections={collections}
+          viewport="desktop"
+        />
       </Aside.Provider>
     </MemoryRouter>,
   );
@@ -93,7 +104,7 @@ describe('Header foundation', () => {
     ).toBeInTheDocument();
   });
 
-  it('builds the Collections mega menu from published Shopify collection data', async () => {
+  it('builds collection and artist mega-menu groups from Shopify data', async () => {
     const user = userEvent.setup();
     renderDesktopMenu();
     const shop = screen.getByRole('button', {name: /collections/i});
@@ -121,8 +132,17 @@ describe('Header foundation', () => {
       screen.queryByRole('menuitem', {name: 'Empty Series'}),
     ).not.toBeInTheDocument();
     expect(
+      screen.getByRole('menuitem', {name: 'Fourth Artist'}),
+    ).toHaveAttribute('href', '/artists/fourth-artist');
+    expect(
+      screen.getByRole('menuitem', {name: 'Nico Vale'}),
+    ).toHaveAttribute('href', '/artists/nico-vale');
+    expect(
       screen.getByRole('menuitem', {name: 'View All Collections'}),
     ).toHaveAttribute('href', '/collections');
+    expect(
+      screen.getByRole('menuitem', {name: 'View All Artists'}),
+    ).toHaveAttribute('href', '/artists');
   });
 
   it('opens Collections with the keyboard, supports arrow navigation, and restores focus on Escape', async () => {
@@ -162,7 +182,11 @@ describe('Header foundation', () => {
         <Aside.Provider>
           <HeaderMenuMobileToggle />
           <Aside type="mobile" heading="MENU">
-            <HeaderMenu collections={collections} viewport="mobile" />
+            <HeaderMenu
+              artists={artists}
+              collections={collections}
+              viewport="mobile"
+            />
           </Aside>
           <Aside type="search" heading="SEARCH">
             Search contents
