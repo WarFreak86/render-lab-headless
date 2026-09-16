@@ -1,6 +1,4 @@
-import {Image} from '@shopify/hydrogen';
 import {ButtonLink} from '~/components/Button';
-import {Icon} from '~/components/Icon';
 import type {
   HomepageEditorialConfig,
   HomepageProductFeature,
@@ -8,9 +6,6 @@ import type {
 
 export function HomepageHero({
   editorial,
-  primaryCta,
-  product,
-  secondaryCta,
 }: {
   editorial?: HomepageEditorialConfig['hero'];
   primaryCta: {label: string; to: string} | null;
@@ -19,62 +14,33 @@ export function HomepageHero({
 }) {
   if (!editorial) return null;
 
-  const resolvedPrimaryCta = primaryCta
-    ? {...primaryCta, label: editorial.primaryCta.label}
-    : editorial.primaryCta;
-  const resolvedSecondaryCta = secondaryCta
-    ? {...secondaryCta, label: 'View all wall art'}
-    : null;
-
   return (
-    <section className="home-hero" aria-labelledby="home-hero-title">
+    <section className="home-hero home-hero--v2" aria-labelledby="home-hero-title">
+      <div className="home-hero__media" aria-hidden="true">
+        <img
+          alt=""
+          fetchPriority="high"
+          loading="eager"
+          src="https://cdn.shopify.com/s/files/1/0748/7701/0081/files/render-lab-home-volcanic-gallery.png?v=1789594138"
+        />
+      </div>
       <div className="home-hero__inner">
         <div className="home-hero__content">
-          {editorial.eyebrow ? (
-            <p className="home-eyebrow home-hero__eyebrow">{editorial.eyebrow}</p>
-          ) : null}
-          <h1 aria-label={editorial.headline.join(' ')} id="home-hero-title">
-            {editorial.headline.map((line, index) => (
-              <span
-                className={index === editorial.accentLine ? 'home-hero__accent' : undefined}
-                key={line}
-              >
-                {line}{' '}
-              </span>
-            ))}
+          <p className="home-eyebrow home-hero__eyebrow">Render-Lab / Wall Art</p>
+          <h1 id="home-hero-title">
+            <span>Art should</span>
+            <span>change the room.</span>
           </h1>
-          {editorial.description ? (
-            <p className="home-hero__copy">{editorial.description}</p>
-          ) : null}
+          <p className="home-hero__copy">
+            Bold imagery. Premium materials. Work designed to become part of the
+            space, not disappear into it.
+          </p>
           <div className="home-hero__actions">
-            <ButtonLink prefetch="intent" to={resolvedPrimaryCta.to}>
-              {resolvedPrimaryCta.label}
+            <ButtonLink prefetch="intent" to="/collections/wall-art">
+              Explore wall art
             </ButtonLink>
-            {resolvedSecondaryCta ? (
-              <ButtonLink
-                icon={<Icon name="arrow-right" size={17} />}
-                prefetch="intent"
-                to={resolvedSecondaryCta.to}
-                variant="text"
-              >
-                {resolvedSecondaryCta.label}
-              </ButtonLink>
-            ) : null}
           </div>
         </div>
-        {product ? (
-          <div className="home-hero__media">
-            <Image
-              alt={product.image.altText}
-              data={product.image}
-              loading="eager"
-              sizes="(max-width: 767px) 100vw, 66vw"
-            />
-            <span className="home-hero__scroll-cue" aria-hidden="true">
-              Scroll to explore
-            </span>
-          </div>
-        ) : null}
       </div>
     </section>
   );
