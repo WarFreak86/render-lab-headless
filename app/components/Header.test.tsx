@@ -89,11 +89,14 @@ describe('Header foundation', () => {
       '/collections/posters',
     );
     expect(
-      screen.getByRole('menuitem', {name: 'Quiet Horizons'}),
-    ).toHaveAttribute('href', '/collections/quiet-horizons');
+      screen.getByRole('menuitem', {name: 'Neon Memento'}),
+    ).toHaveAttribute('href', '/collections/neon-memento');
     expect(
-      screen.getByRole('menuitem', {name: 'Botanical Anomalies'}),
-    ).toHaveAttribute('href', '/collections/botanical-anomalies');
+      screen.queryByRole('menuitem', {name: 'Quiet Horizons'}),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', {name: 'Botanical Anomalies'}),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByRole('menuitem', {name: 'Nightmare Lab'}),
     ).not.toBeInTheDocument();
@@ -135,7 +138,7 @@ describe('Header foundation', () => {
 
     await user.hover(shop);
     expect(shop).toHaveAttribute('aria-expanded', 'true');
-    await user.hover(screen.getByRole('menuitem', {name: 'Quiet Horizons'}));
+    await user.hover(screen.getByRole('menuitem', {name: 'Neon Memento'}));
     expect(shop).toHaveAttribute('aria-expanded', 'true');
   });
 
@@ -164,10 +167,14 @@ describe('Header foundation', () => {
       'href',
       '/collections/wall-art',
     );
-    expect(screen.getByRole('link', {name: 'Quiet Horizons'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Neon Memento'})).toHaveAttribute(
       'href',
-      '/collections/quiet-horizons',
+      '/collections/neon-memento',
     );
+    expect(screen.queryByRole('link', {name: 'Quiet Horizons'})).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', {name: 'Botanical Anomalies'}),
+    ).not.toBeInTheDocument();
     expect(screen.queryByRole('link', {name: 'Nightmare Lab'})).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Materials'})).toHaveAttribute(
       'href',
