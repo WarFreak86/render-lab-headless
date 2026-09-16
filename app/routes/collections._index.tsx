@@ -3,31 +3,8 @@ import type {Route} from './+types/collections._index';
 import {Image} from '@shopify/hydrogen';
 import type {CollectionFragment} from 'storefrontapi.generated';
 import {getProductionUrl} from '~/lib/config';
-import {
-  isSuppressedCollection,
-  isSuppressedMerchandisingAssetUrl,
-} from '~/lib/merchandising';
-
-const HIDDEN_COLLECTION_HANDLES = new Set([
-  'frontpage',
-  'digital-downloads',
-  'limited-edition-clothing',
-]);
-
-const COLLECTION_PRIORITY = [
-  'wall-art',
-  'echoes-of-war',
-  'neon-memento',
-  'metal-wall-art',
-  'canvas-art',
-  'posters',
-  'bundles',
-  'limited-editions',
-  'after-dark',
-  'neon-speed',
-  'alt-history',
-  'alt-timeline',
-] as const;
+import {isSuppressedMerchandisingAssetUrl} from '~/lib/merchandising';
+import {storefrontSeriesCollectionsAlphabetical} from '~/lib/catalog-collections';
 
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/collections');
@@ -47,21 +24,9 @@ export const meta: Route.MetaFunction = () => {
 
 export async function loader({context}: Route.LoaderArgs) {
   const {collections} = await context.storefront.query(COLLECTIONS_QUERY);
-  const rank = new Map<string, number>(
-    COLLECTION_PRIORITY.map((handle, index) => [handle, index]),
+  const visibleCollections = storefrontSeriesCollectionsAlphabetical(
+    collections.nodes,
   );
-  const visibleCollections = collections.nodes
-    .filter(
-      (collection) =>
-        !HIDDEN_COLLECTION_HANDLES.has(collection.handle) &&
-        !isSuppressedCollection(collection) &&
-        collection.products.nodes.length > 0,
-    )
-    .sort((left, right) => {
-      const leftRank = rank.get(left.handle) ?? Number.MAX_SAFE_INTEGER;
-      const rightRank = rank.get(right.handle) ?? Number.MAX_SAFE_INTEGER;
-      return leftRank - rightRank || left.title.localeCompare(right.title);
-    });
 
   const safeFallbackImage = visibleCollections
     .map((collection) => collection.image)
@@ -147,7 +112,7 @@ const COLLECTIONS_QUERY = `#graphql
   }
   query StoreCollections($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
-    collections(first: 50) {
+    collections(first: 100, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...Collection
       }
