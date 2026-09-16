@@ -1,15 +1,17 @@
-import '~/styles/material-proof.css';
+import '~/styles/home-v2.css';
 import {HomepageHero} from './HomepageHero';
 import {FeaturedCollections} from './FeaturedCollections';
-import {ImmersiveEditorial} from './ImmersiveEditorial';
-import {MaterialProof} from './MaterialProof';
-import {BenefitStrip} from './BenefitStrip';
-import {FeaturedDrop} from './FeaturedDrop';
+import {
+  ArtistSpotlight,
+  ClosingCta,
+  EditorialBand,
+  MaterialShowcase,
+} from './HomepageCinematicSections';
 import type {HomepageData} from '~/lib/homepage';
 
 export function HomepageView({data}: {data: HomepageData}) {
   return (
-    <div className="home homepage">
+    <div className="home homepage homepage-v2">
       <HomepageHero
         editorial={data.editorial?.hero}
         primaryCta={data.heroPrimaryCta}
@@ -18,18 +20,13 @@ export function HomepageView({data}: {data: HomepageData}) {
       />
       <FeaturedCollections
         collections={data.featuredCollections}
-        eyebrow={data.editorial?.featuredCollections.eyebrow}
-        title="Find your next piece."
+        eyebrow="Distinct worlds. Original perspectives."
+        title="Featured collections"
       />
-      <ImmersiveEditorial />
-      {data.featuredDrop ? (
-        <FeaturedDrop
-          editorial={data.editorial?.featuredDrop}
-          product={data.featuredDrop}
-        />
-      ) : null}
-      <MaterialProof categories={data.categories} />
-      <BenefitStrip benefits={data.editorial?.benefits ?? []} />
+      <EditorialBand />
+      <MaterialShowcase />
+      <ArtistSpotlight />
+      <ClosingCta />
     </div>
   );
 }
