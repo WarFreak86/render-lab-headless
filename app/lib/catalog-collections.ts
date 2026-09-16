@@ -15,6 +15,7 @@ const STRUCTURAL_COLLECTION_HANDLES = new Set([
   'bundles',
   'frontpage',
   'digital-downloads',
+  'limited-editions',
   'limited-edition-clothing',
   'hoodies',
 ]);
