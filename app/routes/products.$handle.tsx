@@ -1,4 +1,5 @@
 import '~/styles/product-editorial.css';
+import '~/styles/product-gallery-fit.css';
 import {Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/products.$handle';
 import {
