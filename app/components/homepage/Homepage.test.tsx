@@ -58,59 +58,79 @@ function renderHomepage(homepage = data) {
 }
 
 describe('homepage presentation', () => {
-  it('renders the Echoes hero copy while preserving contextual destinations', () => {
+  it('renders the cinematic hero with the wall-art destination', () => {
     renderHomepage();
     expect(
-      screen.getByRole('heading', {level: 1, name: 'Echoes of War'}),
+      screen.getByRole('heading', {level: 1, name: 'Art should change the room.'}),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'Explore Echoes of War'})).toHaveAttribute(
-      'href',
-      '/collections/echoes-of-war',
-    );
-    expect(screen.getByRole('link', {name: 'View all wall art'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Explore wall art'})).toHaveAttribute(
       'href',
       '/collections/wall-art',
     );
   });
 
-  it('renders Shopify-backed format and featured collection destinations', () => {
+  it('renders Shopify-backed featured collection destinations', () => {
     renderHomepage();
-    expect(screen.getByRole('link', {name: 'Explore metal'})).toHaveAttribute(
-      'href',
-      '/collections/metal-wall-art',
-    );
+    expect(screen.getByRole('heading', {level: 2, name: 'Featured collections'})).toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Echoes of War'})).toHaveAttribute(
       'href',
       '/collections/echoes-of-war',
     );
   });
 
-  it('renders physical format studies for metal, canvas, and poster', () => {
+  it('renders cinematic material studies for metal, canvas, and poster', () => {
     renderHomepage();
     expect(
-      screen.getByRole('heading', {level: 2, name: 'Built to live on a wall.'}),
+      screen.getByRole('heading', {level: 2, name: 'Made for the wall.'}),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', {name: /explore metal/i})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Shop Metal'})).toHaveAttribute(
       'href',
       '/collections/metal-wall-art',
     );
-    expect(screen.getByRole('link', {name: /explore canvas/i})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Shop Canvas'})).toHaveAttribute(
       'href',
       '/collections/canvas-art',
     );
-    expect(screen.getByRole('link', {name: /explore poster/i})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Shop Posters'})).toHaveAttribute(
       'href',
       '/collections/posters',
     );
-    expect(screen.getByText('Made to order')).toBeInTheDocument();
   });
 
-  it('omits the unfinished drop section without optional product data', () => {
-    renderHomepage({...data, featuredDrop: null});
-    expect(screen.queryByRole('heading', {name: 'Real Work', level: 2})).not.toBeInTheDocument();
+  it('keeps the existing Shopify artist profiles and destinations', () => {
+    renderHomepage();
+    expect(screen.getByRole('link', {name: 'View Nico Vale'})).toHaveAttribute(
+      'href',
+      '/artists/nico-vale',
+    );
+    expect(screen.getByRole('link', {name: 'View Mara Voss'})).toHaveAttribute(
+      'href',
+      '/artists/mara-voss',
+    );
+    expect(screen.getByRole('link', {name: 'View Dante Mercer'})).toHaveAttribute(
+      'href',
+      '/artists/dante-mercer',
+    );
     expect(
-      screen.queryByRole('heading', {name: 'Next limited drop', level: 2}),
-    ).not.toBeInTheDocument();
+      screen.getByAltText('Portrait of Render-Lab house artist Nico Vale in a coastal-inspired studio'),
+    ).toHaveAttribute('src', expect.stringContaining('nico-vale-artist-profile.png'));
+    expect(
+      screen.getByAltText('Portrait of Render-Lab house artist Mara Voss in a botanical studio'),
+    ).toHaveAttribute('src', expect.stringContaining('mara-voss-artist-portrait.jpg'));
+    expect(
+      screen.getByAltText('Dante Mercer fictional artist profile portrait'),
+    ).toHaveAttribute('src', expect.stringContaining('dante-mercer-artist-profile-realistic.png'));
+  });
+
+  it('finishes with a cinematic wall-art call to action', () => {
+    renderHomepage();
+    expect(
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'Find the piece that changes the room.',
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole('link', {name: 'Explore wall art'})).toHaveLength(2);
   });
 
   it('renders without throwing when optional editorial hero data is absent', () => {
