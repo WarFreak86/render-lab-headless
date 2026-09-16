@@ -1,9 +1,12 @@
 import type {CollectionProductCardData, CollectionMoney} from './collection';
 
-export type MaterialCollectionVariant = {
+export type MaterialOptionVariant = {
+  selectedOptions: Array<{name: string; value: string}>;
+};
+
+export type MaterialCollectionVariant = MaterialOptionVariant & {
   availableForSale?: boolean | null;
   price: CollectionMoney;
-  selectedOptions: Array<{name: string; value: string}>;
 };
 
 export const MATERIAL_BY_COLLECTION_HANDLE: Record<string, string> = {
@@ -12,14 +15,14 @@ export const MATERIAL_BY_COLLECTION_HANDLE: Record<string, string> = {
   'metal-wall-art': 'Metal',
 };
 
-export function selectedMaterial(variant: MaterialCollectionVariant) {
+export function selectedMaterial(variant: MaterialOptionVariant) {
   return variant.selectedOptions.find(
     (option) => /^(material|finish)$/i.test(option.name),
   )?.value;
 }
 
 export function productSupportsMaterial(
-  variants: ReadonlyArray<MaterialCollectionVariant>,
+  variants: ReadonlyArray<MaterialOptionVariant>,
   material: string,
 ) {
   return variants.some(
