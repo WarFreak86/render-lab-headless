@@ -28,35 +28,18 @@ const MATERIALS = [
   },
 ] as const;
 
-const ARTISTS = [
-  {
-    name: 'Nico Vale',
-    handle: 'nico-vale',
-    biography:
-      'Distant coastlines, mountain haze and quiet geometry shaped by cinematic light.',
-    image:
-      'https://cdn.shopify.com/s/files/1/0748/7701/0081/files/nico-vale-artist-profile.png?v=1788249520',
-    alt: 'Portrait of Render-Lab house artist Nico Vale in a coastal-inspired studio',
-  },
-  {
-    name: 'Mara Voss',
-    handle: 'mara-voss',
-    biography:
-      'Botanical beauty pushed toward biological unease, impossible specimens and synthetic life.',
-    image:
-      'https://cdn.shopify.com/s/files/1/0748/7701/0081/files/mara-voss-artist-portrait.jpg?v=1788254504',
-    alt: 'Portrait of Render-Lab house artist Mara Voss in a botanical studio',
-  },
-  {
-    name: 'Dante Mercer',
-    handle: 'dante-mercer',
-    biography:
-      'Street portraiture, neon city culture and larger-than-life urban mythology.',
-    image:
-      'https://cdn.shopify.com/s/files/1/0748/7701/0081/files/dante-mercer-artist-profile-realistic.png?v=1789478404',
-    alt: 'Dante Mercer fictional artist profile portrait',
-  },
-] as const;
+export interface ArtistSpotlightItem {
+  id: string;
+  name: string;
+  handle: string;
+  biography?: string | null;
+  image?: {
+    url: string;
+    altText?: string | null;
+    width?: number | null;
+    height?: number | null;
+  } | null;
+}
 
 export function EditorialBand() {
   return (
@@ -116,37 +99,59 @@ export function MaterialShowcase() {
   );
 }
 
-export function ArtistSpotlight() {
+export function ArtistSpotlight({
+  artists,
+}: {
+  artists: ReadonlyArray<ArtistSpotlightItem>;
+}) {
+  if (!artists.length) return null;
+
   return (
     <section className="home-v2-artists" aria-labelledby="home-v2-artists-title">
       <div className="container container--wide">
         <header className="home-v2-section-head home-v2-section-head--center">
           <p className="home-v2-kicker">Meet the artists</p>
-          <h2 id="home-v2-artists-title">Three distinct visions.</h2>
+          <h2 id="home-v2-artists-title">Distinct visions.</h2>
           <p>One shared obsession.</p>
         </header>
         <div className="home-v2-artists__grid">
-          {ARTISTS.map((artist) => (
+          {artists.map((artist) => (
             <Link
               aria-label={`View ${artist.name}`}
               className="home-v2-artist-card"
-              key={artist.handle}
+              key={artist.id}
               prefetch="intent"
               to={`/artists/${artist.handle}`}
             >
               <div className="home-v2-artist-card__media">
-                <img alt={artist.alt} loading="lazy" src={artist.image} />
+                {artist.image ? (
+                  <img
+                    alt={artist.image.altText || `${artist.name} portrait`}
+                    loading="lazy"
+                    src={artist.image.url}
+                  />
+                ) : (
+                  <div
+                    aria-hidden="true"
+                    className="home-v2-artist-card__placeholder"
+                  />
+                )}
               </div>
               <div className="home-v2-artist-card__copy">
                 <p className="home-v2-kicker">Artist</p>
                 <h3>{artist.name}</h3>
-                <p>{artist.biography}</p>
+                {artist.biography ? <p>{artist.biography}</p> : null}
                 <strong>
                   View artist <Icon name="arrow-right" size={15} />
                 </strong>
               </div>
             </Link>
           ))}
+        </div>
+        <div className="home-v2-artists__all">
+          <Link className="home-v2-link" prefetch="intent" to="/artists">
+            View all artists <Icon name="arrow-right" size={16} />
+          </Link>
         </div>
       </div>
     </section>
