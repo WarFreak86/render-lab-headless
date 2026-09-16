@@ -18,23 +18,23 @@ export function ImmersiveEditorial() {
             src={`${IMMERSIVE_IMAGE}&width=1800`}
             srcSet={`${IMMERSIVE_IMAGE}&width=960 960w, ${IMMERSIVE_IMAGE}&width=1440 1440w, ${IMMERSIVE_IMAGE}&width=2048 2048w`}
           />
-        </div>
 
-        <div className="home-immersive__caption">
-          <div className="home-immersive__heading">
-            <p className="home-eyebrow">Render-Lab / room impact</p>
-            <h2 id="home-immersive-title">Art should change the room.</h2>
-          </div>
+          <div className="home-immersive__caption">
+            <div className="home-immersive__heading">
+              <p className="home-eyebrow">Render-Lab / room impact</p>
+              <h2 id="home-immersive-title">Art should change the room.</h2>
+            </div>
 
-          <div className="home-immersive__copy">
-            <p>
-              A conceptual brand visualization of the scale, energy and atmosphere a
-              statement piece can bring to a space. The artwork stays physical; the
-              impact should feel larger than the frame.
-            </p>
-            <Link className="home-text-link" prefetch="intent" to="/collections/wall-art">
-              Explore wall art <Icon name="arrow-right" size={16} />
-            </Link>
+            <div className="home-immersive__copy">
+              <p>
+                A conceptual brand visualization of the scale, energy and atmosphere a
+                statement piece can bring to a space. The artwork stays physical; the
+                impact should feel larger than the frame.
+              </p>
+              <Link className="home-text-link" prefetch="intent" to="/collections/wall-art">
+                Explore wall art <Icon name="arrow-right" size={16} />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
