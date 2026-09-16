@@ -63,7 +63,7 @@ describe('homepage presentation', () => {
     expect(
       screen.getByRole('heading', {level: 1, name: 'Art should change the room.'}),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'Explore wall art'})).toHaveAttribute(
+    expect(screen.getAllByRole('link', {name: 'Explore wall art'})[0]).toHaveAttribute(
       'href',
       '/collections/wall-art',
     );
@@ -71,7 +71,9 @@ describe('homepage presentation', () => {
 
   it('renders Shopify-backed featured collection destinations', () => {
     renderHomepage();
-    expect(screen.getByRole('heading', {level: 2, name: 'Featured collections'})).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {level: 2, name: 'Featured collections'}),
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Echoes of War'})).toHaveAttribute(
       'href',
       '/collections/echoes-of-war',
@@ -112,14 +114,19 @@ describe('homepage presentation', () => {
       '/artists/dante-mercer',
     );
     expect(
-      screen.getByAltText('Portrait of Render-Lab house artist Nico Vale in a coastal-inspired studio'),
+      screen.getByAltText(
+        'Portrait of Render-Lab house artist Nico Vale in a coastal-inspired studio',
+      ),
     ).toHaveAttribute('src', expect.stringContaining('nico-vale-artist-profile.png'));
     expect(
-      screen.getByAltText('Portrait of Render-Lab house artist Mara Voss in a botanical studio'),
+      screen.getByAltText(
+        'Portrait of Render-Lab house artist Mara Voss in a botanical studio',
+      ),
     ).toHaveAttribute('src', expect.stringContaining('mara-voss-artist-portrait.jpg'));
-    expect(
-      screen.getByAltText('Dante Mercer fictional artist profile portrait'),
-    ).toHaveAttribute('src', expect.stringContaining('dante-mercer-artist-profile-realistic.png'));
+    expect(screen.getByAltText('Dante Mercer fictional artist profile portrait')).toHaveAttribute(
+      'src',
+      expect.stringContaining('dante-mercer-artist-profile-realistic.png'),
+    );
   });
 
   it('finishes with a cinematic wall-art call to action', () => {
