@@ -1,9 +1,13 @@
 import {
-  isSuppressedCollection,
   isSuppressedMerchandisingAssetUrl,
 } from './merchandising';
-import {MATERIAL_BY_COLLECTION_HANDLE} from './material-collection';
+import {
+  MATERIAL_BY_COLLECTION_HANDLE,
+  productSupportsMaterial,
+  type MaterialOptionVariant,
+} from './material-collection';
 import {editorialTeaser} from './editorial-text';
+import {isStorefrontSeriesCollection} from './catalog-collections';
 
 export const COLLECTION_DIRECTORY_HANDLES = [
   'wall-art',
@@ -44,7 +48,12 @@ export interface RawCollectionDirectoryEntry {
     height?: number | null;
   } | null;
   directoryGroups?: {value?: string | null} | null;
-  products: {nodes: Array<{id: string}>};
+  products: {
+    nodes: Array<{
+      id: string;
+      variants?: {nodes: MaterialOptionVariant[]};
+    }>;
+  };
 }
 
 export interface CollectionDirectoryPresentation {
@@ -90,14 +99,6 @@ const COLLECTION_DIRECTORY_PRESENTATIONS: Record<
   },
 };
 
-const NON_SERIES_HANDLES = new Set([
-  ...COLLECTION_DIRECTORY_HANDLES,
-  'frontpage',
-  'digital-downloads',
-  'limited-edition-clothing',
-  'hoodies',
-]);
-
 export function isCollectionDirectoryHandle(
   handle: string,
 ): handle is CollectionDirectoryHandle {
@@ -140,10 +141,26 @@ function parseDirectoryGroups(value?: string | null) {
   );
 }
 
+function collectionSupportsDirectoryMaterial(
+  collection: RawCollectionDirectoryEntry,
+  directoryHandle: CollectionDirectoryHandle,
+) {
+  const material = MATERIAL_BY_COLLECTION_HANDLE[directoryHandle];
+  if (!material) return true;
+
+  return collection.products.nodes.some((product) =>
+    productSupportsMaterial(product.variants?.nodes ?? [], material),
+  );
+}
+
 function belongsToDirectory(
   collection: RawCollectionDirectoryEntry,
   directoryHandle: CollectionDirectoryHandle,
 ) {
+  if (!collectionSupportsDirectoryMaterial(collection, directoryHandle)) {
+    return false;
+  }
+
   const configuredGroups = parseDirectoryGroups(
     collection.directoryGroups?.value,
   );
@@ -182,9 +199,7 @@ export function buildCollectionDirectoryEntries(
   return collections
     .filter(
       (collection) =>
-        !NON_SERIES_HANDLES.has(collection.handle) &&
-        !isSuppressedCollection(collection) &&
-        collection.products.nodes.length > 0 &&
+        isStorefrontSeriesCollection(collection) &&
         belongsToDirectory(collection, directoryHandle),
     )
     .map((collection) => ({
