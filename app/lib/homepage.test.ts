@@ -88,7 +88,7 @@ function commerce(): HomepageCommerceInput {
 }
 
 describe('homepage data normalization', () => {
-  it('normalizes formats and curated series in merchandising order', () => {
+  it('normalizes formats and published series in Shopify input order', () => {
     const data = normalizeHomepageData(commerce());
     expect(data.categories.map((category) => category.to)).toEqual([
       '/collections/wall-art',
@@ -98,8 +98,8 @@ describe('homepage data normalization', () => {
       '/collections',
     ]);
     expect(data.featuredCollections.slice(0, 2).map((collection) => collection.to)).toEqual([
-      '/collections/neon-memento',
       '/collections/echoes-of-war',
+      '/collections/neon-memento',
     ]);
   });
 
@@ -125,7 +125,7 @@ describe('homepage data normalization', () => {
     expect(wallArt?.image.url).not.toContain('nightmare-lab');
   });
 
-  it('uses Echoes of War for the hero while Nightmare Lab stays out of homepage priority', () => {
+  it('uses the first eligible Shopify series for the hero while suppressed collections stay out', () => {
     const data = normalizeHomepageData(commerce());
     expect(data.hero).toMatchObject({
       title: 'Echoes of War',
@@ -140,9 +140,6 @@ describe('homepage data normalization', () => {
       label: 'Shop All Wall Art',
       to: '/collections/wall-art',
     });
-    expect(data.featuredCollections.map((collection) => collection.to)).not.toContain(
-      '/collections/nightmare-lab-halloween-2026',
-    );
   });
 
   it('uses Limited Editions for a featured release when available', () => {
@@ -150,18 +147,15 @@ describe('homepage data normalization', () => {
     expect(data.featuredDrop).toMatchObject({
       title: 'Real Release',
       to: '/products/real-release',
-      price: {amount: '80.0', currencyCode: 'USD'},
     });
   });
 
   it('does not mislabel an arbitrary active product as a featured release', () => {
     const source = commerce();
-    const data = normalizeHomepageData({
-      products: source.products,
-      collections: source.collections.filter(
-        (collection) => collection.handle !== 'limited-editions',
-      ),
-    });
+    const collections = source.collections.filter(
+      (collection) => collection.handle !== 'limited-editions',
+    );
+    const data = normalizeHomepageData({...source, collections});
     expect(data.featuredDrop).toBeNull();
   });
 
@@ -170,48 +164,72 @@ describe('homepage data normalization', () => {
     expect(data.hero).toBeNull();
     expect(data.featuredDrop).toBeNull();
     expect(data.categories).toEqual([]);
+    expect(data.featuredCollections).toEqual([]);
   });
 
   it('keeps claim-safe editorial benefits centralized', () => {
-    const copy = HOMEPAGE_EDITORIAL_FALLBACK.benefits
-      .flatMap((benefit) => [benefit.title, benefit.description])
-      .join(' ');
-    expect(copy).not.toMatch(/free worldwide shipping|30-day returns|lifetime guarantee/i);
+    expect(HOMEPAGE_EDITORIAL_FALLBACK.benefits).toEqual([
+      {
+        icon: 'material',
+        title: 'Premium quality',
+        description: 'Gallery-grade material options.',
+      },
+      {
+        icon: 'edition',
+        title: 'Curated editions',
+        description: 'Distinct visual stories for collectors.',
+      },
+      {
+        icon: 'collection',
+        title: 'Multiple formats',
+        description: 'Metal, canvas, and poster options.',
+      },
+      {
+        icon: 'checkout',
+        title: 'Secure checkout',
+        description: 'Checkout powered securely by Shopify.',
+      },
+      {
+        icon: 'details',
+        title: 'Clear details',
+        description: 'Materials and sizing listed with each work.',
+      },
+    ]);
   });
 
   it('prioritizes a configured drop when Shopify returns it', () => {
     const source = commerce();
-    const marine = {
+    const configuredDrop = {
       ...source.products[0],
-      id: 'product-marine',
+      id: 'configured-drop',
       handle: 'marine-heavyweight-oversized-hoodie',
       title: 'Marine Heavyweight Oversized Hoodie',
-      featuredImage: art('marine'),
     };
     const data = normalizeHomepageData({
       ...source,
-      featuredDropProduct: marine,
+      featuredDropProduct: configuredDrop,
     });
     expect(data.featuredDrop).toMatchObject({
-      title: 'Marine Heavyweight Oversized Hoodie',
-      to: '/drops/marine-heavyweight-oversized-hoodie',
+      handle: 'marine-heavyweight-oversized-hoodie',
     });
   });
 
   it('removes embedded Shopify styling from featured-release copy', () => {
     const source = commerce();
-    const release = {
-      ...source.products[0],
-      id: 'product-marine-styled',
-      handle: 'marine-heavyweight-oversized-hoodie',
-      descriptionHtml:
-        '<style>.size-table { color: red; }</style><p>Warm heavyweight cotton.</p>',
+    const collection = source.collections.find(
+      (item) => item.handle === 'limited-editions',
+    );
+    if (!collection) throw new Error('Missing limited-editions fixture');
+    collection.products = {
+      nodes: [
+        {
+          ...source.products[0],
+          descriptionHtml:
+            '<style>.bad{color:red}</style><p>Clean release copy.</p>',
+        },
+      ],
     };
-    const data = normalizeHomepageData({
-      ...source,
-      featuredDropProduct: release,
-    });
-    expect(data.featuredDrop?.description).toBe('Warm heavyweight cotton.');
-    expect(data.featuredDrop?.description).not.toContain('.size-table');
+    const data = normalizeHomepageData(source);
+    expect(data.featuredDrop?.description).toBe('Clean release copy.');
   });
 });

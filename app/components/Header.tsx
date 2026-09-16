@@ -11,7 +11,11 @@ import {Icon} from '~/components/Icon';
 import {IconButton} from '~/components/IconButton';
 import {useAside} from '~/components/Aside';
 import {SITE_NAME} from '~/lib/config';
-import {EXPLORE_NAV_GROUPS, PRIMARY_NAV_ITEMS} from '~/lib/navigation';
+import {
+  buildExploreNavGroups,
+  PRIMARY_NAV_ITEMS,
+} from '~/lib/navigation';
+import type {StorefrontCollectionRef} from '~/lib/catalog-collections';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -22,7 +26,7 @@ interface HeaderProps {
 
 type Viewport = 'desktop' | 'mobile';
 
-export function Header({isLoggedIn, cart}: HeaderProps) {
+export function Header({header, isLoggedIn, cart}: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -45,7 +49,7 @@ export function Header({isLoggedIn, cart}: HeaderProps) {
         >
           RENDER<span aria-hidden="true">-</span>LAB
         </NavLink>
-        <HeaderMenu viewport="desktop" />
+        <HeaderMenu collections={header.collections.nodes} viewport="desktop" />
         <HeaderSearch />
         <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
       </div>
@@ -53,10 +57,20 @@ export function Header({isLoggedIn, cart}: HeaderProps) {
   );
 }
 
-export function HeaderMenu({viewport}: {viewport: Viewport}) {
+export function HeaderMenu({
+  viewport,
+  collections = [],
+}: {
+  viewport: Viewport;
+  collections?: ReadonlyArray<StorefrontCollectionRef>;
+}) {
   const {close, open} = useAside();
+  const exploreGroups = buildExploreNavGroups(collections);
 
   if (viewport === 'mobile') {
+    const collectionGroup = exploreGroups.find(
+      (group) => group.title === 'Collections',
+    );
     return (
       <nav
         aria-label="Mobile navigation"
@@ -65,11 +79,11 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
         <NavLink onClick={close} to="/collections/wall-art">Wall Art</NavLink>
         <Accordion title="Collections" defaultOpen>
           <div className="header-menu__mobile-mega">
-            {EXPLORE_NAV_GROUPS.filter((group) => group.title === 'Collections').map((group) => (
-              <section className="header-menu__mobile-group" key={group.title}>
-                <p>{group.title}</p>
+            {collectionGroup ? (
+              <section className="header-menu__mobile-group">
+                <p>{collectionGroup.title}</p>
                 <div className="header-menu__mobile-links">
-                  {group.items.map((item) => (
+                  {collectionGroup.items.map((item) => (
                     <NavLink
                       className={({isActive}) =>
                         isActive ? 'is-active' : undefined
@@ -84,7 +98,7 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
                   ))}
                 </div>
               </section>
-            ))}
+            ) : null}
           </div>
         </Accordion>
         {PRIMARY_NAV_ITEMS.filter((item) => item.title !== 'Wall Art').map((item) => (
@@ -125,12 +139,18 @@ export function HeaderMenu({viewport}: {viewport: Viewport}) {
           {item.title}
         </NavLink>
       ))}
-      <ExploreMegaMenu onNavigate={close} />
+      <ExploreMegaMenu groups={exploreGroups} onNavigate={close} />
     </nav>
   );
 }
 
-function ExploreMegaMenu({onNavigate}: {onNavigate: () => void}) {
+function ExploreMegaMenu({
+  groups,
+  onNavigate,
+}: {
+  groups: ReturnType<typeof buildExploreNavGroups>;
+  onNavigate: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -232,7 +252,7 @@ function ExploreMegaMenu({onNavigate}: {onNavigate: () => void}) {
         tabIndex={-1}
       >
         <div className="header-menu__mega-inner">
-          {EXPLORE_NAV_GROUPS.map((group, groupIndex) => {
+          {groups.map((group, groupIndex) => {
             const headingId = `${panelId}-group-${groupIndex}`;
             return (
               <div

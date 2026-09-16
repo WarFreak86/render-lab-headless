@@ -1,5 +1,6 @@
 import {getDropConfigForProduct} from './drops';
 import {isSuppressedMerchandisingAssetUrl} from './merchandising';
+import {storefrontSeriesCollections} from './catalog-collections';
 
 export interface HomepageImage {
   url: string;
@@ -163,14 +164,6 @@ const CATEGORY_PRIORITY = [
   'bundles',
 ] as const;
 
-const FEATURED_COLLECTION_PRIORITY = [
-  'neon-memento',
-  'echoes-of-war',
-  'urban-icon',
-  'tyrants-ruin',
-  'blood-shadow',
-] as const;
-
 const CATEGORY_META: Readonly<Record<string, string>> = {
   'wall-art': 'Curated series',
   'metal-wall-art': 'Gallery-grade finish',
@@ -178,8 +171,6 @@ const CATEGORY_META: Readonly<Record<string, string>> = {
   posters: 'Accessible editions',
   bundles: 'Coordinated sets',
 };
-
-const HERO_COLLECTION_PRIORITY = ['echoes-of-war', 'neon-memento'] as const;
 
 const UUID_LIKE_ALT = /^[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12}$/i;
 
@@ -292,9 +283,10 @@ export function normalizeHomepageData(
     merchandisableCollections,
     CATEGORY_PRIORITY,
   );
-  const featuredCandidates = prioritizedCollections(
+  // The Storefront query arrives newest-updated first. Published, non-empty series
+  // automatically flow into the homepage in that order without a code-maintained list.
+  const featuredCandidates = storefrontSeriesCollections(
     merchandisableCollections,
-    FEATURED_COLLECTION_PRIORITY,
   );
   const usedFeatureImages = new Set<string>();
 
@@ -314,8 +306,7 @@ export function normalizeHomepageData(
   });
 
   const allCollectionsSource =
-    prioritizedCollections(merchandisableCollections, HERO_COLLECTION_PRIORITY)[0] ??
-    merchandisableCollections[0];
+    featuredCandidates[0] ?? merchandisableCollections[0];
   const allCollectionsImage = allCollectionsSource
     ? collectionImage(allCollectionsSource)
     : null;
@@ -348,10 +339,7 @@ export function normalizeHomepageData(
     const normalized = normalizeProduct(product);
     return normalized ? [normalized] : [];
   });
-  const heroCollection = prioritizedCollections(
-    merchandisableCollections,
-    HERO_COLLECTION_PRIORITY,
-  )[0];
+  const heroCollection = featuredCandidates[0];
   const hero =
     normalizeCollectionHero(heroCollection) ??
     normalizedProducts.find(

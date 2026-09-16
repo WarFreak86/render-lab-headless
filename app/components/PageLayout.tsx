@@ -187,7 +187,7 @@ function SearchAside() {
 }
 
 function MobileMenuAside({
-  header: _header,
+  header,
   publicStoreDomain: _publicStoreDomain,
 }: {
   header: PageLayoutProps['header'];
@@ -195,7 +195,7 @@ function MobileMenuAside({
 }) {
   return (
     <Aside type="mobile" heading="MENU">
-      <HeaderMenu viewport="mobile" />
+      <HeaderMenu collections={header.collections.nodes} viewport="mobile" />
     </Aside>
   );
 }

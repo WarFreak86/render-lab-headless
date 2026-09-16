@@ -14,7 +14,12 @@ import {
   type RawCollectionPage,
 } from '~/lib/collection';
 import {PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
-import {applyMaterialCollectionContext, MATERIAL_BY_COLLECTION_HANDLE} from '~/lib/material-collection';
+import {
+  applyMaterialCollectionContext,
+  MATERIAL_BY_COLLECTION_HANDLE,
+  materialCollectionHandleForValue,
+  productSupportsMaterial,
+} from '~/lib/material-collection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {
   buildCollectionDirectoryEntries,
@@ -61,7 +66,15 @@ export async function loader({context, params, request}: Route.LoaderArgs) {
   }
 
   const url = new URL(request.url);
-  const pagination = getPaginationVariables(request, {pageBy: 12});
+  const materialCollectionHandle = materialCollectionHandleForValue(
+    url.searchParams.get('material'),
+  );
+  // Material-linked collection pages are small editorial sets. Fetch enough of the
+  // collection at once so filtering by a real Material/Finish variant never leaves
+  // a misleading product in the grid or an artificially sparse first page.
+  const pagination = getPaginationVariables(request, {
+    pageBy: materialCollectionHandle ? 50 : 12,
+  });
   const filters = parseProductFilters(url.searchParams);
   const sort = getCollectionSortVariables(
     parseSortValue(url.searchParams),
@@ -96,15 +109,22 @@ export async function loader({context, params, request}: Route.LoaderArgs) {
     products: collection.products,
   } satisfies RawCollectionPage);
 
-  const products = normalizedPage.products.map((product, index) =>
-    applyMaterialCollectionContext({
-      product,
-      collectionHandle: Object.entries(MATERIAL_BY_COLLECTION_HANDLE).find(
-        ([, material]) => material.toLowerCase() === url.searchParams.get('material')?.toLowerCase(),
-      )?.[0] ?? collection.handle,
-      variants: collection.products.nodes[index]?.variants?.nodes ?? [],
-    }),
-  );
+  const preferredMaterial = materialCollectionHandle
+    ? MATERIAL_BY_COLLECTION_HANDLE[materialCollectionHandle]
+    : null;
+  const products = normalizedPage.products.flatMap((product, index) => {
+    const variants = collection.products.nodes[index]?.variants?.nodes ?? [];
+    if (preferredMaterial && !productSupportsMaterial(variants, preferredMaterial)) {
+      return [];
+    }
+    return [
+      applyMaterialCollectionContext({
+        product,
+        collectionHandle: materialCollectionHandle ?? collection.handle,
+        variants,
+      }),
+    ];
+  });
   const collectionPage = {...normalizedPage, products};
 
   return {
@@ -312,7 +332,7 @@ const COLLECTION_QUERY = `#graphql
           ...ProductCard
           productType
           availableForSale
-          variants(first: 20) {
+          variants(first: 50) {
             nodes {
               availableForSale
               price {
@@ -383,7 +403,7 @@ const COLLECTION_DIRECTORY_QUERY = `#graphql
         }
       }
     }
-    collections(first: 100) {
+    collections(first: 100, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         id
         handle
@@ -399,8 +419,18 @@ const COLLECTION_DIRECTORY_QUERY = `#graphql
         directoryGroups: metafield(namespace: "custom", key: "directory_groups") {
           value
         }
-        products(first: 1) {
-          nodes { id }
+        products(first: 20) {
+          nodes {
+            id
+            variants(first: 50) {
+              nodes {
+                selectedOptions {
+                  name
+                  value
+                }
+              }
+            }
+          }
         }
       }
     }

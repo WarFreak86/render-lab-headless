@@ -22,11 +22,44 @@ vi.mock('@shopify/hydrogen', async (importOriginal) => {
   };
 });
 
+const collections = [
+  {
+    id: 'collection-machine',
+    handle: 'machine-monument',
+    title: 'Machine & Monument',
+    products: {nodes: [{id: 'product-machine'}]},
+  },
+  {
+    id: 'collection-neon',
+    handle: 'neon-memento',
+    title: 'Neon Memento',
+    products: {nodes: [{id: 'product-neon'}]},
+  },
+  {
+    id: 'collection-wall-art',
+    handle: 'wall-art',
+    title: 'Wall Art',
+    products: {nodes: [{id: 'product-wall'}]},
+  },
+  {
+    id: 'collection-nightmare',
+    handle: 'nightmare-lab',
+    title: 'Nightmare Lab',
+    products: {nodes: [{id: 'product-nightmare'}]},
+  },
+  {
+    id: 'collection-empty',
+    handle: 'empty-series',
+    title: 'Empty Series',
+    products: {nodes: []},
+  },
+];
+
 function renderDesktopMenu() {
   return render(
     <MemoryRouter>
       <Aside.Provider>
-        <HeaderMenu viewport="desktop" />
+        <HeaderMenu collections={collections} viewport="desktop" />
       </Aside.Provider>
     </MemoryRouter>,
   );
@@ -60,7 +93,7 @@ describe('Header foundation', () => {
     ).toBeInTheDocument();
   });
 
-  it('opens Collections as a mega menu without redundant primary destinations', async () => {
+  it('builds the Collections mega menu from published Shopify collection data', async () => {
     const user = userEvent.setup();
     renderDesktopMenu();
     const shop = screen.getByRole('button', {name: /collections/i});
@@ -69,44 +102,24 @@ describe('Header foundation', () => {
       'href',
       '/artists',
     );
-    expect(screen.queryByRole('link', {name: 'Bundles'})).not.toBeInTheDocument();
     expect(shop).toHaveAttribute('aria-expanded', 'false');
-    expect(shop).toHaveAttribute('aria-controls');
     await user.click(shop);
-    expect(shop).toHaveAttribute('aria-expanded', 'true');
 
     expect(
       screen.getByRole('menuitem', {name: 'All Wall Art'}),
     ).toHaveAttribute('href', '/collections/wall-art');
     expect(
-      screen.getByRole('menuitem', {name: 'Metal Wall Art'}),
-    ).toHaveAttribute('href', '/collections/metal-wall-art');
-    expect(
-      screen.getByRole('menuitem', {name: 'Canvas Prints'}),
-    ).toHaveAttribute('href', '/collections/canvas-art');
-    expect(screen.getByRole('menuitem', {name: 'Posters'})).toHaveAttribute(
-      'href',
-      '/collections/posters',
-    );
+      screen.getByRole('menuitem', {name: 'Machine & Monument'}),
+    ).toHaveAttribute('href', '/collections/machine-monument');
     expect(
       screen.getByRole('menuitem', {name: 'Neon Memento'}),
     ).toHaveAttribute('href', '/collections/neon-memento');
     expect(
-      screen.queryByRole('menuitem', {name: 'Quiet Horizons'}),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('menuitem', {name: 'Botanical Anomalies'}),
-    ).not.toBeInTheDocument();
-    expect(
       screen.queryByRole('menuitem', {name: 'Nightmare Lab'}),
     ).not.toBeInTheDocument();
-    expect(screen.getByRole('menuitem', {name: 'Nico Vale'})).toHaveAttribute(
-      'href',
-      '/artists/nico-vale',
-    );
     expect(
-      screen.getByRole('menuitem', {name: 'View All Artists'}),
-    ).toHaveAttribute('href', '/artists');
+      screen.queryByRole('menuitem', {name: 'Empty Series'}),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole('menuitem', {name: 'View All Collections'}),
     ).toHaveAttribute('href', '/collections');
@@ -142,14 +155,14 @@ describe('Header foundation', () => {
     expect(shop).toHaveAttribute('aria-expanded', 'true');
   });
 
-  it('renders the equivalent mobile hierarchy and preserves drawer focus restoration', async () => {
+  it('renders the equivalent mobile hierarchy from the same Shopify data', async () => {
     const user = userEvent.setup();
     render(
       <MemoryRouter>
         <Aside.Provider>
           <HeaderMenuMobileToggle />
           <Aside type="mobile" heading="MENU">
-            <HeaderMenu viewport="mobile" />
+            <HeaderMenu collections={collections} viewport="mobile" />
           </Aside>
           <Aside type="search" heading="SEARCH">
             Search contents
@@ -161,21 +174,20 @@ describe('Header foundation', () => {
     const menuToggle = screen.getByRole('button', {name: 'Open menu'});
     await user.click(menuToggle);
     expect(screen.getByRole('dialog', {name: 'MENU'})).toBeInTheDocument();
-    const shop = screen.getByRole('button', {name: 'Collections'});
-    expect(shop).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getByRole('link', {name: 'Wall Art'})).toHaveAttribute(
       'href',
       '/collections/wall-art',
+    );
+    expect(screen.getByRole('link', {name: 'Machine & Monument'})).toHaveAttribute(
+      'href',
+      '/collections/machine-monument',
     );
     expect(screen.getByRole('link', {name: 'Neon Memento'})).toHaveAttribute(
       'href',
       '/collections/neon-memento',
     );
-    expect(screen.queryByRole('link', {name: 'Quiet Horizons'})).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('link', {name: 'Botanical Anomalies'}),
-    ).not.toBeInTheDocument();
     expect(screen.queryByRole('link', {name: 'Nightmare Lab'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', {name: 'Empty Series'})).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Materials'})).toHaveAttribute(
       'href',
       '/materials',
@@ -184,7 +196,6 @@ describe('Header foundation', () => {
       'href',
       '/artists',
     );
-    expect(screen.queryByRole('link', {name: 'Bundles'})).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Account'})).toHaveAttribute(
       'href',
       '/account',

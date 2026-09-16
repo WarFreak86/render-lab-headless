@@ -1,9 +1,12 @@
 import type {CollectionProductCardData, CollectionMoney} from './collection';
 
-export type MaterialCollectionVariant = {
+export type MaterialOptionVariant = {
+  selectedOptions: Array<{name: string; value: string}>;
+};
+
+export type MaterialCollectionVariant = MaterialOptionVariant & {
   availableForSale?: boolean | null;
   price: CollectionMoney;
-  selectedOptions: Array<{name: string; value: string}>;
 };
 
 export const MATERIAL_BY_COLLECTION_HANDLE: Record<string, string> = {
@@ -12,10 +15,30 @@ export const MATERIAL_BY_COLLECTION_HANDLE: Record<string, string> = {
   'metal-wall-art': 'Metal',
 };
 
-function selectedMaterial(variant: MaterialCollectionVariant) {
+export function selectedMaterial(variant: MaterialOptionVariant) {
   return variant.selectedOptions.find(
     (option) => /^(material|finish)$/i.test(option.name),
   )?.value;
+}
+
+export function productSupportsMaterial(
+  variants: ReadonlyArray<MaterialOptionVariant>,
+  material: string,
+) {
+  return variants.some(
+    (variant) =>
+      selectedMaterial(variant)?.toLowerCase() === material.toLowerCase(),
+  );
+}
+
+export function materialCollectionHandleForValue(material?: string | null) {
+  const normalized = material?.trim().toLowerCase();
+  if (!normalized) return null;
+  return (
+    Object.entries(MATERIAL_BY_COLLECTION_HANDLE).find(
+      ([, value]) => value.toLowerCase() === normalized,
+    )?.[0] ?? null
+  );
 }
 
 function compareMoney(a: CollectionMoney, b: CollectionMoney) {

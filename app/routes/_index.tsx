@@ -8,8 +8,6 @@ import {
   HOMEPAGE_EDITORIAL_FALLBACK,
   normalizeHomepageData,
 } from '~/lib/homepage';
-import {DROP_CONFIGS} from '~/lib/drops';
-import {isSuppressedCollection} from '~/lib/merchandising';
 
 const HOME_DESCRIPTION =
   'Discover Render-Lab wall art, collector editions, and apparel across metal, canvas, and poster formats.';
@@ -35,29 +33,15 @@ export const meta: Route.MetaFunction = ({data}) => {
 };
 
 export async function loader({context}: Route.LoaderArgs) {
-  const {collections, echoesOfWar, products, featuredDropProduct} =
-    await context.storefront.query(HOMEPAGE_QUERY, {
-      variables: {dropHandle: DROP_CONFIGS[0].productHandle},
-    });
-
-  const homepageCollections = (
-    echoesOfWar
-      ? [
-          echoesOfWar,
-          ...collections.nodes.filter(
-            (collection) => collection.id !== echoesOfWar.id,
-          ),
-        ]
-      : collections.nodes
-  ).filter((collection) => !isSuppressedCollection(collection));
+  const {collections, products} = await context.storefront.query(HOMEPAGE_QUERY);
 
   return {
     isShopLinked: Boolean(context.env.PUBLIC_STORE_DOMAIN),
     homepage: normalizeHomepageData(
       {
-        collections: homepageCollections,
+        collections: collections.nodes,
         products: products.nodes,
-        featuredDropProduct,
+        featuredDropProduct: null,
       },
       HOMEPAGE_EDITORIAL_FALLBACK,
     ),
@@ -100,14 +84,10 @@ const HOMEPAGE_QUERY = `#graphql
 
   query Homepage(
     $country: CountryCode
-    $dropHandle: String!
     $language: LanguageCode
   )
     @inContext(country: $country, language: $language) {
-    echoesOfWar: collection(handle: "echoes-of-war") {
-      ...HomepageCollection
-    }
-    collections(first: 20, sortKey: UPDATED_AT, reverse: true) {
+    collections(first: 100, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...HomepageCollection
       }
@@ -120,13 +100,6 @@ const HOMEPAGE_QUERY = `#graphql
         productType
         availableForSale
       }
-    }
-    featuredDropProduct: product(handle: $dropHandle) {
-      ...ProductCard
-      description
-      descriptionHtml
-      productType
-      availableForSale
     }
   }
   ${PRODUCT_CARD_FRAGMENT}
