@@ -26,6 +26,8 @@ export const EXPLORE_NAV_GROUPS: ReadonlyArray<NavigationGroup> = [
       {title: 'Neon Memento', url: '/collections/neon-memento'},
       {title: 'Echoes of War', url: '/collections/echoes-of-war'},
       {title: 'Urban Icon', url: '/collections/urban-icon'},
+      {title: 'Tyrants & Ruin', url: '/collections/tyrants-ruin'},
+      {title: 'Blood & Shadow', url: '/collections/blood-shadow'},
       {title: 'View All Collections', url: '/collections'},
     ],
   },
@@ -34,6 +36,7 @@ export const EXPLORE_NAV_GROUPS: ReadonlyArray<NavigationGroup> = [
     items: [
       {title: 'Nico Vale', url: '/artists/nico-vale'},
       {title: 'Mara Voss', url: '/artists/mara-voss'},
+      {title: 'Dante Mercer', url: '/artists/dante-mercer'},
       {title: 'View All Artists', url: '/artists'},
     ],
   },
