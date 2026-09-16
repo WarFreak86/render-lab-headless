@@ -12,10 +12,30 @@ export const MATERIAL_BY_COLLECTION_HANDLE: Record<string, string> = {
   'metal-wall-art': 'Metal',
 };
 
-function selectedMaterial(variant: MaterialCollectionVariant) {
+export function selectedMaterial(variant: MaterialCollectionVariant) {
   return variant.selectedOptions.find(
     (option) => /^(material|finish)$/i.test(option.name),
   )?.value;
+}
+
+export function productSupportsMaterial(
+  variants: ReadonlyArray<MaterialCollectionVariant>,
+  material: string,
+) {
+  return variants.some(
+    (variant) =>
+      selectedMaterial(variant)?.toLowerCase() === material.toLowerCase(),
+  );
+}
+
+export function materialCollectionHandleForValue(material?: string | null) {
+  const normalized = material?.trim().toLowerCase();
+  if (!normalized) return null;
+  return (
+    Object.entries(MATERIAL_BY_COLLECTION_HANDLE).find(
+      ([, value]) => value.toLowerCase() === normalized,
+    )?.[0] ?? null
+  );
 }
 
 function compareMoney(a: CollectionMoney, b: CollectionMoney) {
