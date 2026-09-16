@@ -33,10 +33,28 @@ export const meta: Route.MetaFunction = ({data}) => {
 };
 
 export async function loader({context}: Route.LoaderArgs) {
-  const {collections, products} = await context.storefront.query(HOMEPAGE_QUERY);
+  const {collections, products, artists} =
+    await context.storefront.query(HOMEPAGE_QUERY);
+
+  const homepageArtists = artists.nodes
+    .map((artist) => {
+      const photoReference = artist.photo?.reference;
+      return {
+        id: artist.id,
+        handle: artist.handle,
+        name: artist.name?.value?.trim() || artist.handle,
+        biography: artist.biography?.value?.trim() || '',
+        image:
+          photoReference && 'image' in photoReference
+            ? photoReference.image
+            : null,
+      };
+    })
+    .sort((left, right) => left.name.localeCompare(right.name));
 
   return {
     isShopLinked: Boolean(context.env.PUBLIC_STORE_DOMAIN),
+    artists: homepageArtists,
     homepage: normalizeHomepageData(
       {
         collections: collections.nodes,
@@ -53,7 +71,7 @@ export default function Homepage() {
   return (
     <>
       {data.isShopLinked ? null : <MockShopNotice />}
-      <HomepageView data={data.homepage} />
+      <HomepageView artists={data.artists} data={data.homepage} />
     </>
   );
 }
@@ -99,6 +117,27 @@ const HOMEPAGE_QUERY = `#graphql
         descriptionHtml
         productType
         availableForSale
+      }
+    }
+    artists: metaobjects(type: "artist", first: 100) {
+      nodes {
+        id
+        handle
+        name: field(key: "name") { value }
+        biography: field(key: "bio") { value }
+        photo: field(key: "profile_image") {
+          reference {
+            ... on MediaImage {
+              image {
+                id
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+        }
       }
     }
   }

@@ -1,0 +1,24 @@
+.home-v2-artists__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.home-v2-artist-card__placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  background:
+    radial-gradient(circle at 50% 25%, rgba(215, 172, 91, 0.12), transparent 32%),
+    linear-gradient(145deg, #111212, #070808);
+}
+
+.home-v2-artists__all {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(1.75rem, 3vw, 2.75rem);
+}
+
+@media (max-width: 70rem) {
+  .home-v2-artists__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,5 +1,6 @@
 import '~/styles/home-v2.css';
 import '~/styles/home-v2-width-fix.css';
+import '~/styles/home-v2-artists-dynamic.css';
 import {HomepageHero} from './HomepageHero';
 import {FeaturedCollections} from './FeaturedCollections';
 import {
@@ -7,10 +8,17 @@ import {
   ClosingCta,
   EditorialBand,
   MaterialShowcase,
+  type ArtistSpotlightItem,
 } from './HomepageCinematicSections';
 import type {HomepageData} from '~/lib/homepage';
 
-export function HomepageView({data}: {data: HomepageData}) {
+export function HomepageView({
+  data,
+  artists = [],
+}: {
+  data: HomepageData;
+  artists?: ReadonlyArray<ArtistSpotlightItem>;
+}) {
   return (
     <div className="home homepage homepage-v2">
       <HomepageHero
@@ -26,7 +34,7 @@ export function HomepageView({data}: {data: HomepageData}) {
       />
       <EditorialBand />
       <MaterialShowcase />
-      <ArtistSpotlight />
+      <ArtistSpotlight artists={artists} />
       <ClosingCta />
     </div>
   );

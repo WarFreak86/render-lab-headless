@@ -262,6 +262,13 @@ export const HEADER_QUERY = `#graphql
         }
       }
     }
+    artists: metaobjects(type: "artist", first: 100) {
+      nodes {
+        id
+        handle
+        name: field(key: "name") { value }
+      }
+    }
   }
   ${MENU_FRAGMENT}
 ` as const;

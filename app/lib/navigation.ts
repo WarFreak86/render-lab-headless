@@ -13,6 +13,12 @@ export interface NavigationGroup {
   items: ReadonlyArray<NavigationItem>;
 }
 
+export interface StorefrontArtistRef {
+  id: string;
+  handle: string;
+  name?: {value?: string | null} | null;
+}
+
 const WALL_ART_GROUP: NavigationGroup = {
   title: 'Wall Art',
   items: [
@@ -23,18 +29,18 @@ const WALL_ART_GROUP: NavigationGroup = {
   ],
 };
 
-const ARTISTS_GROUP: NavigationGroup = {
-  title: 'Artists',
-  items: [
-    {title: 'Nico Vale', url: '/artists/nico-vale'},
-    {title: 'Mara Voss', url: '/artists/mara-voss'},
-    {title: 'Dante Mercer', url: '/artists/dante-mercer'},
-    {title: 'View All Artists', url: '/artists'},
-  ],
-};
+function buildArtistItems(artists: ReadonlyArray<StorefrontArtistRef>) {
+  return artists
+    .map((artist) => ({
+      title: artist.name?.value?.trim() || artist.handle,
+      url: `/artists/${artist.handle}`,
+    }))
+    .sort((left, right) => left.title.localeCompare(right.title));
+}
 
 export function buildExploreNavGroups(
   collections: ReadonlyArray<StorefrontCollectionRef> = [],
+  artists: ReadonlyArray<StorefrontArtistRef> = [],
 ): ReadonlyArray<NavigationGroup> {
   const collectionItems = storefrontSeriesCollectionsAlphabetical(collections).map(
     (collection) => ({
@@ -42,6 +48,7 @@ export function buildExploreNavGroups(
       url: `/collections/${collection.handle}`,
     }),
   );
+  const artistItems = buildArtistItems(artists);
 
   return [
     WALL_ART_GROUP,
@@ -52,7 +59,13 @@ export function buildExploreNavGroups(
         {title: 'View All Collections', url: '/collections'},
       ],
     },
-    ARTISTS_GROUP,
+    {
+      title: 'Artists',
+      items: [
+        ...artistItems,
+        {title: 'View All Artists', url: '/artists'},
+      ],
+    },
   ];
 }
 
