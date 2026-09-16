@@ -14,6 +14,7 @@ import {SITE_NAME} from '~/lib/config';
 import {
   buildExploreNavGroups,
   PRIMARY_NAV_ITEMS,
+  type StorefrontArtistRef,
 } from '~/lib/navigation';
 import type {StorefrontCollectionRef} from '~/lib/catalog-collections';
 
@@ -49,7 +50,11 @@ export function Header({header, isLoggedIn, cart}: HeaderProps) {
         >
           RENDER<span aria-hidden="true">-</span>LAB
         </NavLink>
-        <HeaderMenu collections={header.collections.nodes} viewport="desktop" />
+        <HeaderMenu
+          artists={header.artists.nodes}
+          collections={header.collections.nodes}
+          viewport="desktop"
+        />
         <HeaderSearch />
         <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
       </div>
@@ -60,12 +65,14 @@ export function Header({header, isLoggedIn, cart}: HeaderProps) {
 export function HeaderMenu({
   viewport,
   collections = [],
+  artists = [],
 }: {
   viewport: Viewport;
   collections?: ReadonlyArray<StorefrontCollectionRef>;
+  artists?: ReadonlyArray<StorefrontArtistRef>;
 }) {
   const {close, open} = useAside();
-  const exploreGroups = buildExploreNavGroups(collections);
+  const exploreGroups = buildExploreNavGroups(collections, artists);
 
   if (viewport === 'mobile') {
     const collectionGroup = exploreGroups.find(
