@@ -21,8 +21,6 @@ export const EXPLORE_NAV_GROUPS: ReadonlyArray<NavigationGroup> = [
   {
     title: 'Collections',
     items: [
-      {title: 'Quiet Horizons', url: '/collections/quiet-horizons'},
-      {title: 'Botanical Anomalies', url: '/collections/botanical-anomalies'},
       {title: 'Neon Memento', url: '/collections/neon-memento'},
       {title: 'Echoes of War', url: '/collections/echoes-of-war'},
       {title: 'Urban Icon', url: '/collections/urban-icon'},
