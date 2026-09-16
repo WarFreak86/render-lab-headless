@@ -14,7 +14,7 @@ export function FeaturedCollections({
   title: string;
   eyebrow?: string;
 }) {
-  const visibleCollections = collections.slice(0, 3);
+  const visibleCollections = collections.slice(0, 5);
 
   if (visibleCollections.length === 0) return null;
 
@@ -39,14 +39,10 @@ export function FeaturedCollections({
           className="featured-collections-grid featured-collections-grid--mosaic"
           data-count={visibleCollections.length}
         >
-          {visibleCollections.map((collection, index) => (
+          {visibleCollections.map((collection) => (
             <Link
               aria-label={collection.title}
-              className={`collection-feature-card collection-feature-card--editorial ${
-                index === 0
-                  ? 'collection-feature-card--lead'
-                  : 'collection-feature-card--support'
-              }`}
+              className="collection-feature-card collection-feature-card--editorial"
               key={collection.id}
               prefetch="intent"
               to={collection.to}
@@ -56,18 +52,16 @@ export function FeaturedCollections({
                   alt={collection.image.altText}
                   data={collection.image}
                   loading="lazy"
-                  sizes={
-                    index === 0
-                      ? '(max-width: 767px) 100vw, 66vw'
-                      : '(max-width: 767px) 100vw, 34vw'
-                  }
+                  sizes="(max-width: 767px) 78vw, (max-width: 1120px) 33vw, 20vw"
                 />
                 <span className="collection-feature-card__shade" aria-hidden="true" />
                 <span className="collection-feature-card__content">
                   <strong>{collection.title}</strong>
-                  {collection.description ? <small>{editorialTeaser(collection.description)}</small> : null}
+                  {collection.description ? (
+                    <small>{editorialTeaser(collection.description)}</small>
+                  ) : null}
                   <span className="collection-feature-card__action" aria-hidden="true">
-                    Explore series <Icon name="arrow-right" size={15} />
+                    View collection <Icon name="arrow-right" size={15} />
                   </span>
                 </span>
               </div>

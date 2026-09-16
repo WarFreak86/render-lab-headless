@@ -164,14 +164,11 @@ const CATEGORY_PRIORITY = [
 ] as const;
 
 const FEATURED_COLLECTION_PRIORITY = [
-  'botanical-anomalies',
-  'quiet-horizons',
   'neon-memento',
   'echoes-of-war',
-  'after-dark',
-  'limited-editions',
-  'neon-speed',
-  'alt-history',
+  'urban-icon',
+  'tyrants-ruin',
+  'blood-shadow',
 ] as const;
 
 const CATEGORY_META: Readonly<Record<string, string>> = {
