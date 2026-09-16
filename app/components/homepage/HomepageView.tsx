@@ -1,6 +1,7 @@
 import '~/styles/material-proof.css';
 import {HomepageHero} from './HomepageHero';
 import {FeaturedCollections} from './FeaturedCollections';
+import {ImmersiveEditorial} from './ImmersiveEditorial';
 import {MaterialProof} from './MaterialProof';
 import {BenefitStrip} from './BenefitStrip';
 import {FeaturedDrop} from './FeaturedDrop';
@@ -20,12 +21,15 @@ export function HomepageView({data}: {data: HomepageData}) {
         eyebrow={data.editorial?.featuredCollections.eyebrow}
         title="Find your next piece."
       />
+      <ImmersiveEditorial />
+      {data.featuredDrop ? (
+        <FeaturedDrop
+          editorial={data.editorial?.featuredDrop}
+          product={data.featuredDrop}
+        />
+      ) : null}
       <MaterialProof categories={data.categories} />
       <BenefitStrip benefits={data.editorial?.benefits ?? []} />
-      {data.featuredDrop ? <FeaturedDrop
-        editorial={data.editorial?.featuredDrop}
-        product={data.featuredDrop}
-      /> : null}
     </div>
   );
 }
