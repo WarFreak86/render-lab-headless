@@ -5,6 +5,17 @@ import {
   type RawCollectionDirectoryEntry,
 } from './collection-directory';
 
+function materialVariants(
+  optionName: 'Material' | 'Finish',
+  values: string[],
+) {
+  return {
+    nodes: values.map((value) => ({
+      selectedOptions: [{name: optionName, value}],
+    })),
+  };
+}
+
 function collection(
   input: Partial<RawCollectionDirectoryEntry> &
     Pick<RawCollectionDirectoryEntry, 'handle' | 'title'>,
@@ -13,7 +24,14 @@ function collection(
     id: `collection-${input.handle}`,
     description: '',
     image: null,
-    products: {nodes: [{id: `product-${input.handle}`}]},
+    products: {
+      nodes: [
+        {
+          id: `product-${input.handle}`,
+          variants: materialVariants('Material', ['Metal', 'Canvas', 'Poster']),
+        },
+      ],
+    },
     ...input,
   };
 }
@@ -63,6 +81,41 @@ describe('collection directories', () => {
       description: 'Surreal botanical artwork.',
       to: '/collections/botanical-anomalies',
     });
+  });
+
+  it('only lists collections under Posters when a real Poster variant exists', () => {
+    const entries = buildCollectionDirectoryEntries(
+      [
+        collection({
+          handle: 'metal-canvas-only',
+          title: 'Metal & Canvas Only',
+          products: {
+            nodes: [
+              {
+                id: 'product-metal-canvas',
+                variants: materialVariants('Material', ['Metal', 'Canvas']),
+              },
+            ],
+          },
+        }),
+        collection({
+          handle: 'legacy-finish-series',
+          title: 'Legacy Finish Series',
+          products: {
+            nodes: [
+              {
+                id: 'product-legacy',
+                variants: materialVariants('Finish', ['Metal', 'Canvas', 'Poster']),
+              },
+            ],
+          },
+        }),
+      ],
+      'posters',
+    );
+
+    expect(entries.map((entry) => entry.title)).toEqual(['Legacy Finish Series']);
+    expect(entries[0]?.to).toBe('/collections/legacy-finish-series?material=Poster');
   });
 
   it('keeps suppressed collections out even when directory_groups explicitly places them', () => {
