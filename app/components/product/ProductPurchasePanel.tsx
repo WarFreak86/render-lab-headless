@@ -339,7 +339,7 @@ export function ProductPurchasePanel({
           </li>
           <li>
             <span>Checkout</span>
-            <small>Secured by Shopify</small>
+            <small>Secure payment processing</small>
           </li>
         </ul>
         {selectedMaterial === 'metal' || selectedMaterial === 'canvas' ? <p className="product-purchase__guide">Mounting hardware included by the manufacturer.</p> : null}
@@ -349,7 +349,7 @@ export function ProductPurchasePanel({
       ) : (
         <p className="product-purchase__checkout">
           <Icon name="checkout" size={17} />
-          Checkout secured by Shopify
+          Secure checkout
         </p>
       )}
     </section>
