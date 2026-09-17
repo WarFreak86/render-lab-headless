@@ -1,6 +1,6 @@
 import {Image} from '@shopify/hydrogen';
 import type {CollectionHeroData} from '~/lib/collection';
-import {editorialTeaser} from '~/lib/editorial-text';
+import {editorialText} from '~/lib/editorial-text';
 
 export function CollectionHero({hero}: {hero: CollectionHeroData}) {
   const heading = hero.editorialHeading ?? hero.title;
@@ -16,7 +16,9 @@ export function CollectionHero({hero}: {hero: CollectionHeroData}) {
         <div className="collection-hero__copy">
           {eyebrow ? <p className="collection-hero__eyebrow">{eyebrow}</p> : null}
           <h1>{heading}</h1>
-          {hero.description ? <p className="collection-hero__intro">{editorialTeaser(hero.description)}</p> : null}
+          {hero.description ? (
+            <p className="collection-hero__intro">{editorialText(hero.description)}</p>
+          ) : null}
         </div>
         {hero.image ? (
           <div className="collection-hero__media">
