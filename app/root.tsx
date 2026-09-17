@@ -55,25 +55,23 @@ export const meta: Route.MetaFunction = () => {
 };
 
 /**
- * This is important to avoid re-fetching root queries on sub-navigations
+ * Keep shared storefront data current while respecting React Router's normal
+ * revalidation behavior. This is especially important for dynamic collections
+ * that power the header navigation.
  */
 export const shouldRevalidate: ShouldRevalidateFunction = ({
   formMethod,
   currentUrl,
   nextUrl,
+  defaultShouldRevalidate,
 }) => {
-  // revalidate when a mutation is performed e.g add to cart, login...
+  // Revalidate when a mutation is performed e.g add to cart, login...
   if (formMethod && formMethod !== 'GET') return true;
 
-  // revalidate when manually revalidating via useRevalidator
+  // Revalidate when manually revalidating via useRevalidator.
   if (currentUrl.toString() === nextUrl.toString()) return true;
 
-  // Defaulting to no revalidation for root loader data to improve performance.
-  // When using this feature, you risk your UI getting out of sync with your server.
-  // Use with caution. If you are uncomfortable with this optimization, update the
-  // line below to `return defaultShouldRevalidate` instead.
-  // For more details see: https://remix.run/docs/en/main/route/should-revalidate
-  return false;
+  return defaultShouldRevalidate;
 };
 
 /**
@@ -138,7 +136,8 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
 
   const [header] = await Promise.all([
     storefront.query(HEADER_QUERY, {
-      cache: storefront.CacheLong(),
+      // Collections drive the dynamic navigation, so keep this cache deliberately short.
+      cache: storefront.CacheShort(),
       variables: {
         headerMenuHandle: 'main-menu', // Adjust to your header menu handle
       },
