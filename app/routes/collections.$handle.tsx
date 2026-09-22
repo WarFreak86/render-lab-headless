@@ -6,6 +6,7 @@ import {CollectionView} from '~/components/collection/CollectionView';
 import {CollectionDirectoryView} from '~/components/collection/CollectionDirectoryView';
 import {getProductionUrl} from '~/lib/config';
 import {
+  getApprovedEditorialCollectionSeo,
   getCollectionSortVariables,
   normalizeCollectionPage,
   parseProductFilters,
@@ -21,19 +22,50 @@ import {
   productSupportsMaterial,
 } from '~/lib/material-collection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {getCollectionCanonicalUrl, getMetaDescription} from '~/lib/seo';
 import {
   buildCollectionDirectoryEntries,
   getCollectionDirectoryPresentation,
+  getCollectionDirectorySeo,
   isCollectionDirectoryHandle,
 } from '~/lib/collection-directory';
 
-export const meta: Route.MetaFunction = ({data}) => {
+export const meta: Route.MetaFunction = ({data, location}) => {
   const page = data?.collectionPage;
-  const title = `${page?.hero.title ?? 'Collection'} | Render-Lab`;
+  const directorySeo =
+    data?.mode === 'directory' &&
+    page &&
+    isCollectionDirectoryHandle(page.handle)
+      ? getCollectionDirectorySeo(page.handle)
+      : null;
+  const approvedEditorialSeo =
+    data?.mode === 'products' && page
+      ? getApprovedEditorialCollectionSeo(page.handle)
+      : null;
+  const shopifySeoTitle =
+    (data?.mode === 'products' && data.collectionSeoTitle?.trim()) || null;
+  const shopifySeoDescription =
+    (approvedEditorialSeo &&
+      data?.mode === 'products' &&
+      data.collectionSeoDescription?.trim()) ||
+    null;
+  const title =
+    directorySeo?.title ??
+    approvedEditorialSeo?.title ??
+    (approvedEditorialSeo ? shopifySeoTitle : null) ??
+    `${page?.hero.title ?? 'Collection'} | Render-Lab`;
   const description =
-    page?.hero.description ??
-    `Browse ${page?.hero.title ?? 'the collection'} at Render-Lab.`;
-  const canonical = getProductionUrl(`/collections/${page?.handle ?? ''}`);
+    directorySeo?.description ??
+    shopifySeoDescription ??
+    getMetaDescription(
+      data?.collectionSeoDescription,
+      page?.hero.description,
+      `Browse ${page?.hero.title ?? 'the collection'} at Render-Lab.`,
+    );
+  const canonical =
+    data?.mode === 'products'
+      ? getCollectionCanonicalUrl(page?.handle ?? '', location.search)
+      : getProductionUrl(`/collections/${page?.handle ?? ''}`);
   return [
     {title},
     {name: 'description', content: description},
@@ -59,9 +91,11 @@ export async function loader({context, params, request}: Route.LoaderArgs) {
     const directory = await loadCollectionDirectory(context, handle);
     return {
       mode: 'directory' as const,
+      directoryHandle: directory.handle,
       collectionPage: directory.collectionPage,
       directoryEntries: directory.entries,
       analyticsCollectionId: directory.analyticsCollectionId,
+      collectionSeoDescription: directory.collectionSeoDescription,
     };
   }
 
@@ -114,7 +148,10 @@ export async function loader({context, params, request}: Route.LoaderArgs) {
     : null;
   const products = normalizedPage.products.flatMap((product, index) => {
     const variants = collection.products.nodes[index]?.variants?.nodes ?? [];
-    if (preferredMaterial && !productSupportsMaterial(variants, preferredMaterial)) {
+    if (
+      preferredMaterial &&
+      !productSupportsMaterial(variants, preferredMaterial)
+    ) {
       return [];
     }
     return [
@@ -134,6 +171,8 @@ export async function loader({context, params, request}: Route.LoaderArgs) {
       nodes: products,
       pageInfo: collection.products.pageInfo,
     },
+    collectionSeoTitle: collection.seo.title,
+    collectionSeoDescription: collection.seo.description,
   };
 }
 
@@ -145,6 +184,7 @@ export default function CollectionRoute() {
     return (
       <>
         <CollectionDirectoryView
+          directoryHandle={data.directoryHandle}
           entries={data.directoryEntries}
           hero={data.collectionPage.hero}
         />
@@ -193,11 +233,22 @@ async function loadCollectionDirectory(
   const collectionPage = collection
     ? normalizeDirectoryCollection(collection)
     : buildFallbackDirectoryPage(handle);
+  const presentation = getCollectionDirectoryPresentation(handle);
 
   return {
-    collectionPage,
+    handle,
+    collectionPage: {
+      ...collectionPage,
+      hero: {
+        ...collectionPage.hero,
+        title: presentation.title,
+        eyebrow: collectionPage.hero.editorialHeading ?? presentation.eyebrow,
+        editorialHeading: presentation.editorialHeading,
+      },
+    },
     entries: buildCollectionDirectoryEntries(collections.nodes, handle),
     analyticsCollectionId: collection?.id ?? null,
+    collectionSeoDescription: collection?.seo.description ?? null,
   };
 }
 
@@ -258,6 +309,10 @@ const COLLECTION_QUERY = `#graphql
       handle
       title
       description
+      seo {
+        title
+        description
+      }
       image {
         id
         url
@@ -369,6 +424,9 @@ const COLLECTION_DIRECTORY_QUERY = `#graphql
       handle
       title
       description
+      seo {
+        description
+      }
       image {
         id
         url

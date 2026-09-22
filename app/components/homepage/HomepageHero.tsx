@@ -1,7 +1,9 @@
+import {Image} from '@shopify/hydrogen';
 import {ButtonLink} from '~/components/Button';
-import type {
-  HomepageEditorialConfig,
-  HomepageProductFeature,
+import {
+  HOMEPAGE_HERO_IMAGE,
+  type HomepageEditorialConfig,
+  type HomepageProductFeature,
 } from '~/lib/homepage';
 
 export function HomepageHero({
@@ -15,21 +17,26 @@ export function HomepageHero({
   if (!editorial) return null;
 
   return (
-    <section className="home-hero home-hero--v2" aria-labelledby="home-hero-title">
+    <section
+      className="home-hero home-hero--v2"
+      aria-labelledby="home-hero-title"
+    >
       <div className="home-hero__media" aria-hidden="true">
-        <img
+        <Image
           alt=""
-          fetchPriority="high"
+          data={{...HOMEPAGE_HERO_IMAGE, altText: ''}}
+          {...{fetchpriority: 'high'}}
           loading="eager"
-          src="https://cdn.shopify.com/s/files/1/0748/7701/0081/files/render-lab-home-volcanic-gallery.png?v=1789594138"
+          sizes="100vw"
         />
       </div>
       <div className="home-hero__inner">
         <div className="home-hero__content">
-          <p className="home-eyebrow home-hero__eyebrow">Render-Lab / Wall Art</p>
+          <p className="home-eyebrow home-hero__eyebrow">
+            Render-Lab / Wall Art
+          </p>
           <h1 id="home-hero-title">
-            <span>Art should</span>
-            <span>change the room.</span>
+            <span>Modern Wall Art</span> <span>for Unordinary Spaces</span>
           </h1>
           <p className="home-hero__copy">
             Bold imagery. Premium materials. Work designed to become part of the

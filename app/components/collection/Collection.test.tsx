@@ -132,6 +132,7 @@ describe('collection presentation', () => {
     render(
       <MemoryRouter>
         <CollectionDirectoryView
+          directoryHandle="wall-art"
           entries={[
             {
               id: 'collection-botanical',
@@ -158,6 +159,18 @@ describe('collection presentation', () => {
     expect(
       screen.getByRole('link', {name: /Botanical Anomalies/i}),
     ).toHaveAttribute('href', '/collections/botanical-anomalies');
+    expect(screen.getByRole('link', {name: 'metal wall art'})).toHaveAttribute(
+      'href',
+      '/collections/metal-wall-art',
+    );
+    expect(screen.getByRole('link', {name: 'canvas wall art'})).toHaveAttribute(
+      'href',
+      '/collections/canvas-art',
+    );
+    expect(screen.getByRole('link', {name: 'art posters'})).toHaveAttribute(
+      'href',
+      '/collections/posters',
+    );
     expect(screen.queryByText('$29.00')).not.toBeInTheDocument();
   });
 

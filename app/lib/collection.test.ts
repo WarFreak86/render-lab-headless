@@ -1,6 +1,7 @@
 import {
   clearCollectionFilters,
   getActiveCollectionFilters,
+  getApprovedEditorialCollectionSeo,
   getCollectionSortVariables,
   normalizeCollectionPage,
   parseProductFilters,
@@ -104,6 +105,36 @@ describe('collection data and URL state', () => {
       editorialHeading: 'Custom collection headline',
       description: 'Custom merchandising copy.',
     });
+  });
+
+  it.each([
+    ['chrome-thunder', 'Chrome & Thunder: Muscle Car & Hot Rod Wall Art'],
+    ['echoes-of-war', 'Echoes of War: Military History Wall Art'],
+    ['reel-legends', 'Reel Legends: Cinematic Character Wall Art'],
+    ['urban-icon', 'Urban Icon: Neon Hip-Hop-Inspired Wall Art'],
+  ])('uses the approved Phase D H1 for %s', (handle, h1) => {
+    const page = normalizeCollectionPage({
+      ...rawCollection,
+      handle,
+      title: 'Existing collection title',
+      description: 'Distinctive existing editorial copy.',
+    });
+
+    expect(page.hero).toMatchObject({
+      editorialHeading: h1,
+      description: 'Distinctive existing editorial copy.',
+    });
+  });
+
+  it('keeps unapproved editorial collections outside the Phase D H1 map', () => {
+    const page = normalizeCollectionPage({
+      ...rawCollection,
+      handle: 'blood-shadow',
+      title: 'Blood & Shadow',
+    });
+
+    expect(getApprovedEditorialCollectionSeo('blood-shadow')).toBeUndefined();
+    expect(page.hero.editorialHeading).toBeUndefined();
   });
 
   it('normalizes an optional collection artist metaobject reference', () => {

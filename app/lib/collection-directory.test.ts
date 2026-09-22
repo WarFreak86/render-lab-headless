@@ -1,14 +1,12 @@
 import {
   buildCollectionDirectoryEntries,
   getCollectionDirectoryPresentation,
+  getCollectionDirectorySeo,
   isCollectionDirectoryHandle,
   type RawCollectionDirectoryEntry,
 } from './collection-directory';
 
-function materialVariants(
-  optionName: 'Material' | 'Finish',
-  values: string[],
-) {
+function materialVariants(optionName: 'Material' | 'Finish', values: string[]) {
   return {
     nodes: values.map((value) => ({
       selectedOptions: [{name: optionName, value}],
@@ -50,6 +48,23 @@ describe('collection directories', () => {
       editorialHeading: 'Better together.',
       description: 'Explore coordinated sets grouped by collection.',
     });
+  });
+
+  it('provides the approved SEO presentation for the four Phase C directories', () => {
+    expect(getCollectionDirectorySeo('wall-art')).toEqual({
+      title: 'Wall Art Prints | Metal, Canvas & Posters | Render-Lab',
+      description:
+        'Explore Render-Lab wall art prints across metal, canvas and poster formats. Discover distinctive automotive, abstract, botanical, surreal and cinematic collections.',
+      h1: 'Wall Art Prints',
+    });
+    expect(getCollectionDirectorySeo('metal-wall-art')?.h1).toBe(
+      'Metal Wall Art',
+    );
+    expect(getCollectionDirectorySeo('canvas-art')?.h1).toBe('Canvas Wall Art');
+    expect(getCollectionDirectorySeo('posters')?.h1).toBe(
+      'Art Posters & Prints',
+    );
+    expect(getCollectionDirectorySeo('bundles')).toBeNull();
   });
 
   it('turns active editorial collections into alphabetical directory entries while suppressed collections stay hidden', () => {
@@ -105,7 +120,11 @@ describe('collection directories', () => {
             nodes: [
               {
                 id: 'product-legacy',
-                variants: materialVariants('Finish', ['Metal', 'Canvas', 'Poster']),
+                variants: materialVariants('Finish', [
+                  'Metal',
+                  'Canvas',
+                  'Poster',
+                ]),
               },
             ],
           },
@@ -114,8 +133,12 @@ describe('collection directories', () => {
       'posters',
     );
 
-    expect(entries.map((entry) => entry.title)).toEqual(['Legacy Finish Series']);
-    expect(entries[0]?.to).toBe('/collections/legacy-finish-series?material=Poster');
+    expect(entries.map((entry) => entry.title)).toEqual([
+      'Legacy Finish Series',
+    ]);
+    expect(entries[0]?.to).toBe(
+      '/collections/legacy-finish-series?material=Poster',
+    );
   });
 
   it('keeps suppressed collections out even when directory_groups explicitly places them', () => {

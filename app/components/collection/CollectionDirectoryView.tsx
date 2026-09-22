@@ -2,12 +2,17 @@ import {Image} from '@shopify/hydrogen';
 import {Link} from 'react-router';
 import {CollectionHero} from './CollectionHero';
 import type {CollectionHeroData} from '~/lib/collection';
-import type {CollectionDirectoryEntry} from '~/lib/collection-directory';
+import type {
+  CollectionDirectoryEntry,
+  CollectionDirectoryHandle,
+} from '~/lib/collection-directory';
 
 export function CollectionDirectoryView({
+  directoryHandle,
   entries,
   hero,
 }: {
+  directoryHandle: CollectionDirectoryHandle;
   entries: CollectionDirectoryEntry[];
   hero: CollectionHeroData;
 }) {
@@ -21,7 +26,16 @@ export function CollectionDirectoryView({
         <div className="container container--wide">
           <div className="collection-directory__heading">
             <h2 id="collection-directory-heading">Browse by collection</h2>
-            <p>Choose a series to see only the artwork that belongs to it.</p>
+            {directoryHandle === 'wall-art' ? (
+              <p>
+                Choose a series below, or explore wall art by format:{' '}
+                <Link to="/collections/metal-wall-art">metal wall art</Link>,{' '}
+                <Link to="/collections/canvas-art">canvas wall art</Link>, and{' '}
+                <Link to="/collections/posters">art posters</Link>.
+              </p>
+            ) : (
+              <p>Choose a series to see only the artwork that belongs to it.</p>
+            )}
           </div>
 
           {entries.length ? (

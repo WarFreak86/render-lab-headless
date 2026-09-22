@@ -36,6 +36,25 @@ export const PRODUCT_VARIANT_FRAGMENT = `#graphql
   }
 ` as const;
 
+export const PRODUCT_SCHEMA_VARIANT_FRAGMENT = `#graphql
+  fragment ProductSchemaVariant on ProductVariant {
+    availableForSale
+    id
+    image {
+      url
+    }
+    price {
+      amount
+      currencyCode
+    }
+    selectedOptions {
+      name
+      value
+    }
+    sku
+  }
+` as const;
+
 export const PRODUCT_FRAGMENT = `#graphql
   fragment Product on Product {
     availableForSale
@@ -134,9 +153,18 @@ export const PRODUCT_QUERY = `#graphql
   ) @inContext(country: $country, language: $language) {
     product(handle: $handle) {
       ...Product
+      variants(first: 250) {
+        nodes {
+          ...ProductSchemaVariant
+        }
+        pageInfo {
+          hasNextPage
+        }
+      }
     }
   }
   ${PRODUCT_FRAGMENT}
+  ${PRODUCT_SCHEMA_VARIANT_FRAGMENT}
 ` as const;
 
 export const DROP_PRODUCT_QUERY = `#graphql

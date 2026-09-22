@@ -59,20 +59,24 @@ function variant({
 }
 
 function renderPanel({
+  handle = 'artwork',
   options,
   selectedVariant = variant(),
+  title = 'Artwork',
 }: {
+  handle?: string;
   options: any[];
   selectedVariant?: any;
+  title?: string;
 }) {
   return render(
     <MemoryRouter>
       <Aside.Provider>
         <ProductPurchasePanel
           product={{
-            handle: 'artwork',
+            handle,
             productType: 'Metal print',
-            title: 'Artwork',
+            title,
           }}
           productOptions={options}
           selectedVariant={selectedVariant}
@@ -90,6 +94,24 @@ describe('ProductPurchasePanel', () => {
     mockCart.fetcher.data = undefined;
     mockCart.fetcher.state = 'idle';
   });
+
+  it.each([
+    ['Fireglass — 1934 Ford Three-Window', 'Fireglass'],
+    ['Fields of Memory — Echoes of War', 'Fields of Memory'],
+    ['Hard Exit — Heat', 'Hard Exit'],
+    ['The Producer — Urban Icon', 'The Producer'],
+    ['Eyes of Doom', 'Eyes of Doom'],
+  ])(
+    'preserves the pilot artwork name as the single H1 for %s',
+    (title, h1) => {
+      renderPanel({options: [], title});
+
+      expect(screen.getAllByRole('heading', {level: 1})).toHaveLength(1);
+      expect(
+        screen.getByRole('heading', {level: 1, name: h1}),
+      ).toBeInTheDocument();
+    },
+  );
 
   it('handles a single default variant without showing a meaningless selector', () => {
     const selectedVariant = variant();
@@ -286,9 +308,9 @@ describe('ProductPurchasePanel', () => {
     const lines = JSON.parse(
       container.querySelector('form')?.getAttribute('data-lines') || '[]',
     ) as Array<{merchandiseId: string}>;
-    expect(lines[0].merchandiseId).toBe(
-      'gid://shopify/ProductVariant/size-l',
-    );
-    expect(screen.getByRole('button', {name: /Add to cart.*\$85\.00/})).toBeEnabled();
+    expect(lines[0].merchandiseId).toBe('gid://shopify/ProductVariant/size-l');
+    expect(
+      screen.getByRole('button', {name: /Add to cart.*\$85\.00/}),
+    ).toBeEnabled();
   });
 });

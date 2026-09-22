@@ -4,10 +4,7 @@ import {MemoryRouter} from 'react-router';
 import {HomepageView} from './HomepageView';
 import {HomepageHero} from './HomepageHero';
 import {CategoryRail} from './CategoryRail';
-import {
-  HOMEPAGE_EDITORIAL_FALLBACK,
-  type HomepageData,
-} from '~/lib/homepage';
+import {HOMEPAGE_EDITORIAL_FALLBACK, type HomepageData} from '~/lib/homepage';
 import type {ArtistSpotlightItem} from './HomepageCinematicSections';
 
 const image = {
@@ -63,11 +60,24 @@ const artists: ArtistSpotlightItem[] = [
 const data: HomepageData = {
   editorial: HOMEPAGE_EDITORIAL_FALLBACK,
   hero: product,
-  heroPrimaryCta: {label: 'Explore Echoes of War', to: '/collections/echoes-of-war'},
+  heroPrimaryCta: {
+    label: 'Explore Echoes of War',
+    to: '/collections/echoes-of-war',
+  },
   heroSecondaryCta: {label: 'Shop All Wall Art', to: '/collections/wall-art'},
   categories: [
-    {id: 'category-1', title: 'Metal Wall Art', to: '/collections/metal-wall-art', image},
-    {id: 'category-2', title: 'Canvas Prints', to: '/collections/canvas-art', image},
+    {
+      id: 'category-1',
+      title: 'Metal Wall Art',
+      to: '/collections/metal-wall-art',
+      image,
+    },
+    {
+      id: 'category-2',
+      title: 'Canvas Prints',
+      to: '/collections/canvas-art',
+      image,
+    },
     {id: 'category-3', title: 'Posters', to: '/collections/posters', image},
   ],
   featuredCollections: [
@@ -94,14 +104,24 @@ function renderHomepage(
 
 describe('homepage presentation', () => {
   it('renders the cinematic hero with the wall-art destination', () => {
-    renderHomepage();
+    const {container} = renderHomepage();
     expect(
-      screen.getByRole('heading', {level: 1, name: 'Art should change the room.'}),
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Modern Wall Art for Unordinary Spaces',
+      }),
     ).toBeInTheDocument();
-    expect(screen.getAllByRole('link', {name: 'Explore wall art'})[0]).toHaveAttribute(
-      'href',
-      '/collections/wall-art',
-    );
+    expect(
+      screen.getAllByRole('link', {name: 'Explore wall art'})[0],
+    ).toHaveAttribute('href', '/collections/wall-art');
+    const heroImage = container.querySelector('.home-hero__media img');
+    expect(heroImage).toHaveAttribute('loading', 'eager');
+    expect(heroImage).toHaveAttribute('sizes', '100vw');
+    expect(heroImage).toHaveAttribute('fetchpriority', 'high');
+    expect(heroImage).toHaveAttribute('width');
+    expect(heroImage).toHaveAttribute('height');
+    expect(heroImage).toHaveStyle({aspectRatio: '1672/941'});
+    expect(heroImage).toHaveAttribute('srcset');
   });
 
   it('renders Shopify-backed featured collection destinations', () => {
@@ -140,7 +160,10 @@ describe('homepage presentation', () => {
       screen.getByRole('heading', {level: 2, name: 'Distinct visions.'}),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole('heading', {level: 2, name: 'Three distinct visions.'}),
+      screen.queryByRole('heading', {
+        level: 2,
+        name: 'Three distinct visions.',
+      }),
     ).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'View Nico Vale'})).toHaveAttribute(
       'href',
@@ -150,18 +173,15 @@ describe('homepage presentation', () => {
       'href',
       '/artists/mara-voss',
     );
-    expect(screen.getByRole('link', {name: 'View Dante Mercer'})).toHaveAttribute(
-      'href',
-      '/artists/dante-mercer',
-    );
-    expect(screen.getByRole('link', {name: 'View Fourth Artist'})).toHaveAttribute(
-      'href',
-      '/artists/fourth-artist',
-    );
-    expect(screen.getByRole('link', {name: 'View all artists'})).toHaveAttribute(
-      'href',
-      '/artists',
-    );
+    expect(
+      screen.getByRole('link', {name: 'View Dante Mercer'}),
+    ).toHaveAttribute('href', '/artists/dante-mercer');
+    expect(
+      screen.getByRole('link', {name: 'View Fourth Artist'}),
+    ).toHaveAttribute('href', '/artists/fourth-artist');
+    expect(
+      screen.getByRole('link', {name: 'View all artists'}),
+    ).toHaveAttribute('href', '/artists');
   });
 
   it('omits the artist spotlight cleanly when Shopify has no artists', () => {
@@ -177,7 +197,9 @@ describe('homepage presentation', () => {
         name: 'Find the piece that changes the room.',
       }),
     ).toBeInTheDocument();
-    expect(screen.getAllByRole('link', {name: 'Explore wall art'})).toHaveLength(2);
+    expect(
+      screen.getAllByRole('link', {name: 'Explore wall art'}),
+    ).toHaveLength(2);
   });
 
   it('renders without throwing when optional editorial hero data is absent', () => {
@@ -205,12 +227,17 @@ describe('homepage presentation', () => {
 
     render(
       <MemoryRouter>
-        <CategoryRail categories={data.categories} title="Choose a format or set" />
+        <CategoryRail
+          categories={data.categories}
+          title="Choose a format or set"
+        />
       </MemoryRouter>,
     );
     expect(screen.getByRole('link', {name: 'Metal Wall Art'})).toBeVisible();
     await user.click(screen.getByRole('button', {name: 'Next categories'}));
-    expect(scrollBy).toHaveBeenCalledWith(expect.objectContaining({behavior: 'auto'}));
+    expect(scrollBy).toHaveBeenCalledWith(
+      expect.objectContaining({behavior: 'auto'}),
+    );
     vi.unstubAllGlobals();
   });
 });

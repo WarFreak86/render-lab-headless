@@ -17,7 +17,11 @@ import {getProductionUrl} from '~/lib/config';
 import {normalizeProductPage} from '~/lib/product';
 import {PRODUCT_QUERY} from '~/lib/product-query';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {getCommerceStructuredData, safeJsonLd} from '~/lib/seo';
+import {
+  getBrandedTitle,
+  getProductGroupStructuredData,
+  safeJsonLd,
+} from '~/lib/seo';
 
 export const meta: Route.MetaFunction = ({data}) => {
   const product = data?.product;
@@ -25,7 +29,7 @@ export const meta: Route.MetaFunction = ({data}) => {
   const image = product?.media?.nodes?.[0]?.image;
   const canonical = getProductionUrl(`/products/${product?.handle ?? ''}`);
   const variant = product?.selectedOrFirstAvailableVariant;
-  const title = `${product?.seo?.title || product?.title || 'Product'} | Render-Lab`;
+  const title = getBrandedTitle(product?.seo?.title || product?.title);
   return [
     {title},
     ...(description ? [{name: 'description', content: description}] : []),
@@ -86,6 +90,12 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     throw new Response(null, {status: 404});
   }
 
+  if (product.variants.pageInfo.hasNextPage) {
+    throw new Error(
+      `Product ${product.id} has more than 250 variants; refusing to emit a truncated ProductGroup`,
+    );
+  }
+
   redirectIfHandleIsLocalized(request, {handle, data: product});
 
   return {
@@ -116,19 +126,14 @@ export default function Product() {
   const selectedImageId = selectedVariant?.image?.id;
   const canonical = getProductionUrl(`/products/${product.handle}`);
   const jsonLdString = safeJsonLd(
-    getCommerceStructuredData({
+    getProductGroupStructuredData({
       canonical,
+      productId: product.id,
       title: product.title,
       description: product.description,
       images: page.gallery.map((image) => image.url),
       vendor: product.vendor,
-      variant: selectedVariant
-        ? {
-            availableForSale: selectedVariant.availableForSale,
-            price: selectedVariant.price,
-            sku: selectedVariant.sku,
-          }
-        : null,
+      variants: product.variants.nodes,
       breadcrumb: [
         {name: 'Shop', url: getProductionUrl('/collections')},
         ...(page.breadcrumb

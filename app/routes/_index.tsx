@@ -6,29 +6,29 @@ import {PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
 import {getProductionUrl} from '~/lib/config';
 import {
   HOMEPAGE_EDITORIAL_FALLBACK,
+  HOMEPAGE_HERO_IMAGE,
   normalizeHomepageData,
 } from '~/lib/homepage';
 
+const HOME_TITLE = 'Modern Wall Art & Art Prints | Render-Lab';
 const HOME_DESCRIPTION =
-  'Discover Render-Lab wall art, collector editions, and apparel across metal, canvas, and poster formats.';
+  'Discover modern wall art from Render-Lab in premium metal, canvas and poster formats. Explore automotive, abstract, botanical, surreal and cinematic art collections.';
 
-export const meta: Route.MetaFunction = ({data}) => {
+export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/');
-  const image = data?.homepage.hero?.image;
+  const image = HOMEPAGE_HERO_IMAGE;
   return [
-    {title: 'Render-Lab | Art for considered spaces'},
+    {title: HOME_TITLE},
     {name: 'description', content: HOME_DESCRIPTION},
     {tagName: 'link', rel: 'canonical', href: canonical},
-    {property: 'og:title', content: 'Render-Lab | Art for considered spaces'},
+    {property: 'og:title', content: HOME_TITLE},
     {property: 'og:description', content: HOME_DESCRIPTION},
     {property: 'og:type', content: 'website'},
     {property: 'og:url', content: canonical},
-    ...(image
-      ? [
-          {property: 'og:image', content: image.url},
-          {property: 'og:image:alt', content: image.altText},
-        ]
-      : []),
+    {property: 'og:image', content: image.url},
+    {property: 'og:image:alt', content: image.altText},
+    {property: 'og:image:width', content: String(image.width)},
+    {property: 'og:image:height', content: String(image.height)},
   ];
 };
 

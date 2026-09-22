@@ -9,6 +9,13 @@ export interface HomepageImage {
   height?: number | null;
 }
 
+export const HOMEPAGE_HERO_IMAGE = {
+  url: 'https://cdn.shopify.com/s/files/1/0748/7701/0081/files/render-lab-home-volcanic-gallery.png?v=1789594138',
+  altText: 'Volcanic landscape wall art displayed in a modern gallery interior',
+  width: 1672,
+  height: 941,
+} satisfies HomepageImage;
+
 export interface HomepageMoney {
   amount: string;
   currencyCode: string;
@@ -115,7 +122,10 @@ export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
     accentLine: 1,
     description:
       'History carried in the silhouette. A cross-era military art collection built around soldiers, memory and the landscapes of conflict.',
-    primaryCta: {label: 'Explore Echoes of War', to: '/collections/echoes-of-war'},
+    primaryCta: {
+      label: 'Explore Echoes of War',
+      to: '/collections/echoes-of-war',
+    },
   },
   categories: {
     title: 'Explore by category',
@@ -180,7 +190,8 @@ function imageAlt(altText: string | null | undefined, fallback: string) {
 }
 
 function normalizeImage(
-  image: HomepageCollectionInput['image'] | HomepageProductInput['featuredImage'],
+  image:
+    HomepageCollectionInput['image'] | HomepageProductInput['featuredImage'],
   fallbackAlt: string,
 ): HomepageImage | null {
   if (!image?.url || isSuppressedMerchandisingAssetUrl(image.url)) return null;
@@ -194,7 +205,10 @@ function normalizeImage(
 
 function normalizeProduct(product: HomepageProductInput | undefined) {
   if (!product) return null;
-  const image = normalizeImage(product.featuredImage, `${product.title} artwork`);
+  const image = normalizeImage(
+    product.featuredImage,
+    `${product.title} artwork`,
+  );
   if (!image) return null;
   const drop = getDropConfigForProduct(product.handle);
   return {
@@ -212,7 +226,9 @@ function normalizeProduct(product: HomepageProductInput | undefined) {
   } satisfies HomepageProductFeature;
 }
 
-function normalizeCollectionHero(collection: HomepageCollectionInput | undefined) {
+function normalizeCollectionHero(
+  collection: HomepageCollectionInput | undefined,
+) {
   if (!collection) return null;
   const image = collectionImage(collection);
   if (!image) return null;
@@ -262,10 +278,17 @@ function collectionImage(
   const candidates = [
     normalizeImage(collection.image, `${collection.title} collection`),
     ...collection.products.nodes.map((product) =>
-      normalizeImage(product.featuredImage, `${collection.title} collection artwork`),
+      normalizeImage(
+        product.featuredImage,
+        `${collection.title} collection artwork`,
+      ),
     ),
   ].filter((image): image is HomepageImage => Boolean(image));
-  return candidates.find((image) => !usedUrls?.has(image.url)) ?? candidates[0] ?? null;
+  return (
+    candidates.find((image) => !usedUrls?.has(image.url)) ??
+    candidates[0] ??
+    null
+  );
 }
 
 function shortCollectionTitle(title: string) {
@@ -277,7 +300,8 @@ export function normalizeHomepageData(
   editorial: HomepageEditorialConfig = HOMEPAGE_EDITORIAL_FALLBACK,
 ): HomepageData {
   const merchandisableCollections = commerce.collections.filter(
-    (collection) => collection.products.nodes.length > 0 && collectionImage(collection),
+    (collection) =>
+      collection.products.nodes.length > 0 && collectionImage(collection),
   );
   const categoryCollections = prioritizedCollections(
     merchandisableCollections,

@@ -1,6 +1,4 @@
-import {
-  isSuppressedMerchandisingAssetUrl,
-} from './merchandising';
+import {isSuppressedMerchandisingAssetUrl} from './merchandising';
 import {
   MATERIAL_BY_COLLECTION_HANDLE,
   productSupportsMaterial,
@@ -63,33 +61,70 @@ export interface CollectionDirectoryPresentation {
   description: string;
 }
 
+export interface CollectionDirectorySeo {
+  title: string;
+  description: string;
+  h1: string;
+}
+
+const COLLECTION_DIRECTORY_SEO: Partial<
+  Record<CollectionDirectoryHandle, CollectionDirectorySeo>
+> = {
+  'wall-art': {
+    title: 'Wall Art Prints | Metal, Canvas & Posters | Render-Lab',
+    description:
+      'Explore Render-Lab wall art prints across metal, canvas and poster formats. Discover distinctive automotive, abstract, botanical, surreal and cinematic collections.',
+    h1: 'Wall Art Prints',
+  },
+  'metal-wall-art': {
+    title: 'Metal Wall Art & Modern Metal Prints | Render-Lab',
+    description:
+      'Shop Render-Lab metal wall art featuring distinctive automotive, abstract, botanical and contemporary artwork printed on premium rigid metal panels.',
+    h1: 'Metal Wall Art',
+  },
+  'canvas-art': {
+    title: 'Canvas Wall Art & Modern Canvas Prints | Render-Lab',
+    description:
+      'Explore Render-Lab canvas wall art across original automotive, abstract, botanical and contemporary collections, available in multiple display sizes.',
+    h1: 'Canvas Wall Art',
+  },
+  posters: {
+    title: 'Art Posters & Wall Art Prints | Render-Lab',
+    description:
+      'Shop Render-Lab art posters and wall art prints featuring distinctive artwork from original automotive, abstract, botanical and contemporary collections.',
+    h1: 'Art Posters & Prints',
+  },
+};
+
 const COLLECTION_DIRECTORY_PRESENTATIONS: Record<
   CollectionDirectoryHandle,
   CollectionDirectoryPresentation
 > = {
   'wall-art': {
-    title: 'Wall Art',
-    eyebrow: 'Wall art',
-    editorialHeading: 'Art built to change the room.',
-    description: 'Choose a collection, then explore only the artwork in that series.',
+    title: 'Wall Art Prints',
+    eyebrow: 'Art built to change the room.',
+    editorialHeading: 'Wall Art Prints',
+    description:
+      'Choose a collection, then explore only the artwork in that series.',
   },
   'metal-wall-art': {
-    title: 'Metal Prints',
-    eyebrow: 'Format / Metal',
-    editorialHeading: 'Brushed aluminum. Maximum impact.',
+    title: 'Metal Wall Art',
+    eyebrow: 'Brushed aluminum. Maximum impact.',
+    editorialHeading: 'Metal Wall Art',
     description: 'Explore collections available as gallery-grade metal prints.',
   },
   'canvas-art': {
-    title: 'Canvas Prints',
-    eyebrow: 'Format / Canvas',
-    editorialHeading: 'Texture made for the wall.',
+    title: 'Canvas Wall Art',
+    eyebrow: 'Texture made for the wall.',
+    editorialHeading: 'Canvas Wall Art',
     description: 'Explore collections available as dimensional canvas prints.',
   },
   posters: {
-    title: 'Posters',
-    eyebrow: 'Format / Poster',
-    editorialHeading: 'Easy to frame. Hard to ignore.',
-    description: 'Explore collections available as accessible fine-art posters.',
+    title: 'Art Posters & Prints',
+    eyebrow: 'Easy to frame. Hard to ignore.',
+    editorialHeading: 'Art Posters & Prints',
+    description:
+      'Explore collections available as accessible fine-art posters.',
   },
   bundles: {
     title: 'Bundles',
@@ -111,6 +146,10 @@ export function getCollectionDirectoryPresentation(
   handle: CollectionDirectoryHandle,
 ) {
   return COLLECTION_DIRECTORY_PRESENTATIONS[handle];
+}
+
+export function getCollectionDirectorySeo(handle: CollectionDirectoryHandle) {
+  return COLLECTION_DIRECTORY_SEO[handle] ?? null;
 }
 
 function cleanText(value?: string | null) {
@@ -208,8 +247,11 @@ export function buildCollectionDirectoryEntries(
       title: collection.title,
       description: editorialTeaser(collection.description),
       image: normalizeImage(collection),
-      to: `/collections/${collection.handle}${MATERIAL_BY_COLLECTION_HANDLE[directoryHandle]
-        ? `?material=${encodeURIComponent(MATERIAL_BY_COLLECTION_HANDLE[directoryHandle])}` : ''}`,
+      to: `/collections/${collection.handle}${
+        MATERIAL_BY_COLLECTION_HANDLE[directoryHandle]
+          ? `?material=${encodeURIComponent(MATERIAL_BY_COLLECTION_HANDLE[directoryHandle])}`
+          : ''
+      }`,
     }))
     .sort((left, right) => left.title.localeCompare(right.title));
 }

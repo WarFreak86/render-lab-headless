@@ -200,6 +200,34 @@ const COLLECTION_MERCHANDISING_FALLBACKS: Record<
   },
 };
 
+export interface ApprovedEditorialCollectionSeo {
+  h1: string;
+  title?: string;
+}
+
+const APPROVED_EDITORIAL_COLLECTION_SEO: Record<
+  string,
+  ApprovedEditorialCollectionSeo
+> = {
+  'chrome-thunder': {
+    h1: 'Chrome & Thunder: Muscle Car & Hot Rod Wall Art',
+  },
+  'echoes-of-war': {
+    h1: 'Echoes of War: Military History Wall Art',
+    title: 'Military History Wall Art | Echoes of War',
+  },
+  'reel-legends': {
+    h1: 'Reel Legends: Cinematic Character Wall Art',
+  },
+  'urban-icon': {
+    h1: 'Urban Icon: Neon Hip-Hop-Inspired Wall Art',
+  },
+};
+
+export function getApprovedEditorialCollectionSeo(handle: string) {
+  return APPROVED_EDITORIAL_COLLECTION_SEO[handle];
+}
+
 const FILTER_PREFIX = 'filter.';
 const PAGINATION_PARAMS = ['cursor', 'direction'];
 
@@ -326,6 +354,7 @@ export function normalizeCollectionPage(
   const currencyCode = firstProduct?.minPrice.currencyCode ?? 'USD';
   const heroMedia = collection.heroMedia?.reference?.image;
   const merchandising = COLLECTION_MERCHANDISING_FALLBACKS[collection.handle];
+  const approvedSeo = getApprovedEditorialCollectionSeo(collection.handle);
 
   return {
     id: collection.id,
@@ -334,7 +363,9 @@ export function normalizeCollectionPage(
       title,
       eyebrow: merchandising?.eyebrow,
       editorialHeading:
-        cleanText(collection.editorialHeading?.value) ?? merchandising?.heading,
+        approvedSeo?.h1 ??
+        cleanText(collection.editorialHeading?.value) ??
+        merchandising?.heading,
       description:
         cleanText(collection.editorialCopy?.value) ??
         cleanText(collection.description),
