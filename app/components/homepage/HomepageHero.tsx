@@ -25,7 +25,7 @@ export function HomepageHero({
         <Image
           alt=""
           data={{...HOMEPAGE_HERO_IMAGE, altText: ''}}
-          {...{fetchpriority: 'high'}}
+          fetchPriority="high"
           loading="eager"
           sizes="100vw"
         />
