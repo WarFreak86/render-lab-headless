@@ -28,7 +28,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}: Foote
           <NavLink to="/cart">Cart</NavLink>
           <NavLink to="/search">Search</NavLink>
           <NavLink to="/materials">Materials guide</NavLink>
-          <a href="mailto:render.lab.art@gmail.com">Contact Render-Lab</a>
+          <NavLink to="/pages/contact">Contact</NavLink>\n          <a href="mailto:render.lab.art@gmail.com">render.lab.art@gmail.com</a>
         </FooterLinkGroup>
         <div>
           <h2 className="site-footer__heading">Policies</h2>
