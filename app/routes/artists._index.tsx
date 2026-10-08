@@ -28,7 +28,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
   const normalizedQuery = query.toLocaleLowerCase();
 
   const {metaobjects} = await context.storefront.query(ARTISTS_QUERY, {
-    cache: context.storefront.CacheLong(),
+    cache: context.storefront.CacheNone(),
   });
 
   const artists = metaobjects.nodes
