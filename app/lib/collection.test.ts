@@ -111,6 +111,10 @@ describe('collection data and URL state', () => {
     ['chrome-thunder', 'Chrome & Thunder: Muscle Car & Hot Rod Wall Art'],
     ['echoes-of-war', 'Echoes of War: Military History Wall Art'],
     ['reel-legends', 'Reel Legends: Cinematic Character Wall Art'],
+    [
+      'the-veil-between-worlds',
+      'The Veil Between Worlds: Cosmic Gothic Wall Art',
+    ],
     ['urban-icon', 'Urban Icon: Neon Hip-Hop-Inspired Wall Art'],
   ])('uses the approved Phase D H1 for %s', (handle, h1) => {
     const page = normalizeCollectionPage({
