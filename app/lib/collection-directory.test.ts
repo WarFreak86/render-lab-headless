@@ -54,7 +54,7 @@ describe('collection directories', () => {
     expect(getCollectionDirectorySeo('wall-art')).toEqual({
       title: 'Wall Art Prints | Metal, Canvas & Posters | Render-Lab',
       description:
-        'Explore Render-Lab wall art prints across metal, canvas and poster formats. Discover distinctive automotive, abstract, botanical, surreal and cinematic collections.',
+        'Explore Render-Lab wall art prints across metal, canvas and poster formats. Discover automotive, abstract, botanical, surreal and cinematic collections.',
       h1: 'Wall Art Prints',
     });
     expect(getCollectionDirectorySeo('metal-wall-art')?.h1).toBe(
