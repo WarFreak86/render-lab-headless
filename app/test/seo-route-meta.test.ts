@@ -16,8 +16,7 @@ function getMetaContent(
     (entry) =>
       typeof entry === 'object' &&
       entry !== null &&
-      key in entry &&
-      entry[key] === value,
+      (entry as Record<string, unknown>)[key] === value,
   );
 }
 
