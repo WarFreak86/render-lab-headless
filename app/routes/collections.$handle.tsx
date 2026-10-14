@@ -54,14 +54,13 @@ export const meta: Route.MetaFunction = ({data, location}) => {
     approvedEditorialSeo?.title ??
     (approvedEditorialSeo ? shopifySeoTitle : null) ??
     `${page?.hero.title ?? 'Collection'} | Render-Lab`;
-  const description =
-    directorySeo?.description ??
-    shopifySeoDescription ??
-    getMetaDescription(
-      data?.collectionSeoDescription,
-      page?.hero.description,
-      `Browse ${page?.hero.title ?? 'the collection'} at Render-Lab.`,
-    );
+  const description = getMetaDescription(
+    directorySeo?.description,
+    shopifySeoDescription,
+    data?.collectionSeoDescription,
+    page?.hero.description,
+    `Browse ${page?.hero.title ?? 'the collection'} at Render-Lab.`,
+  );
   const canonical =
     data?.mode === 'products'
       ? getCollectionCanonicalUrl(page?.handle ?? '', location.search)

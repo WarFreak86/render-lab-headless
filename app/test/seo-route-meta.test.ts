@@ -1,6 +1,9 @@
 import {meta as collectionMeta} from '~/routes/collections.$handle';
 import {meta as homepageMeta} from '~/routes/_index';
 import {meta as materialsMeta} from '~/routes/materials';
+import {meta as pageMeta} from '~/routes/pages.$handle';
+import {meta as blogMeta} from '~/routes/blogs.$blogHandle._index';
+import {getMetaDescription} from '~/lib/seo';
 import {meta as productMeta} from '~/routes/products.$handle';
 import {HOMEPAGE_HERO_IMAGE} from '~/lib/homepage';
 
@@ -115,7 +118,7 @@ describe('Phase B1 route metadata', () => {
     const entries = homepageMeta({data: undefined} as never);
     const title = 'Modern Wall Art & Art Prints | Render-Lab';
     const description =
-      'Discover modern wall art from Render-Lab in premium metal, canvas and poster formats. Explore automotive, abstract, botanical, surreal and cinematic art collections.';
+      'Discover wall art from Render-Lab in premium metal, canvas and poster formats. Explore automotive, abstract, botanical, surreal and cinematic art collections.';
 
     expect(entries).toContainEqual({title});
     expect(entries).toContainEqual({name: 'description', content: description});
@@ -134,7 +137,7 @@ describe('Phase B1 route metadata', () => {
     [
       'wall-art',
       'Wall Art Prints | Metal, Canvas & Posters | Render-Lab',
-      'Explore Render-Lab wall art prints across metal, canvas and poster formats. Discover distinctive automotive, abstract, botanical, surreal and cinematic collections.',
+      'Explore Render-Lab wall art prints across metal, canvas and poster formats. Discover automotive, abstract, botanical, surreal and cinematic collections.',
     ],
     [
       'metal-wall-art',
@@ -237,10 +240,13 @@ describe('Phase B1 route metadata', () => {
 
     expect(entries).toContainEqual({title});
     expect(entries).toContainEqual({property: 'og:title', content: title});
-    expect(entries).toContainEqual({name: 'description', content: description});
+    expect(entries).toContainEqual({
+      name: 'description',
+      content: getMetaDescription(description),
+    });
     expect(entries).toContainEqual({
       property: 'og:description',
-      content: description,
+      content: getMetaDescription(description),
     });
   });
 
@@ -278,5 +284,174 @@ describe('Phase B1 route metadata', () => {
     } as never);
 
     expect(entries).toContainEqual({title});
+  });
+});
+
+describe('SEO audit metadata regressions', () => {
+  const carnivoraHandles = [
+    'carnivora-no-01-open-trap',
+    'carnivora-no-02-crown-of-dew',
+    'carnivora-no-03-hanging-nectar',
+    'carnivora-no-04-lure',
+    'carnivora-no-05-aperture',
+    'carnivora-no-06-nectar-chamber',
+    'carnivora-no-07-lantern',
+    'carnivora-no-08-vascular-edge',
+    'carnivora-no-09-devour',
+    'carnivora-no-10-vascular-light',
+  ];
+
+  it.each(carnivoraHandles)(
+    'caps the product and Open Graph descriptions for %s',
+    (handle) => {
+      const visibleDescription = `Carnivora botanical wall art. ${'Detailed artwork and material information. '.repeat(12)}`;
+      const entries = productMeta({
+        data: {
+          product: {
+            handle,
+            title: 'Carnivora artwork',
+            description: visibleDescription,
+            seo: {title: null, description: null},
+            media: {nodes: []},
+            selectedOrFirstAvailableVariant: null,
+          },
+        },
+      } as never);
+      const actual = (getMetaContent(entries, 'name', 'description') as
+        | {content: string}
+        | undefined)?.content;
+
+      expect(actual).toBeDefined();
+      expect(actual?.length).toBeLessThanOrEqual(160);
+      expect(actual).toContain('Carnivora botanical wall art.');
+      expect(entries).toContainEqual({
+        property: 'og:description',
+        content: actual,
+      });
+      expect(entries).toContainEqual({
+        tagName: 'link',
+        rel: 'canonical',
+        href: `https://render-lab.org/products/${handle}`,
+      });
+    },
+  );
+
+  it('prefers Shopify product SEO text over a long visible description', () => {
+    const entries = productMeta({
+      data: {
+        product: {
+          handle: 'carnivora-no-01-open-trap',
+          title: 'Open Trap',
+          description: 'Visible description. '.repeat(30),
+          seo: {title: null, description: 'Shopify-authored Carnivora SEO copy.'},
+          media: {nodes: []},
+          selectedOrFirstAvailableVariant: null,
+        },
+      },
+    } as never);
+
+    expect(entries).toContainEqual({
+      name: 'description',
+      content: 'Shopify-authored Carnivora SEO copy.',
+    });
+  });
+
+  it.each(['contact', 'data-sharing-opt-out'])(
+    'provides an indexable page description fallback for %s',
+    (handle) => {
+      const entries = pageMeta({
+        data: {
+          page: {
+            handle,
+            title: 'Information',
+            body: '<p>Existing informational page content.</p>',
+            seo: {title: null, description: null},
+          },
+        },
+      } as never);
+      const actual = (getMetaContent(entries, 'name', 'description') as
+        | {content: string}
+        | undefined)?.content;
+
+      expect(actual?.length).toBeGreaterThan(70);
+      expect(actual?.length).toBeLessThanOrEqual(160);
+      expect(entries).toContainEqual({
+        property: 'og:description',
+        content: actual,
+      });
+      expect(entries).toContainEqual({
+        tagName: 'link',
+        rel: 'canonical',
+        href: `https://render-lab.org/pages/${handle}`,
+      });
+    },
+  );
+
+  it('preserves authoritative Shopify page SEO descriptions', () => {
+    const entries = pageMeta({
+      data: {
+        page: {
+          handle: 'contact',
+          title: 'Contact',
+          body: '<p>Visible page copy.</p>',
+          seo: {title: null, description: 'Custom Shopify contact SEO text.'},
+        },
+      },
+    } as never);
+    expect(entries).toContainEqual({
+      name: 'description',
+      content: 'Custom Shopify contact SEO text.',
+    });
+  });
+
+  it('provides blog metadata when the Shopify SEO description is missing', () => {
+    const entries = blogMeta({
+      data: {
+        blog: {
+          handle: 'news',
+          title: 'News',
+          seo: {title: null, description: null},
+        },
+      },
+    } as never);
+    const actual = (getMetaContent(entries, 'name', 'description') as
+      | {content: string}
+      | undefined)?.content;
+
+    expect(actual?.length).toBeGreaterThan(70);
+    expect(actual?.length).toBeLessThanOrEqual(160);
+    expect(entries).toContainEqual({
+      property: 'og:description',
+      content: actual,
+    });
+    expect(entries).toContainEqual({
+      tagName: 'link',
+      rel: 'canonical',
+      href: 'https://render-lab.org/blogs/news',
+    });
+  });
+
+  it('caps long Shopify SEO text on editorial collection routes', () => {
+    const entries = collectionMeta({
+      data: {
+        mode: 'products',
+        collectionSeoTitle: 'Echoes of War SEO Title',
+        collectionSeoDescription: 'Cinematic historical wall art. '.repeat(12),
+        collectionPage: {
+          handle: 'echoes-of-war',
+          hero: {title: 'Echoes of War'},
+        },
+      },
+      location: {search: ''},
+    } as never);
+    const actual = (getMetaContent(entries, 'name', 'description') as
+      | {content: string}
+      | undefined)?.content;
+
+    expect(actual?.length).toBeLessThanOrEqual(160);
+    expect(entries).toContainEqual({
+      property: 'og:description',
+      content: actual,
+    });
   });
 });

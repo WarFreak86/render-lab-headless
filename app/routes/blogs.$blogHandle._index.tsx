@@ -5,20 +5,26 @@ import type {ArticleItemFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {getProductionUrl} from '~/lib/config';
+import {getMetaDescription} from '~/lib/seo';
+
+const BLOG_DESCRIPTION_FALLBACK =
+  'Explore the Render-Lab journal for artwork stories, collection updates, design inspiration, and studio news.';
 
 export const meta: Route.MetaFunction = ({data}) => {
   const blog = data?.blog;
   const title = `${blog?.seo?.title || blog?.title || 'Journal'} | Render-Lab`;
   const canonical = getProductionUrl(`/blogs/${blog?.handle ?? ''}`);
+  const description = getMetaDescription(
+    blog?.seo?.description,
+    BLOG_DESCRIPTION_FALLBACK,
+  );
   return [
     {title},
-    ...(blog?.seo?.description
-      ? [{name: 'description', content: blog.seo.description}]
-      : []),
+    ...(description ? [{name: 'description', content: description}] : []),
     {tagName: 'link', rel: 'canonical', href: canonical},
     {property: 'og:title', content: title},
-    ...(blog?.seo?.description
-      ? [{property: 'og:description', content: blog.seo.description}]
+    ...(description
+      ? [{property: 'og:description', content: description}]
       : []),
     {property: 'og:type', content: 'website'},
     {property: 'og:url', content: canonical},

@@ -19,13 +19,17 @@ import {PRODUCT_QUERY} from '~/lib/product-query';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {
   getBrandedTitle,
+  getMetaDescription,
   getProductGroupStructuredData,
   safeJsonLd,
 } from '~/lib/seo';
 
 export const meta: Route.MetaFunction = ({data}) => {
   const product = data?.product;
-  const description = product?.seo?.description || product?.description;
+  const description = getMetaDescription(
+    product?.seo?.description,
+    product?.description,
+  );
   const image = product?.media?.nodes?.[0]?.image;
   const canonical = getProductionUrl(`/products/${product?.handle ?? ''}`);
   const variant = product?.selectedOrFirstAvailableVariant;

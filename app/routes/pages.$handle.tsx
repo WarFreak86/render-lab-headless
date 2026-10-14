@@ -2,20 +2,31 @@ import {useLoaderData} from 'react-router';
 import type {Route} from './+types/pages.$handle';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {getProductionUrl} from '~/lib/config';
+import {getMetaDescription} from '~/lib/seo';
+
+const PAGE_DESCRIPTION_FALLBACKS: Record<string, string> = {
+  contact:
+    'Contact Render-Lab with questions about wall art, orders, shipping, or returns. Find the support information you need for your purchase.',
+  'data-sharing-opt-out':
+    'Learn about Render-Lab privacy choices and how to opt out of applicable data sharing. Review your options and privacy information.',
+};
 
 export const meta: Route.MetaFunction = ({data}) => {
   const page = data?.page;
   const title = `${page?.seo?.title || page?.title || 'Page'} | Render-Lab`;
   const canonical = getProductionUrl(`/pages/${page?.handle ?? ''}`);
+  const description = getMetaDescription(
+    page?.seo?.description,
+    page?.handle ? PAGE_DESCRIPTION_FALLBACKS[page.handle] : undefined,
+    page?.body,
+  );
   return [
     {title},
-    ...(page?.seo?.description
-      ? [{name: 'description', content: page.seo.description}]
-      : []),
+    ...(description ? [{name: 'description', content: description}] : []),
     {tagName: 'link', rel: 'canonical', href: canonical},
     {property: 'og:title', content: title},
-    ...(page?.seo?.description
-      ? [{property: 'og:description', content: page.seo.description}]
+    ...(description
+      ? [{property: 'og:description', content: description}]
       : []),
     {property: 'og:type', content: 'article'},
     {property: 'og:url', content: canonical},
