@@ -191,6 +191,10 @@ describe('Phase B1 route metadata', () => {
   it.each([
     ['chrome-thunder', 'Muscle Car & Hot Rod Wall Art | Chrome & Thunder'],
     ['reel-legends', 'Reel Legends | Cinematic Icon Wall Art'],
+    [
+      'the-veil-between-worlds',
+      'The Veil Between Worlds | Cosmic Gothic Wall Art',
+    ],
     ['urban-icon', 'Urban Icon | Neon Hip-Hop Inspired Wall Art | Render-Lab'],
   ])(
     'uses the Shopify SEO title for approved Phase D collection %s',

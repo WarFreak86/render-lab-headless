@@ -219,6 +219,9 @@ const APPROVED_EDITORIAL_COLLECTION_SEO: Record<
   'reel-legends': {
     h1: 'Reel Legends: Cinematic Character Wall Art',
   },
+  'the-veil-between-worlds': {
+    h1: 'The Veil Between Worlds: Cosmic Gothic Wall Art',
+  },
   'urban-icon': {
     h1: 'Urban Icon: Neon Hip-Hop-Inspired Wall Art',
   },
