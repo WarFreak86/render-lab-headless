@@ -8,11 +8,17 @@ import {meta as productMeta} from '~/routes/products.$handle';
 import {HOMEPAGE_HERO_IMAGE} from '~/lib/homepage';
 
 function getMetaContent(
-  entries: ReturnType<typeof materialsMeta>,
+  entries: ReadonlyArray<unknown>,
   key: 'name' | 'property' | 'rel',
   value: string,
 ) {
-  return entries.find((entry) => key in entry && entry[key] === value);
+  return entries.find(
+    (entry) =>
+      typeof entry === 'object' &&
+      entry !== null &&
+      key in entry &&
+      entry[key] === value,
+  );
 }
 
 describe('Phase B1 route metadata', () => {
