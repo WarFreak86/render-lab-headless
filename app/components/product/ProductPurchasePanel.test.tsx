@@ -313,4 +313,53 @@ describe('ProductPurchasePanel', () => {
       screen.getByRole('button', {name: /Add to cart.*\$85\.00/}),
     ).toBeEnabled();
   });
+
+  it('submits the Google-linked Canvas variant and advertised price', () => {
+    const selectedVariant = {
+      ...variant({
+        amount: '119.00',
+        id: 'gid://shopify/ProductVariant/47375048933537',
+      }),
+      selectedOptions: [
+        {name: 'Size', value: '24x32'},
+        {name: 'Material', value: 'Canvas'},
+      ],
+    };
+    const {container} = renderPanel({
+      options: [
+        {
+          name: 'Material',
+          optionValues: [
+            {name: 'Metal', available: true, exists: true, selected: false},
+            {name: 'Canvas', available: true, exists: true, selected: true},
+          ],
+        },
+        {
+          name: 'Size',
+          optionValues: [
+            {name: '24x32', available: true, exists: true, selected: true},
+          ],
+        },
+      ],
+      selectedVariant,
+    });
+
+    expect(screen.getByRole('button', {name: 'Canvas'})).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(screen.getByRole('button', {name: '24x32'})).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(
+      screen.getByRole('button', {name: /Add to cart.*\$119\.00/}),
+    ).toBeEnabled();
+    const lines = JSON.parse(
+      container.querySelector('form')?.getAttribute('data-lines') || '[]',
+    ) as Array<{merchandiseId: string}>;
+    expect(lines[0].merchandiseId).toBe(
+      'gid://shopify/ProductVariant/47375048933537',
+    );
+  });
 });

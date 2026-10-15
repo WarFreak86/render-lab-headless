@@ -167,6 +167,22 @@ export const PRODUCT_QUERY = `#graphql
   ${PRODUCT_SCHEMA_VARIANT_FRAGMENT}
 ` as const;
 
+export const PRODUCT_VARIANT_BY_ID_QUERY = `#graphql
+  query ProductVariantById(
+    $country: CountryCode
+    $id: ID!
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    variant: node(id: $id) {
+      __typename
+      ... on ProductVariant {
+        ...ProductVariant
+      }
+    }
+  }
+  ${PRODUCT_VARIANT_FRAGMENT}
+` as const;
+
 export const DROP_PRODUCT_QUERY = `#graphql
   query DropProduct(
     $country: CountryCode

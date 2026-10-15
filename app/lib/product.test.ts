@@ -1,4 +1,5 @@
 import {
+  getVariantGidFromRequest,
   getOptionState,
   normalizeProductPage,
   parseMetafieldList,
@@ -23,6 +24,28 @@ const variants = [
 ];
 
 describe('product data and variant state', () => {
+  it('accepts only numeric Shopify variant deep-link IDs', () => {
+    expect(
+      getVariantGidFromRequest(
+        new Request(
+          'https://render-lab.org/products/after-the-collapse?variant=47375048933537',
+        ),
+      ),
+    ).toBe('gid://shopify/ProductVariant/47375048933537');
+    expect(
+      getVariantGidFromRequest(
+        new Request(
+          'https://render-lab.org/products/after-the-collapse?variant=not-an-id',
+        ),
+      ),
+    ).toBeUndefined();
+    expect(
+      getVariantGidFromRequest(
+        new Request('https://render-lab.org/products/after-the-collapse'),
+      ),
+    ).toBeUndefined();
+  });
+
   it('uses the artwork series rather than a format directory in breadcrumbs', () => {
     const page = normalizeProductPage({title: 'Fields of Memory — Echoes of War', collections: {nodes: [
       {handle: 'canvas-art', title: 'Canvas Prints'},

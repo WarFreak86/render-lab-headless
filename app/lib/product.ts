@@ -76,6 +76,18 @@ export interface VariantLike {
   selectedOptions: Array<{name: string; value: string}>;
 }
 
+const NUMERIC_SHOPIFY_VARIANT_ID = /^[1-9]\d{0,31}$/;
+
+export function getVariantGidFromRequest(request: Request) {
+  const numericId = new URL(request.url).searchParams.get('variant');
+
+  if (!numericId || !NUMERIC_SHOPIFY_VARIANT_ID.test(numericId)) {
+    return undefined;
+  }
+
+  return `gid://shopify/ProductVariant/${numericId}`;
+}
+
 const UUID_ALT_TEXT =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
