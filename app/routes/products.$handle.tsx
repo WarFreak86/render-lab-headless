@@ -14,8 +14,11 @@ import {ProductDetails} from '~/components/product/ProductDetails';
 import {ProductGallery} from '~/components/product/ProductGallery';
 import {ProductPurchasePanel} from '~/components/product/ProductPurchasePanel';
 import {getProductionUrl} from '~/lib/config';
-import {normalizeProductPage} from '~/lib/product';
-import {PRODUCT_QUERY} from '~/lib/product-query';
+import {getVariantGidFromRequest, normalizeProductPage} from '~/lib/product';
+import {
+  PRODUCT_QUERY,
+  PRODUCT_VARIANT_BY_ID_QUERY,
+} from '~/lib/product-query';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {
   getBrandedTitle,
@@ -83,11 +86,21 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     throw new Error('Expected product handle to be defined');
   }
 
-  const [{product}] = await Promise.all([
+  const selectedOptions = getSelectedProductOptions(request).filter(
+    ({name}) => name !== 'variant',
+  );
+  const requestedVariantId = getVariantGidFromRequest(request);
+  const [{product}, requestedVariantData] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {
       cache: storefront.CacheShort(),
-      variables: {handle, selectedOptions: getSelectedProductOptions(request)},
+      variables: {handle, selectedOptions},
     }),
+    requestedVariantId
+      ? storefront.query(PRODUCT_VARIANT_BY_ID_QUERY, {
+          cache: storefront.CacheShort(),
+          variables: {id: requestedVariantId},
+        })
+      : Promise.resolve(undefined),
   ]);
 
   if (!product?.id) {
@@ -102,8 +115,15 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
 
   redirectIfHandleIsLocalized(request, {handle, data: product});
 
+  const requestedVariant = requestedVariantData?.variant;
+  const selectedProduct =
+    requestedVariant?.__typename === 'ProductVariant' &&
+    requestedVariant.product.id === product.id
+      ? {...product, selectedOrFirstAvailableVariant: requestedVariant}
+      : product;
+
   return {
-    product,
+    product: selectedProduct,
   };
 }
 
