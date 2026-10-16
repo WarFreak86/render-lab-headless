@@ -73,7 +73,7 @@ const COLLECTION_DIRECTORY_SEO: Partial<
   'wall-art': {
     title: 'Wall Art Prints | Metal, Canvas & Posters | Render-Lab',
     description:
-      'Explore Render-Lab wall art prints across metal, canvas and poster formats. Discover automotive, abstract, botanical, surreal and cinematic collections.',
+      'Explore Render-Lab wall art in metal, canvas and poster formats. Browse automotive, botanical, abstract, surreal and cinematic collections.',
     h1: 'Wall Art Prints',
   },
   'metal-wall-art': {

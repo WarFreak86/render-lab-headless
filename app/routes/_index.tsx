@@ -12,7 +12,7 @@ import {
 
 const HOME_TITLE = 'Modern Wall Art & Art Prints | Render-Lab';
 const HOME_DESCRIPTION =
-  'Discover wall art from Render-Lab in premium metal, canvas and poster formats. Explore automotive, abstract, botanical, surreal and cinematic art collections.';
+  'Discover premium Render-Lab wall art in metal, canvas and poster formats. Explore automotive, botanical, abstract, surreal and cinematic collections.';
 
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/');
