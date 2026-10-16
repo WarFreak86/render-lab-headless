@@ -123,7 +123,7 @@ describe('Phase B1 route metadata', () => {
     const entries = homepageMeta({data: undefined} as never);
     const title = 'Modern Wall Art & Art Prints | Render-Lab';
     const description =
-      'Discover wall art from Render-Lab in premium metal, canvas and poster formats. Explore automotive, abstract, botanical, surreal and cinematic art collections.';
+      'Discover premium Render-Lab wall art in metal, canvas and poster formats. Explore automotive, botanical, abstract, surreal and cinematic collections.';
 
     expect(entries).toContainEqual({title});
     expect(entries).toContainEqual({name: 'description', content: description});
@@ -142,7 +142,7 @@ describe('Phase B1 route metadata', () => {
     [
       'wall-art',
       'Wall Art Prints | Metal, Canvas & Posters | Render-Lab',
-      'Explore Render-Lab wall art prints across metal, canvas and poster formats. Discover automotive, abstract, botanical, surreal and cinematic collections.',
+      'Explore Render-Lab wall art in metal, canvas and poster formats. Browse automotive, botanical, abstract, surreal and cinematic collections.',
     ],
     [
       'metal-wall-art',
