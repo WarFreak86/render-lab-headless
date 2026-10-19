@@ -343,7 +343,7 @@ export function ProductPurchasePanel({
           </li>
         </ul>
         {selectedMaterial === 'metal' || selectedMaterial === 'canvas' ? <p className="product-purchase__guide">Mounting hardware included by the manufacturer.</p> : null}
-        <a className="product-purchase__guide" href="mailto:render.lab.art@gmail.com">Questions? Contact Render-Lab <Icon name="arrow-right" size={14} /></a>
+        <a className="product-purchase__guide" href="mailto:support@render-lab.org">Questions? Contact Render-Lab <Icon name="arrow-right" size={14} /></a>
         {selectedVariant?.sku ? <details className="product-purchase__reference"><summary>Product reference</summary><p>SKU {selectedVariant.sku}</p></details> : null}
         </>
       ) : (
