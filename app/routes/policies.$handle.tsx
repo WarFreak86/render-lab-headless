@@ -1,4 +1,4 @@
-import {Link, useLoaderData} from 'react-router';
+import {Link, redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/policies.$handle';
 import {type Shop} from '@shopify/hydrogen/storefront-api-types';
 import {getProductionUrl} from '~/lib/config';
@@ -23,6 +23,12 @@ export const meta: Route.MetaFunction = ({data}) => {
 export async function loader({params, context}: Route.LoaderArgs) {
   if (!params.handle) {
     throw new Response('No handle was passed in', {status: 404});
+  }
+
+  // Shopify publishes Contact information separately from the four ShopPolicy
+  // fields exposed by the Storefront API. Keep links from checkout/terms alive.
+  if (params.handle === 'contact-information') {
+    throw redirect('/pages/contact', 302);
   }
 
   const policyName = params.handle.replace(
