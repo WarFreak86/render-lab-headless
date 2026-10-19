@@ -90,6 +90,14 @@ function renderPanel({
 }
 
 describe('ProductPurchasePanel', () => {
+  it('uses the official support inbox for product questions', () => {
+    renderPanel({options: []});
+    expect(screen.getByRole('link', {name: /Questions\? Contact Render-Lab/i})).toHaveAttribute(
+      'href',
+      'mailto:support@render-lab.org',
+    );
+  });
+
   beforeEach(() => {
     mockCart.fetcher.data = undefined;
     mockCart.fetcher.state = 'idle';
