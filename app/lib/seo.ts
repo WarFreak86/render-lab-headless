@@ -396,7 +396,6 @@ Disallow: /blogs/*%2b*
 Disallow: /*/blogs/*+*
 Disallow: /*/blogs/*%2B*
 Disallow: /*/blogs/*%2b*
-Disallow: /policies/
 Disallow: /search
 Allow: /search/
 Disallow: /search/?*
