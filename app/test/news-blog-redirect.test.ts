@@ -12,16 +12,18 @@ describe('unpublished Render-Lab journal', () => {
   it('redirects the empty News blog without making a Storefront API call', async () => {
     const query = vi.fn();
 
-    await expect(
-      singleBlogLoader({
+    try {
+      await singleBlogLoader({
         params: {blogHandle: 'news'},
         request: new Request('https://render-lab.org/blogs/news'),
         context: {storefront: {query}},
-      } as never),
-    ).rejects.toMatchObject({
-      status: 302,
-      headers: expect.objectContaining({}),
-    });
+      } as never);
+      throw new Error('Expected News blog redirect');
+    } catch (error) {
+      expect(error).toBeInstanceOf(Response);
+      expect((error as Response).status).toBe(302);
+      expect((error as Response).headers.get('Location')).toBe('/collections');
+    }
 
     expect(query).not.toHaveBeenCalled();
   });
