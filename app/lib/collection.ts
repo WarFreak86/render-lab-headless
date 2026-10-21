@@ -272,7 +272,7 @@ function normalizeCollectionArtist(
     biography: cleanText(reference.biography?.value),
     image: normalizeImage(
       reference.photo?.reference?.image,
-      `${name} portrait`,
+      `${name} profile artwork`,
     ),
     profileUrl: cleanText(reference.profileUrl?.value),
   };
