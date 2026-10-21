@@ -32,6 +32,13 @@ const WALL_ART_GROUP: NavigationGroup = {
 // Only display genuine creator and studio identities. Retired fictional artist
 // records remain in Shopify for archival purposes, but are not public profiles.
 const PUBLIC_CREATOR_HANDLES = new Set(['jb-render', 'render-lab-studio']);
+const RETIRED_CREATOR_HANDLES = new Set([
+  'dante-mercer', 'mara-voss', 'kai-stratos', 'nico-vale',
+]);
+
+export function isRetiredArtistHandle(handle: string) {
+  return RETIRED_CREATOR_HANDLES.has(handle);
+}
 
 export function isStorefrontArtistReady(handle: string) {
   return PUBLIC_CREATOR_HANDLES.has(handle);
@@ -69,7 +76,7 @@ export function buildExploreNavGroups(
       ],
     },
     {
-      title: 'Artists',
+      title: 'Our Studio',
       items: [
         ...artistItems,
         {title: 'Meet Our Studio', url: '/artists'},
