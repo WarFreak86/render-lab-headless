@@ -2,7 +2,7 @@ import {Image} from '@shopify/hydrogen';
 import {Link, redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/artists.$handle';
 import {getProductionUrl} from '~/lib/config';
-import {isStorefrontArtistReady} from '~/lib/navigation';
+import {isRetiredArtistHandle, isStorefrontArtistReady} from '~/lib/navigation';
 
 export const meta: Route.MetaFunction = ({data}) => {
   const artist = data?.artist;
@@ -19,7 +19,7 @@ export const meta: Route.MetaFunction = ({data}) => {
     {tagName: 'link', rel: 'canonical', href: canonical},
     {property: 'og:title', content: title},
     {property: 'og:description', content: description},
-    {property: 'og:type', content: 'profile'},
+    {property: 'og:type', content: artist?.handle === 'render-lab-studio' ? 'website' : 'profile'},
     {property: 'og:url', content: canonical},
     ...(artist?.image
       ? [
@@ -37,7 +37,8 @@ export async function loader({context, params}: Route.LoaderArgs) {
   const handle = params.handle;
   if (!handle) throw new Response('Artist not found', {status: 404});
   // Retired fictional personas are no longer customer-facing profiles.
-  if (!isStorefrontArtistReady(handle)) throw redirect('/artists', 301);
+  if (isRetiredArtistHandle(handle)) throw redirect('/artists', 301);
+  if (!isStorefrontArtistReady(handle)) throw new Response('Artist not found', {status: 404});
 
   const {metaobject, collections} = await context.storefront.query(
     ARTIST_PROFILE_QUERY,
