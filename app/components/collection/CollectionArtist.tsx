@@ -12,7 +12,7 @@ export function CollectionArtist({artist}: {artist: CollectionArtistData}) {
       className="collection-artist collection-artist--story"
     >
       <div className="container container--wide collection-artist__inner">
-        <p className="collection-artist__label">Artist behind the series</p>
+        <p className="collection-artist__label">Behind the series</p>
         <div
           className={`collection-artist__layout ${
             artist.image ? '' : 'collection-artist__layout--text-only'
@@ -33,7 +33,7 @@ export function CollectionArtist({artist}: {artist: CollectionArtistData}) {
             {artist.biography ? <p>{artist.biography}</p> : null}
             {isInternalProfile ? (
               <Link className="collection-artist__link" to={profileUrl}>
-                View artist profile
+                Explore creative profile
                 <ArrowIcon />
               </Link>
             ) : (

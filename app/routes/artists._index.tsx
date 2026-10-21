@@ -7,16 +7,16 @@ import {isStorefrontArtistReady} from '~/lib/navigation';
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/artists');
   return [
-    {title: 'Artists | Render-Lab'},
+    {title: 'Our Studio | Render-Lab'},
     {
       name: 'description',
-      content: 'Browse Render-Lab artists and discover their collections.',
+      content: 'Meet J.B. Render and Render-Lab Studio, and browse artwork by the genuine artist and the in-house studio.',
     },
     {tagName: 'link', rel: 'canonical', href: canonical},
-    {property: 'og:title', content: 'Artists | Render-Lab'},
+    {property: 'og:title', content: 'Our Studio | Render-Lab'},
     {
       property: 'og:description',
-      content: 'Browse Render-Lab artists and discover their collections.',
+      content: 'Meet J.B. Render and Render-Lab Studio, and browse the collections developed by the artist and the in-house studio.',
     },
     {property: 'og:type', content: 'website'},
     {property: 'og:url', content: canonical},
@@ -65,11 +65,11 @@ export default function ArtistsIndexRoute() {
   return (
     <div className="artists-page">
       <header className="artists-page__header">
-        <p className="artists-page__eyebrow">Render-Lab Artists</p>
-        <h1>Shop by artist</h1>
+        <p className="artists-page__eyebrow">Render-Lab Studio</p>
+        <h1>Meet the artist &amp; studio</h1>
         <p>
-          Discover the artists behind each collection, then browse the work tied
-          to their individual profile.
+          Meet J.B. Render, the artist and creative director behind Render-Lab,
+          and explore collections developed under the Render-Lab Studio identity.
         </p>
       </header>
 
@@ -117,10 +117,10 @@ export default function ArtistsIndexRoute() {
                 )}
               </div>
               <div className="artist-card__copy">
-                <p className="artist-card__label">Artist</p>
+                <p className="artist-card__label">{artist.handle === 'render-lab-studio' ? 'Creative studio' : 'Artist & creative director'}</p>
                 <h2>{artist.name}</h2>
                 {artist.biography ? <p>{artist.biography}</p> : null}
-                <span>View artist profile →</span>
+                <span>Explore profile →</span>
               </div>
             </Link>
           ))}
@@ -128,9 +128,9 @@ export default function ArtistsIndexRoute() {
       ) : (
         <div className="artists-empty">
           <h2>No artists found</h2>
-          <p>Try another name or browse the complete artist directory.</p>
+          <p>Try another name or browse our studio profiles.</p>
           <Link className="button button--secondary" to="/artists">
-            View all artists
+            View our studio
           </Link>
         </div>
       )}
