@@ -138,7 +138,7 @@ export function ArtistSpotlight({
                 )}
               </div>
               <div className="home-v2-artist-card__copy">
-                <p className="home-v2-kicker">Artist</p>
+                <p className="home-v2-kicker">{artist.handle === "render-lab-studio" ? "Creative studio" : "Artist & creative director"}</p>
                 <h3>{artist.name}</h3>
                 {artist.biography ? <p>{artist.biography}</p> : null}
                 <strong>
