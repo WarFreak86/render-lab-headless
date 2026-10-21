@@ -5,7 +5,7 @@ export const meta = () => {
   const canonical = getProductionUrl('/legal/rights-notice');
   const title = 'Rights & Intellectual Property Notice | Render-Lab';
   const description =
-    'Information about independent artists, third-party rights, and rights-holder inquiries at Render-Lab.';
+    'Information about Render-Lab Studio, creative direction, third-party rights, and rights-holder inquiries.';
 
   return [
     {title},
@@ -25,8 +25,9 @@ export default function RightsNotice() {
         <p className="legal-page__eyebrow">Legal</p>
         <h1>Rights &amp; Intellectual Property Notice</h1>
         <p className="legal-page__intro">
-          Render-Lab offers artwork created by independent artists and presents it as
-          part of curated collections and editions.
+          Render-Lab develops and curates collections through its in-house creative
+          identity, Render-Lab Studio, under the creative direction of J.B. Render.
+          Render-Lab Studio is a business creative credit, not a separate individual.
         </p>
       </header>
 
@@ -43,8 +44,7 @@ export default function RightsNotice() {
         <section className="legal-page__section">
           <h2>No implied affiliation</h2>
           <p>
-            Unless a product page expressly states otherwise, neither Render-Lab nor
-            the contributing artist claims any affiliation with, endorsement by,
+            Unless a product page expressly states otherwise, Render-Lab does not claim any affiliation with, endorsement by,
             sponsorship by, or authorization from any third-party rights holder. The
             appearance of third-party subject matter does not by itself imply an
             official relationship.
