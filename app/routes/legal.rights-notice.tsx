@@ -44,10 +44,11 @@ export default function RightsNotice() {
         <section className="legal-page__section">
           <h2>No implied affiliation</h2>
           <p>
-            Unless a product page expressly states otherwise, Render-Lab does not claim any affiliation with, endorsement by,
-            sponsorship by, or authorization from any third-party rights holder. The
-            appearance of third-party subject matter does not by itself imply an
-            official relationship.
+            Unless a product page expressly states otherwise, Render-Lab does not
+            claim affiliation with, endorsement by, sponsorship by, or
+            authorization from any third-party rights holder. The appearance of
+            third-party subject matter does not by itself imply an official
+            relationship.
           </p>
         </section>
 
