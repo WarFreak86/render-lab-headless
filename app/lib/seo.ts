@@ -378,8 +378,8 @@ export function getProductGroupStructuredData({
   };
 }
 
-function generalDisallowRules(sitemapUrl?: string) {
-  return `Disallow: /cart
+function generalDisallowRules(sitemapUrl?: string, allowCart = false) {
+  return `${allowCart ? 'Allow: /cart' : 'Disallow: /cart'}
 Disallow: /account
 Disallow: /collections/*sort_by*
 Disallow: /*/collections/*sort_by*
@@ -406,6 +406,11 @@ export function getProductionRobotsTxt() {
   const sitemapUrl = getProductionUrl('/sitemap.xml');
   return `User-agent: *
 ${generalDisallowRules(sitemapUrl)}
+
+# Google StoreBot needs cart access to inspect the checkout and payment methods.
+# Repeat other general rules because this specific group overrides User-agent: *.
+User-agent: Storebot-Google
+${generalDisallowRules(undefined, true)}
 
 # Google adsbot ignores robots.txt unless specifically named.
 User-agent: adsbot-google
