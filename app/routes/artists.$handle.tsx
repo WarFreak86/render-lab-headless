@@ -1,7 +1,8 @@
 import {Image} from '@shopify/hydrogen';
-import {Link, useLoaderData} from 'react-router';
+import {Link, redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/artists.$handle';
 import {getProductionUrl} from '~/lib/config';
+import {isStorefrontArtistReady} from '~/lib/navigation';
 
 export const meta: Route.MetaFunction = ({data}) => {
   const artist = data?.artist;
@@ -35,6 +36,8 @@ export const meta: Route.MetaFunction = ({data}) => {
 export async function loader({context, params}: Route.LoaderArgs) {
   const handle = params.handle;
   if (!handle) throw new Response('Artist not found', {status: 404});
+  // Retired fictional personas are no longer customer-facing profiles.
+  if (!isStorefrontArtistReady(handle)) throw redirect('/artists', 301);
 
   const {metaobject, collections} = await context.storefront.query(
     ARTIST_PROFILE_QUERY,
@@ -78,7 +81,7 @@ export default function ArtistProfileRoute() {
   return (
     <div className="artist-profile">
       <Link className="artist-profile__back" to="/artists">
-        ← All artists
+        ← Our Studio
       </Link>
 
       <section className="artist-profile__hero">
@@ -95,7 +98,7 @@ export default function ArtistProfileRoute() {
           )}
         </div>
         <div className="artist-profile__copy">
-          <p className="artist-profile__eyebrow">Artist</p>
+          <p className="artist-profile__eyebrow">{artist.handle === 'render-lab-studio' ? 'In-house creative studio' : 'Artist & creative director'}</p>
           <h1>{artist.name}</h1>
           {artist.biography ? <p>{artist.biography}</p> : null}
         </div>
@@ -104,7 +107,7 @@ export default function ArtistProfileRoute() {
       <section className="artist-profile__collections" aria-labelledby="artist-work-heading">
         <div className="artist-profile__section-heading">
           <p>Collections</p>
-          <h2 id="artist-work-heading">Work by {artist.name}</h2>
+          <h2 id="artist-work-heading">Collections by {artist.name}</h2>
         </div>
 
         {collections.length ? (
