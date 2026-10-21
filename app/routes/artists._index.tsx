@@ -16,7 +16,7 @@ export const meta: Route.MetaFunction = () => {
     {property: 'og:title', content: 'Our Studio | Render-Lab'},
     {
       property: 'og:description',
-      content: 'Browse Render-Lab artists and discover their collections.',
+      content: 'Meet J.B. Render and Render-Lab Studio, and browse the collections developed by the artist and the in-house studio.',
     },
     {property: 'og:type', content: 'website'},
     {property: 'og:url', content: canonical},
