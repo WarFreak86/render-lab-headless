@@ -29,6 +29,12 @@ describe('launch SEO helpers', () => {
     expect(getRobotsTxt('https://render-lab.org/')).toContain(
       'Sitemap: https://render-lab.org/sitemap.xml',
     );
+    const robots = getRobotsTxt('https://render-lab.org/');
+    expect(robots).not.toContain('Disallow: /policies/');
+    expect(robots).toContain('User-agent: *\nDisallow: /cart');
+    expect(robots).toContain(
+      'User-agent: Storebot-Google\nAllow: /cart\nDisallow: /account',
+    );
   });
 
   it('pins sitemap requests and brand schema to the production origin', () => {
