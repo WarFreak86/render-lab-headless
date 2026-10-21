@@ -29,12 +29,12 @@ const WALL_ART_GROUP: NavigationGroup = {
   ],
 };
 
-// Hide parked artist profiles until their related collections are republished.
-// Keep the Shopify metaobjects and collection records intact.
-const PARKED_ARTIST_HANDLES = new Set(['kai-stratos', 'nico-vale']);
+// Only display genuine creator and studio identities. Retired fictional artist
+// records remain in Shopify for archival purposes, but are not public profiles.
+const PUBLIC_CREATOR_HANDLES = new Set(['jb-render', 'render-lab-studio']);
 
 export function isStorefrontArtistReady(handle: string) {
-  return !PARKED_ARTIST_HANDLES.has(handle);
+  return PUBLIC_CREATOR_HANDLES.has(handle);
 }
 
 function buildArtistItems(artists: ReadonlyArray<StorefrontArtistRef>) {
@@ -72,7 +72,7 @@ export function buildExploreNavGroups(
       title: 'Artists',
       items: [
         ...artistItems,
-        {title: 'View All Artists', url: '/artists'},
+        {title: 'Meet Our Studio', url: '/artists'},
       ],
     },
   ];
@@ -81,5 +81,5 @@ export function buildExploreNavGroups(
 export const PRIMARY_NAV_ITEMS: ReadonlyArray<NavigationItem> = [
   {title: 'Wall Art', url: '/collections/wall-art'},
   {title: 'Materials', url: '/materials'},
-  {title: 'Artists', url: '/artists'},
+  {title: 'Our Studio', url: '/artists'},
 ];
