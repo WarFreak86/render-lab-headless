@@ -1,4 +1,4 @@
-import {Link, useLoaderData} from 'react-router';
+import {Link, redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/blogs.$blogHandle._index';
 import {Image, getPaginationVariables} from '@shopify/hydrogen';
 import type {ArticleItemFragment} from 'storefrontapi.generated';
@@ -46,6 +46,9 @@ export async function loader(args: Route.LoaderArgs) {
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
  */
 async function loadCriticalData({context, request, params}: Route.LoaderArgs) {
+  // The News blog is intentionally parked until Render-Lab publishes articles.
+  if (params.blogHandle === 'news') throw redirect('/collections', 302);
+
   const paginationVariables = getPaginationVariables(request, {
     pageBy: 4,
   });
