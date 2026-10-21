@@ -110,8 +110,8 @@ export function ArtistSpotlight({
     <section className="home-v2-artists" aria-labelledby="home-v2-artists-title">
       <div className="container container--wide">
         <header className="home-v2-section-head home-v2-section-head--center">
-          <p className="home-v2-kicker">Meet the artists</p>
-          <h2 id="home-v2-artists-title">Distinct visions.</h2>
+          <p className="home-v2-kicker">Meet Render-Lab</p>
+          <h2 id="home-v2-artists-title">The artist &amp; the studio.</h2>
           <p>One shared obsession.</p>
         </header>
         <div className="home-v2-artists__grid">
@@ -126,7 +126,7 @@ export function ArtistSpotlight({
               <div className="home-v2-artist-card__media">
                 {artist.image ? (
                   <img
-                    alt={artist.image.altText || `${artist.name} portrait`}
+                    alt={artist.image.altText || `${artist.name} profile artwork`}
                     loading="lazy"
                     src={artist.image.url}
                   />
@@ -142,7 +142,7 @@ export function ArtistSpotlight({
                 <h3>{artist.name}</h3>
                 {artist.biography ? <p>{artist.biography}</p> : null}
                 <strong>
-                  View artist <Icon name="arrow-right" size={15} />
+                  Explore profile <Icon name="arrow-right" size={15} />
                 </strong>
               </div>
             </Link>
@@ -150,7 +150,7 @@ export function ArtistSpotlight({
         </div>
         <div className="home-v2-artists__all">
           <Link className="home-v2-link" prefetch="intent" to="/artists">
-            View all artists <Icon name="arrow-right" size={16} />
+            Meet our studio <Icon name="arrow-right" size={16} />
           </Link>
         </div>
       </div>
