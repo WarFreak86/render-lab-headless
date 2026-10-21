@@ -21,7 +21,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}: Foote
         <FooterLinkGroup title="Explore">
           <NavLink to="/collections">Collections</NavLink>
           <NavLink to="/collections/wall-art">Wall Art</NavLink>
-          <NavLink to="/artists">Artists</NavLink>
+          <NavLink to="/artists">Our Studio</NavLink>
         </FooterLinkGroup>
         <FooterLinkGroup title="Support">
           <NavLink to="/account">Account</NavLink>
@@ -51,9 +51,10 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}: Foote
       </Container>
       <Container className="site-footer__rights" size="wide">
         <p>
-          Render-Lab features artwork created by independent artists. Some works may
-          reference third-party trademarks, copyrighted material, public figures, or
-          other protected subject matter. Unless expressly stated, no affiliation,
+          Render-Lab develops and curates artwork through Render-Lab Studio under the
+          creative direction of J.B. Render. Physical prints are made to order.
+          Some works may reference third-party trademarks, copyrighted material,
+          public figures, or other protected subject matter. Unless expressly stated, no affiliation,
           endorsement, sponsorship, or authorization by a third-party rights holder is
           claimed or implied.{' '}
           <NavLink to="/legal/rights-notice">Read the rights notice.</NavLink>
