@@ -1,5 +1,10 @@
 import {Container} from '~/components/Container';
 import {getProductionUrl} from '~/lib/config';
+import legalEnhancements from '~/styles/enhancements-legal.css?url';
+
+export const links = () => [
+  {rel: 'stylesheet', href: legalEnhancements},
+];
 
 export const meta = () => {
   const canonical = getProductionUrl('/legal/rights-notice');

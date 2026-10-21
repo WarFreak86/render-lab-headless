@@ -1,6 +1,11 @@
 import {Link} from 'react-router';
+import materialsGalleryStyles from '~/styles/gallery-materials.css?url';
 import {Icon} from '~/components/Icon';
 import {getProductionUrl} from '~/lib/config';
+
+export const links = () => [
+  {rel: 'stylesheet', href: materialsGalleryStyles},
+];
 
 const MATERIALS_TITLE = 'Materials | Render-Lab';
 const MATERIALS_DESCRIPTION =

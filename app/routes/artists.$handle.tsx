@@ -1,7 +1,10 @@
 import {Image} from '@shopify/hydrogen';
+import artistStyles from '~/styles/artists.css?url';
 import {Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/artists.$handle';
 import {getProductionUrl} from '~/lib/config';
+
+export const links = () => [{rel: 'stylesheet', href: artistStyles}];
 
 export const meta: Route.MetaFunction = ({data}) => {
   const artist = data?.artist;

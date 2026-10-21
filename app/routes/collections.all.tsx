@@ -1,4 +1,6 @@
 import {getPaginationVariables} from '@shopify/hydrogen';
+import collectionStyles from '~/styles/collection.css?url';
+import collectionGalleryStyles from '~/styles/gallery-collection.css?url';
 import {useLoaderData, useSearchParams} from 'react-router';
 import type {Route} from './+types/collections.all';
 import {CollectionView} from '~/components/collection/CollectionView';
@@ -13,6 +15,10 @@ import {PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
 import {isSuppressedProduct} from '~/lib/merchandising';
 
 const ALL_ART_DESCRIPTION = 'Browse all available Render-Lab art and objects.';
+export const links = () => [
+  {rel: 'stylesheet', href: collectionStyles},
+  {rel: 'stylesheet', href: collectionGalleryStyles},
+];
 
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/collections/all');

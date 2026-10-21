@@ -6,6 +6,10 @@ import {
   useOptimisticVariant,
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
+import productStyles from '~/styles/product.css?url';
+import dropStyles from '~/styles/drop.css?url';
+import productEnhancements from '~/styles/enhancements-product.css?url';
+import productGalleryStyles from '~/styles/gallery-product.css?url';
 import {useLoaderData} from 'react-router';
 import type {Route} from './+types/drops.$handle';
 import {DropCountdown} from '~/components/drop/DropCountdown';
@@ -29,6 +33,13 @@ import {
 import {normalizeProductPage} from '~/lib/product';
 import {DROP_PRODUCT_QUERY} from '~/lib/product-query';
 import {getCommerceStructuredData, safeJsonLd} from '~/lib/seo';
+
+export const links = () => [
+  {rel: 'stylesheet', href: productStyles},
+  {rel: 'stylesheet', href: dropStyles},
+  {rel: 'stylesheet', href: productEnhancements},
+  {rel: 'stylesheet', href: productGalleryStyles},
+];
 
 function descriptionText(descriptionHtml?: string | null) {
   return descriptionHtml

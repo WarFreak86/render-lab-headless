@@ -1,0 +1,38 @@
+.homepage .home-hero__actions .button--primary {
+  background: var(--color-gold); color: #100e0a; border-color: var(--color-gold);
+  font-size: .8125rem; letter-spacing: .04em; border-radius: 2px;
+}
+.homepage .home-hero__inner { min-height: 36rem; grid-template-columns: 45% 55%; }
+.homepage .home-hero__content { max-width: none; padding: 4rem var(--gutter); }
+.homepage .home-hero h1 { font-size: clamp(3rem, 5.5vw, 5rem); line-height: 1.02; text-transform: none; max-width: 12ch; }
+.homepage .home-hero__accent { background: none; color: var(--color-text); margin: 0; }
+.homepage .home-hero__copy { font-size: 1.0625rem; line-height: 1.65; max-width: 32ch; }
+.homepage .home-hero__scroll-cue { display: none; }
+.homepage .home-section-heading h2 { max-width: none; font-size: clamp(2.25rem, 4vw, 3.25rem); line-height: 1.08; }
+.homepage .featured-collections-grid--mosaic { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1.5rem; grid-template-rows: auto; overflow: visible; }
+.homepage .collection-feature-card--editorial { grid-column: auto; grid-row: auto; min-height: 0; }
+.homepage.home .collection-feature-card--editorial .collection-feature-card__media { display: flex; flex-direction: column; height: auto; min-height: 0; aspect-ratio: auto; background: transparent; }
+.homepage.home .collection-feature-card--editorial .collection-feature-card__media img { position: static; width: 100%; height: clamp(20rem,32vw,30rem); object-fit: cover; filter: none; }
+.homepage.home .collection-feature-card--editorial .collection-feature-card__shade { display: none; }
+.homepage.home .collection-feature-card--editorial .collection-feature-card__content { position: static; padding: 1.1rem 0 0; background: transparent; }
+.homepage.home .collection-feature-card--editorial .collection-feature-card__content strong { font-size: clamp(1.5rem,2.4vw,2rem); line-height: 1.1; max-width: none; }
+.homepage.home .collection-feature-card--editorial .collection-feature-card__content small { font-size: .875rem; line-height: 1.55; margin-top: .75rem; }
+.homepage.home .collection-feature-card--editorial .collection-feature-card__action { font-size: .75rem; margin-top: 1rem; }
+.homepage .home-benefits { padding-block: 2rem; }
+.homepage .home-materials { padding-block: var(--space-section); }
+.homepage .home-materials__meta { display: none; }
+.homepage .home-materials__header { display: block; }
+.homepage .home-materials__intro h2 { font-size: clamp(2.25rem,4vw,3.25rem); line-height: 1.08; max-width: none; }
+.homepage .material-proof-card__description { font-size: .9375rem; }
+@media(max-width:767px) {
+  .homepage .home-hero__inner { display: flex; flex-direction: column; min-height: 0; }
+  .homepage .home-hero__media { position: relative; order: -1; height: 19rem; min-height: 0; }
+  .homepage .home-hero__content { padding: 2rem var(--gutter) 2.5rem; }
+  .homepage .home-hero h1 { font-size: 3rem; }
+  .homepage .home-hero h1 span { display: inline; white-space: normal; }
+  .homepage .home-hero__copy { font-size: 1rem; margin-top: 1rem; }
+  .homepage .home-hero__actions { margin-top: 1.5rem; gap: .75rem; }
+  .homepage .featured-collections-grid--mosaic { grid-template-columns: 1fr; gap: 2rem; }
+  .homepage .collection-feature-card--editorial { width: auto; }
+  .homepage.home .collection-feature-card--editorial .collection-feature-card__media img { height: 18rem; }
+}

@@ -1,4 +1,6 @@
 import {Analytics, getPaginationVariables} from '@shopify/hydrogen';
+import collectionStyles from '~/styles/collection.css?url';
+import collectionGalleryStyles from '~/styles/gallery-collection.css?url';
 import {redirect, useLoaderData, useSearchParams} from 'react-router';
 import type {CollectionDirectoryQuery} from 'storefrontapi.generated';
 import type {Route} from './+types/collections.$handle';
@@ -29,6 +31,11 @@ import {
   getCollectionDirectorySeo,
   isCollectionDirectoryHandle,
 } from '~/lib/collection-directory';
+
+export const links = () => [
+  {rel: 'stylesheet', href: collectionStyles},
+  {rel: 'stylesheet', href: collectionGalleryStyles},
+];
 
 export const meta: Route.MetaFunction = ({data, location}) => {
   const page = data?.collectionPage;
