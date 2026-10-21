@@ -29,8 +29,17 @@ const WALL_ART_GROUP: NavigationGroup = {
   ],
 };
 
+// Hide parked artist profiles until their related collections are republished.
+// Keep the Shopify metaobjects and collection records intact.
+const PARKED_ARTIST_HANDLES = new Set(['kai-stratos', 'nico-vale']);
+
+export function isStorefrontArtistReady(handle: string) {
+  return !PARKED_ARTIST_HANDLES.has(handle);
+}
+
 function buildArtistItems(artists: ReadonlyArray<StorefrontArtistRef>) {
   return artists
+    .filter((artist) => isStorefrontArtistReady(artist.handle))
     .map((artist) => ({
       title: artist.name?.value?.trim() || artist.handle,
       url: `/artists/${artist.handle}`,

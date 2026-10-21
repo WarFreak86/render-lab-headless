@@ -11,6 +11,9 @@ export const meta: Route.MetaFunction = ({data}) => {
   const canonical = getProductionUrl(`/artists/${artist?.handle ?? ''}`);
   return [
     {title},
+    ...(data?.collections?.length === 0
+      ? [{name: 'robots', content: 'noindex, follow'}]
+      : []),
     {name: 'description', content: description},
     {tagName: 'link', rel: 'canonical', href: canonical},
     {property: 'og:title', content: title},
