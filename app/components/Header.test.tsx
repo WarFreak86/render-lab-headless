@@ -56,10 +56,11 @@ const collections = [
 ];
 
 const artists = [
+  {id: 'artist-jb', handle: 'jb-render', name: {value: 'J.B. Render'}},
+  {id: 'artist-studio', handle: 'render-lab-studio', name: {value: 'Render-Lab Studio'}},
   {id: 'artist-nico', handle: 'nico-vale', name: {value: 'Nico Vale'}},
   {id: 'artist-mara', handle: 'mara-voss', name: {value: 'Mara Voss'}},
   {id: 'artist-dante', handle: 'dante-mercer', name: {value: 'Dante Mercer'}},
-  {id: 'artist-four', handle: 'fourth-artist', name: {value: 'Fourth Artist'}},
 ];
 
 function renderDesktopMenu() {
@@ -109,7 +110,7 @@ describe('Header foundation', () => {
     renderDesktopMenu();
     const shop = screen.getByRole('button', {name: /collections/i});
 
-    expect(screen.getByRole('link', {name: 'Artists'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Our Studio'})).toHaveAttribute(
       'href',
       '/artists',
     );
@@ -132,16 +133,19 @@ describe('Header foundation', () => {
       screen.queryByRole('menuitem', {name: 'Empty Series'}),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByRole('menuitem', {name: 'Fourth Artist'}),
-    ).toHaveAttribute('href', '/artists/fourth-artist');
+      screen.getByRole('menuitem', {name: 'J.B. Render'}),
+    ).toHaveAttribute('href', '/artists/jb-render');
     expect(
-      screen.getByRole('menuitem', {name: 'Nico Vale'}),
-    ).toHaveAttribute('href', '/artists/nico-vale');
+      screen.getByRole('menuitem', {name: 'Render-Lab Studio'}),
+    ).toHaveAttribute('href', '/artists/render-lab-studio');
+    expect(screen.queryByRole('menuitem', {name: 'Nico Vale'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', {name: 'Mara Voss'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', {name: 'Dante Mercer'})).not.toBeInTheDocument();
     expect(
       screen.getByRole('menuitem', {name: 'View All Collections'}),
     ).toHaveAttribute('href', '/collections');
     expect(
-      screen.getByRole('menuitem', {name: 'View All Artists'}),
+      screen.getByRole('menuitem', {name: 'Meet Our Studio'}),
     ).toHaveAttribute('href', '/artists');
   });
 
@@ -216,7 +220,7 @@ describe('Header foundation', () => {
       'href',
       '/materials',
     );
-    expect(screen.getByRole('link', {name: 'Artists'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'Our Studio'})).toHaveAttribute(
       'href',
       '/artists',
     );
