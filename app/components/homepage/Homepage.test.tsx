@@ -28,32 +28,18 @@ const product = {
 
 const artists: ArtistSpotlightItem[] = [
   {
-    id: 'artist-1',
-    handle: 'nico-vale',
-    name: 'Nico Vale',
-    biography: 'Coastlines and cinematic light.',
-    image: {...image, altText: 'Nico Vale portrait'},
+    id: 'artist-jb',
+    handle: 'jb-render',
+    name: 'J.B. Render',
+    biography: 'Visual artist and creative director of Render-Lab.',
+    image: {...image, altText: 'J.B. Render portrait'},
   },
   {
-    id: 'artist-2',
-    handle: 'mara-voss',
-    name: 'Mara Voss',
-    biography: 'Botanical unease and synthetic life.',
-    image: {...image, altText: 'Mara Voss portrait'},
-  },
-  {
-    id: 'artist-3',
-    handle: 'dante-mercer',
-    name: 'Dante Mercer',
-    biography: 'Street portraiture and urban mythology.',
-    image: {...image, altText: 'Dante Mercer portrait'},
-  },
-  {
-    id: 'artist-4',
-    handle: 'fourth-artist',
-    name: 'Fourth Artist',
-    biography: 'A newly added Shopify artist.',
-    image: {...image, altText: 'Fourth Artist portrait'},
+    id: 'artist-studio',
+    handle: 'render-lab-studio',
+    name: 'Render-Lab Studio',
+    biography: 'In-house creative studio under the direction of J.B. Render.',
+    image: {...image, altText: 'Render-Lab Studio artwork'},
   },
 ];
 
@@ -154,39 +140,29 @@ describe('homepage presentation', () => {
     );
   });
 
-  it('renders the Shopify artist roster without a fixed artist count', () => {
+  it('renders only the genuine artist and in-house studio credits', () => {
     renderHomepage();
     expect(
-      screen.getByRole('heading', {level: 2, name: 'Distinct visions.'}),
+      screen.getByRole('heading', {level: 2, name: 'The artist & the studio.'}),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', {
-        level: 2,
-        name: 'Three distinct visions.',
-      }),
-    ).not.toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'View Nico Vale'})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: 'View J.B. Render'})).toHaveAttribute(
       'href',
-      '/artists/nico-vale',
-    );
-    expect(screen.getByRole('link', {name: 'View Mara Voss'})).toHaveAttribute(
-      'href',
-      '/artists/mara-voss',
+      '/artists/jb-render',
     );
     expect(
-      screen.getByRole('link', {name: 'View Dante Mercer'}),
-    ).toHaveAttribute('href', '/artists/dante-mercer');
+      screen.getByRole('link', {name: 'View Render-Lab Studio'}),
+    ).toHaveAttribute('href', '/artists/render-lab-studio');
+    expect(screen.queryByRole('link', {name: 'View Nico Vale'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', {name: 'View Mara Voss'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', {name: 'View Dante Mercer'})).not.toBeInTheDocument();
     expect(
-      screen.getByRole('link', {name: 'View Fourth Artist'}),
-    ).toHaveAttribute('href', '/artists/fourth-artist');
-    expect(
-      screen.getByRole('link', {name: 'View all artists'}),
+      screen.getByRole('link', {name: 'Meet our studio'}),
     ).toHaveAttribute('href', '/artists');
   });
 
   it('omits the artist spotlight cleanly when Shopify has no artists', () => {
     renderHomepage(data, []);
-    expect(screen.queryByText('Meet the artists')).not.toBeInTheDocument();
+    expect(screen.queryByText('Meet Render-Lab')).not.toBeInTheDocument();
   });
 
   it('finishes with a cinematic wall-art call to action', () => {
