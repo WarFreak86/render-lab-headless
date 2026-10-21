@@ -2,6 +2,7 @@ import {Image} from '@shopify/hydrogen';
 import {Form, Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/artists._index';
 import {getProductionUrl} from '~/lib/config';
+import {isStorefrontArtistReady} from '~/lib/navigation';
 
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/artists');
@@ -32,6 +33,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
   });
 
   const artists = metaobjects.nodes
+    .filter((artist) => isStorefrontArtistReady(artist.handle))
     .map((artist) => {
       const photoReference = artist.photo?.reference;
       return {
