@@ -8,7 +8,7 @@ import {getSafeRedirect} from '~/lib/redirect';
 export const meta: Route.MetaFunction = () => {
   return [
     {title: 'Cart | Render-Lab'},
-    {name: 'robots', content: 'noindex, nofollow'},
+    {name: 'robots', content: 'noindex, follow'},
   ];
 };
 
