@@ -16,6 +16,7 @@ describe('route stylesheet ownership', () => {
       'cart.css',
       'enhancements.css',
       'gallery-evolution.css',
+      'mobile-commerce.css',
     ]) {
       expect(root).toContain(`~/styles/${stylesheet}?url`);
     }
@@ -35,6 +36,9 @@ describe('route stylesheet ownership', () => {
     );
     expect(root.indexOf('<Links />')).toBeLessThan(
       root.indexOf('href={enhancementStyles}'),
+    );
+    expect(root.indexOf('href={galleryStyles}')).toBeLessThan(
+      root.indexOf('href={mobileCommerceStyles}'),
     );
   });
 

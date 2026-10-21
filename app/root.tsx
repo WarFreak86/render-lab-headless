@@ -28,6 +28,7 @@ import navigationStyles from '~/styles/navigation.css?url';
 import cartStyles from '~/styles/cart.css?url';
 import enhancementStyles from '~/styles/enhancements.css?url';
 import galleryStyles from '~/styles/gallery-evolution.css?url';
+import mobileCommerceStyles from '~/styles/mobile-commerce.css?url';
 import {PageLayout} from './components/PageLayout';
 
 import '@fontsource/cormorant-garamond/latin-500.css';
@@ -190,6 +191,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Links />
         <link rel="stylesheet" href={enhancementStyles}></link>
         <link rel="stylesheet" href={galleryStyles}></link>
+        <link rel="stylesheet" href={mobileCommerceStyles}></link>
         {rootData?.robots ? (
           <meta name="robots" content={rootData.robots} />
         ) : null}
