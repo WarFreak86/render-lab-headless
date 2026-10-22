@@ -1,0 +1,8 @@
+.product-option__value-badge {
+  margin-top: 0.22rem;
+  color: var(--color-gold-bright);
+  font-size: 0.55rem;
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-ui);
+  text-transform: uppercase;
+}

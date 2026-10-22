@@ -197,20 +197,23 @@ describe('homepage data normalization', () => {
     ]);
   });
 
-  it('prioritizes a configured drop when Shopify returns it', () => {
+  it('links a former drop product through the regular product route', () => {
     const source = commerce();
-    const configuredDrop = {
+    const formerDrop = {
       ...source.products[0],
-      id: 'configured-drop',
+      id: 'former-drop',
       handle: 'marine-heavyweight-oversized-hoodie',
       title: 'Marine Heavyweight Oversized Hoodie',
     };
-    const data = normalizeHomepageData({
-      ...source,
-      featuredDropProduct: configuredDrop,
-    });
+    const collection = source.collections.find(
+      (item) => item.handle === 'limited-editions',
+    );
+    if (!collection) throw new Error('Missing limited-editions fixture');
+    collection.products = {nodes: [formerDrop]};
+    const data = normalizeHomepageData(source);
     expect(data.featuredDrop).toMatchObject({
       handle: 'marine-heavyweight-oversized-hoodie',
+      to: '/products/marine-heavyweight-oversized-hoodie',
     });
   });
 

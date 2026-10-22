@@ -1,4 +1,3 @@
-import {getDropConfigForProduct} from './drops';
 import {isSuppressedMerchandisingAssetUrl} from './merchandising';
 import {storefrontSeriesCollections} from './catalog-collections';
 
@@ -57,7 +56,6 @@ export interface HomepageCollectionInput {
 export interface HomepageCommerceInput {
   collections: ReadonlyArray<HomepageCollectionInput>;
   products: ReadonlyArray<HomepageProductInput>;
-  featuredDropProduct?: HomepageProductInput | null;
 }
 
 export interface HomepageEditorialConfig {
@@ -210,12 +208,11 @@ function normalizeProduct(product: HomepageProductInput | undefined) {
     `${product.title} artwork`,
   );
   if (!image) return null;
-  const drop = getDropConfigForProduct(product.handle);
   return {
     id: product.id,
     handle: product.handle,
     title: product.title,
-    to: drop ? `/drops/${drop.handle}` : `/products/${product.handle}`,
+    to: `/products/${product.handle}`,
     description: cleanProductDescription(
       product.descriptionHtml || product.description,
     ),
@@ -379,15 +376,7 @@ export function normalizeHomepageData(
     (collection) => collection.handle === 'limited-editions',
   );
   const featuredDrop =
-    (commerce.featuredDropProduct &&
-    getDropConfigForProduct(commerce.featuredDropProduct.handle)
-      ? normalizeProduct(commerce.featuredDropProduct)
-      : null) ??
-    normalizedProducts.find((product) =>
-      Boolean(getDropConfigForProduct(product.handle)),
-    ) ??
-    normalizeProduct(featuredDropCollection?.products.nodes[0]) ??
-    null;
+    normalizeProduct(featuredDropCollection?.products.nodes[0]) ?? null;
 
   const heroPrimaryCta = heroCollection
     ? {

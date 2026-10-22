@@ -1,8 +1,11 @@
 import {Image} from '@shopify/hydrogen';
+import artistStyles from '~/styles/artists.css?url';
 import {Form, Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/artists._index';
 import {getProductionUrl} from '~/lib/config';
 import {isStorefrontArtistReady} from '~/lib/navigation';
+
+export const links = () => [{rel: 'stylesheet', href: artistStyles}];
 
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/artists');

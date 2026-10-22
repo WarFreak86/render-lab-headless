@@ -1,5 +1,8 @@
 import '~/styles/product-editorial.css';
 import '~/styles/product-gallery-fit.css';
+import productStyles from '~/styles/product.css?url';
+import productEnhancements from '~/styles/enhancements-product.css?url';
+import productGalleryStyles from '~/styles/gallery-product.css?url';
 import {Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/products.$handle';
 import {
@@ -26,6 +29,12 @@ import {
   getProductGroupStructuredData,
   safeJsonLd,
 } from '~/lib/seo';
+
+export const links = () => [
+  {rel: 'stylesheet', href: productStyles},
+  {rel: 'stylesheet', href: productEnhancements},
+  {rel: 'stylesheet', href: productGalleryStyles},
+];
 
 export const meta: Route.MetaFunction = ({data}) => {
   const product = data?.product;

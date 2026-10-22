@@ -1,4 +1,7 @@
 import {useLoaderData} from 'react-router';
+import homeStyles from '~/styles/home.css?url';
+import homeEnhancements from '~/styles/enhancements-home.css?url';
+import homeGalleryStyles from '~/styles/gallery-home.css?url';
 import type {Route} from './+types/_index';
 import {MockShopNotice} from '~/components/MockShopNotice';
 import {HomepageView} from '~/components/homepage/HomepageView';
@@ -12,6 +15,11 @@ import {
 } from '~/lib/homepage';
 
 const HOME_TITLE = 'Modern Wall Art & Art Prints | Render-Lab';
+export const links = () => [
+  {rel: 'stylesheet', href: homeStyles},
+  {rel: 'stylesheet', href: homeEnhancements},
+  {rel: 'stylesheet', href: homeGalleryStyles},
+];
 const HOME_DESCRIPTION =
   'Discover premium Render-Lab wall art in metal, canvas and poster formats. Explore automotive, botanical, abstract, surreal and cinematic collections.';
 
@@ -61,7 +69,6 @@ export async function loader({context}: Route.LoaderArgs) {
       {
         collections: collections.nodes,
         products: products.nodes,
-        featuredDropProduct: null,
       },
       HOMEPAGE_EDITORIAL_FALLBACK,
     ),
