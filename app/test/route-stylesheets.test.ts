@@ -25,7 +25,6 @@ describe('route stylesheet ownership', () => {
       'artists.css',
       'collection.css',
       'product.css',
-      'drop.css',
       'enhancements-home.css',
       'gallery-home.css',
     ]) {
@@ -49,7 +48,6 @@ describe('route stylesheet ownership', () => {
     ['routes/collections.all.tsx', ['collection.css', 'gallery-collection.css']],
     ['routes/collections.$handle.tsx', ['collection.css', 'gallery-collection.css']],
     ['routes/products.$handle.tsx', ['product.css', 'enhancements-product.css', 'gallery-product.css']],
-    ['routes/drops.$handle.tsx', ['product.css', 'drop.css', 'enhancements-product.css', 'gallery-product.css']],
     ['routes/materials.tsx', ['gallery-materials.css']],
     ['routes/legal.rights-notice.tsx', ['enhancements-legal.css']],
   ])('%s links its required page styles', (route, stylesheets) => {

@@ -69,7 +69,6 @@ export async function loader({context}: Route.LoaderArgs) {
       {
         collections: collections.nodes,
         products: products.nodes,
-        featuredDropProduct: null,
       },
       HOMEPAGE_EDITORIAL_FALLBACK,
     ),
