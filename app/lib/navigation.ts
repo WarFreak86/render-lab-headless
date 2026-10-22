@@ -29,8 +29,24 @@ const WALL_ART_GROUP: NavigationGroup = {
   ],
 };
 
+// Only display genuine creator and studio identities. Retired fictional artist
+// records remain in Shopify for archival purposes, but are not public profiles.
+const PUBLIC_CREATOR_HANDLES = new Set(['jb-render', 'render-lab-studio']);
+const RETIRED_CREATOR_HANDLES = new Set([
+  'dante-mercer', 'mara-voss', 'kai-stratos', 'nico-vale',
+]);
+
+export function isRetiredArtistHandle(handle: string) {
+  return RETIRED_CREATOR_HANDLES.has(handle);
+}
+
+export function isStorefrontArtistReady(handle: string) {
+  return PUBLIC_CREATOR_HANDLES.has(handle);
+}
+
 function buildArtistItems(artists: ReadonlyArray<StorefrontArtistRef>) {
   return artists
+    .filter((artist) => isStorefrontArtistReady(artist.handle))
     .map((artist) => ({
       title: artist.name?.value?.trim() || artist.handle,
       url: `/artists/${artist.handle}`,
@@ -60,10 +76,10 @@ export function buildExploreNavGroups(
       ],
     },
     {
-      title: 'Artists',
+      title: 'Our Studio',
       items: [
         ...artistItems,
-        {title: 'View All Artists', url: '/artists'},
+        {title: 'Meet Our Studio', url: '/artists'},
       ],
     },
   ];
@@ -72,5 +88,5 @@ export function buildExploreNavGroups(
 export const PRIMARY_NAV_ITEMS: ReadonlyArray<NavigationItem> = [
   {title: 'Wall Art', url: '/collections/wall-art'},
   {title: 'Materials', url: '/materials'},
-  {title: 'Artists', url: '/artists'},
+  {title: 'Our Studio', url: '/artists'},
 ];

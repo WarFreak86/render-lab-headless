@@ -7,6 +7,7 @@ import {MockShopNotice} from '~/components/MockShopNotice';
 import {HomepageView} from '~/components/homepage/HomepageView';
 import {PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
 import {getProductionUrl} from '~/lib/config';
+import {isStorefrontArtistReady} from '~/lib/navigation';
 import {
   HOMEPAGE_EDITORIAL_FALLBACK,
   HOMEPAGE_HERO_IMAGE,
@@ -45,6 +46,7 @@ export async function loader({context}: Route.LoaderArgs) {
     await context.storefront.query(HOMEPAGE_QUERY);
 
   const homepageArtists = artists.nodes
+    .filter((artist) => isStorefrontArtistReady(artist.handle))
     .map((artist) => {
       const photoReference = artist.photo?.reference;
       return {

@@ -182,7 +182,7 @@ describe('collection presentation', () => {
             id: 'artist-1',
             handle: 'render-lab-studio',
             name: 'Render-Lab Studio',
-            biography: 'Independent artists and art directors.',
+            biography: 'In-house creative team under J.B. Render.',
             image: null,
             profileUrl: '/pages/artists/render-lab-studio',
           }}
@@ -194,7 +194,7 @@ describe('collection presentation', () => {
       screen.getByRole('heading', {name: 'Render-Lab Studio'}),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('link', {name: /View artist profile/i}),
+      screen.getByRole('link', {name: /Explore creative profile/i}),
     ).toHaveAttribute('href', '/pages/artists/render-lab-studio');
   });
 });

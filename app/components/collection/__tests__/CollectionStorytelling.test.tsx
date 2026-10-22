@@ -33,7 +33,7 @@ describe('collection storytelling', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('link', {name: /view artist profile/i})).toHaveAttribute(
+    expect(screen.getByRole('link', {name: /Explore creative profile/i})).toHaveAttribute(
       'href',
       '/artists/studio-archive',
     );
