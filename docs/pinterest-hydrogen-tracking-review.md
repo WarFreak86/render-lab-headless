@@ -28,7 +28,7 @@
 
 ## Deployment automation
 
-The current `.github/workflows/oxygen-deployment-1000173485.yml` uses `on: [push]` and deploys to Oxygen. **Keep this workflow disabled while this PR is under review**. Restore it only as part of an intentional deployment plan.
+This PR narrows `.github/workflows/oxygen-deployment-1000173485.yml` to pushes on `main` and explicit `workflow_dispatch` runs, avoiding deploys from every feature branch. **The workflow is still disabled while this PR is under review.** Re-enable it only as part of an intentional production deployment plan; test Pinterest's browser events after publishing.
 
 ## References
 
