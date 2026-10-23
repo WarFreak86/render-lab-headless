@@ -164,6 +164,8 @@ export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
   },
 };
 
+const FEATURED_COLLECTION_PRIORITY: ReadonlyArray<string> = ['chrome-thunder'];
+
 const CATEGORY_PRIORITY = [
   'wall-art',
   'metal-wall-art',
@@ -309,6 +311,14 @@ export function normalizeHomepageData(
   const featuredCandidates = storefrontSeriesCollections(
     merchandisableCollections,
   );
+  // Pin one priority series on the homepage while retaining the dynamic
+  // newest-updated order for all remaining published series.
+  const featuredDisplayOrder = [
+    ...prioritizedCollections(featuredCandidates, FEATURED_COLLECTION_PRIORITY),
+    ...featuredCandidates.filter(
+      (collection) => !FEATURED_COLLECTION_PRIORITY.includes(collection.handle),
+    ),
+  ];
   const usedFeatureImages = new Set<string>();
 
   const categories = categoryCollections.flatMap((collection) => {
@@ -341,7 +351,7 @@ export function normalizeHomepageData(
     });
   }
 
-  const featuredCollections = featuredCandidates.flatMap((collection) => {
+  const featuredCollections = featuredDisplayOrder.flatMap((collection) => {
     const image = collectionImage(collection, usedFeatureImages);
     if (!image) return [];
     usedFeatureImages.add(image.url);
