@@ -103,6 +103,32 @@ describe('homepage data normalization', () => {
     ]);
   });
 
+  it('pins Chrome & Thunder in featured cards without changing the current hero', () => {
+    const source = commerce();
+    const existingSeries = source.collections.find(
+      (collection) => collection.handle === 'echoes-of-war',
+    );
+    if (!existingSeries) throw new Error('Missing test series');
+    const chrome = {
+      ...existingSeries,
+      id: 'collection-chrome',
+      handle: 'chrome-thunder',
+      title: 'Chrome & Thunder',
+      image: art('chrome'),
+    };
+    const data = normalizeHomepageData({
+      ...source,
+      collections: [...source.collections, chrome],
+    });
+
+    expect(data.featuredCollections.slice(0, 3).map((collection) => collection.to)).toEqual([
+      '/collections/chrome-thunder',
+      '/collections/echoes-of-war',
+      '/collections/neon-memento',
+    ]);
+    expect(data.hero?.to).toBe('/collections/echoes-of-war');
+  });
+
   it('replaces a suppressed collection image with a safe product image', () => {
     const source = commerce();
     const collections = source.collections.map((collection) =>

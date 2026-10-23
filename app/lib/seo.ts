@@ -324,10 +324,23 @@ export function getProductGroupStructuredData({
       throw new Error(`ProductGroup variant ${variant.id} requires a price`);
     }
 
+    const variantOptions = getVariantOptions(variant);
+    const variantName = variantOptions.length
+      ? `${title} — ${variantOptions.map((option) => option.value).join(' / ')}`
+      : title;
+    const parentDescription = description
+      ?.replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const variantDescription = [variantName, parentDescription]
+      .filter(Boolean)
+      .join('. ');
+
     return {
       '@type': 'Product' as const,
       '@id': productVariantSchemaId(canonical, variant.id),
-      name: title,
+      name: variantName,
+      description: variantDescription,
       url: variantUrl,
       ...(variant.sku?.trim() ? {sku: variant.sku.trim()} : {}),
       ...(image ? {image} : {}),

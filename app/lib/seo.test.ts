@@ -224,6 +224,8 @@ describe('ProductGroup structured data', () => {
       'https://schema.org/size',
     ]);
     expect(metal).toMatchObject({
+      name: 'Example Artwork — Metal / 16x12',
+      description: 'Example Artwork — Metal / 16x12. An example description.',
       material: 'Metal',
       size: '16x12',
       image: variantImage,
@@ -235,6 +237,8 @@ describe('ProductGroup structured data', () => {
       },
     });
     expect(canvas).toMatchObject({
+      name: 'Example Artwork — Canvas / 24 x 18',
+      description: 'Example Artwork — Canvas / 24 x 18. An example description.',
       material: 'Canvas',
       size: '24 x 18',
       image: productImage,
@@ -242,6 +246,28 @@ describe('ProductGroup structured data', () => {
     });
     expect(canvas.offers.url).toBe(canvas.url);
     expect(canvas.offers.url).not.toContain('?variant=');
+  });
+
+  it('includes genuine product subject matter in distinct variant descriptions', () => {
+    const structured = getProductGroupStructuredData({
+      canonical,
+      productId,
+      title: 'Automotive Study',
+      description: 'Theme: Automotive wall art featuring a vintage muscle car.',
+      images: [productImage],
+      variants: [
+        materialVariant(),
+        materialVariant({id: '222', material: 'Canvas', sku: 'CAN-1824'}),
+      ],
+    });
+    const group = structured['@graph'][0];
+    if (!('hasVariant' in group)) throw new Error('Expected ProductGroup');
+
+    const descriptions = group.hasVariant.map((variant) => variant.description);
+    expect(new Set(descriptions).size).toBe(2);
+    expect(descriptions.every((value) => value.includes('Theme: Automotive wall art'))).toBe(true);
+    expect(descriptions[0]).toContain('Metal');
+    expect(descriptions[1]).toContain('Canvas');
   });
 
   it('represents Finish conservatively without claiming it is material', () => {
