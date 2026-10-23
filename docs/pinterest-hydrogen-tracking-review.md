@@ -10,6 +10,7 @@
 - Requires Shopify Customer Privacy API marketing consent **and** analytics tracking permission before loading Pinterest.
 - Does **not** send `checkout`, `initiatecheckout`, or duplicate purchase events; keep the Pinterest for Shopify checkout integration.
 - If another Pinterest base tag is already present, the browser code reuses it instead of injecting another base tag.
+- Extends the existing Hydrogen content security policy to permit Pinterest's `s.pinimg.com` script and `ct.pinterest.com` tracking endpoint without removing Shopify's defaults.
 
 ## Before merging
 
@@ -23,7 +24,7 @@
    - Remove a cart item: expect **no** `AddToCart`.
    - Verify test checkout remains handled only by Shopify's Pinterest app.
    - Revoke marketing consent and verify subsequent storefront actions do not send new Pinterest events.
-5. Check `npm run lint`, `npm run typecheck`, and `npm test` before merge. This draft PR was prepared without running the disabled Oxygen deploy workflow.
+5. Automated QA in an isolated checkout (no Oxygen deployment): `npm run lint`, `npm run typecheck`, and `npm test` passed; 277 tests across 39 files. The resulting CSP header was also inspected against Hydrogen's CSP implementation. These checks do not establish that browser events arrive in Pinterest Events Manager.
 
 ## Deployment automation
 
