@@ -1,0 +1,29 @@
+package	severity	exposure	installed_nodes	reason_retained
+@fastify/busboy	high	local-simulator	node_modules/miniflare/node_modules/@fastify/busboy@2.1.1	Vendor-pinned simulator dependencies; major replacements/overrides deferred
+@graphql-codegen/add	high	codegen	node_modules/@graphql-codegen/add@5.0.3	Older Shopify codegen branch requires utils 10/11; patched utils 12 requires upstream major dependency migration
+@graphql-codegen/plugin-helpers	high	codegen	node_modules/@graphql-codegen/plugin-helpers@5.1.1	Older Shopify codegen branch requires utils 10/11; patched utils 12 requires upstream major dependency migration
+@graphql-codegen/schema-ast	high	codegen	node_modules/@graphql-codegen/schema-ast@4.1.0	Older Shopify codegen branch requires utils 10/11; patched utils 12 requires upstream major dependency migration
+@graphql-codegen/typescript	high	codegen	node_modules/@graphql-codegen/typescript@4.1.6	Older Shopify codegen branch requires utils 10/11; patched utils 12 requires upstream major dependency migration
+@graphql-codegen/typescript-operations	high	codegen	node_modules/@graphql-codegen/typescript-operations@4.6.1	Older Shopify codegen branch requires utils 10/11; patched utils 12 requires upstream major dependency migration
+@graphql-codegen/visitor-plugin-common	high	codegen	node_modules/@graphql-codegen/visitor-plugin-common@5.8.0	Older Shopify codegen branch requires utils 10/11; patched utils 12 requires upstream major dependency migration
+@graphql-tools/batch-execute	high	codegen	node_modules/@graphql-tools/batch-execute@10.0.9	Older Shopify codegen branch requires utils 10/11; patched utils 12 requires upstream major dependency migration
+@graphql-tools/delegate	high	codegen	node_modules/@graphql-tools/delegate@12.1.2	Older Shopify codegen branch requires utils 10/11; patched utils 12 requires upstream major dependency migration
+@graphql-tools/executor	high	codegen	node_modules/@graphql-tools/executor@1.5.7	Older Shopify codegen branch requires utils 10/11; patched utils 12 requires upstream major dependency migration
+@graphql-tools/utils	high	codegen	node_modules/@graphql-tools/batch-execute/node_modules/@graphql-tools/utils@11.2.2 | node_modules/@graphql-tools/delegate/node_modules/@graphql-tools/utils@11.2.2 | node_modules/@graphql-tools/executor/node_modules/@graphql-tools/utils@11.2.2 | node_modules/@graphql-tools/utils@10.11.0 | node_modules/@graphql-tools/wrap/node_modules/@graphql-tools/utils@11.2.2	Older Shopify codegen branch requires utils 10/11; patched utils 12 requires upstream major dependency migration
+@graphql-tools/wrap	high	codegen	node_modules/@graphql-tools/wrap@11.1.22	Older Shopify codegen branch requires utils 10/11; patched utils 12 requires upstream major dependency migration
+@react-router/dev	moderate	router	node_modules/@react-router/dev@7.16.0	Hydrogen 2026.4.5 peers require ~7.16.0; initial discovery bypasses manifest handler, package finding remains
+@react-router/node	moderate	router	node_modules/@react-router/node@7.16.0	Hydrogen 2026.4.5 peers require ~7.16.0; initial discovery bypasses manifest handler, package finding remains
+@shopify/graphql-codegen	high	codegen	node_modules/@shopify/graphql-codegen@0.0.2	Older Shopify codegen branch requires utils 10/11; patched utils 12 requires upstream major dependency migration
+@shopify/hydrogen	moderate	router	node_modules/@shopify/hydrogen@2026.4.5	Hydrogen 2026.4.5 peers require ~7.16.0; initial discovery bypasses manifest handler, package finding remains
+@shopify/hydrogen-codegen	high	local-simulator	node_modules/@shopify/hydrogen-codegen@0.3.3	Vendor-pinned simulator dependencies; major replacements/overrides deferred
+@shopify/mini-oxygen	moderate	local-simulator	node_modules/@shopify/mini-oxygen@4.2.2	Vendor-pinned simulator dependencies; major replacements/overrides deferred
+body-parser	high	local-simulator	node_modules/body-parser@1.20.4	Vendor-pinned simulator dependencies; major replacements/overrides deferred
+cookie	low	local-simulator	node_modules/youch/node_modules/cookie@0.5.0	Vendor-pinned simulator dependencies; major replacements/overrides deferred
+miniflare	high	local-simulator	node_modules/miniflare@3.20250310.1	Vendor-pinned simulator dependencies; major replacements/overrides deferred
+qs	moderate	local-simulator	node_modules/qs@6.14.2	Vendor-pinned simulator dependencies; major replacements/overrides deferred
+react-router	high	router	node_modules/react-router@7.16.0	Hydrogen 2026.4.5 peers require ~7.16.0; initial discovery bypasses manifest handler, package finding remains
+react-router-dom	moderate	router	node_modules/react-router-dom@7.16.0	Hydrogen 2026.4.5 peers require ~7.16.0; initial discovery bypasses manifest handler, package finding remains
+undici	high	local-simulator	node_modules/jsdom/node_modules/undici@7.29.0 | node_modules/miniflare/node_modules/undici@5.29.0 | node_modules/undici@7.24.0	Vendor-pinned simulator dependencies; major replacements/overrides deferred
+ws	high	local-simulator	node_modules/miniflare/node_modules/ws@8.18.0	Vendor-pinned simulator dependencies; major replacements/overrides deferred
+youch	low	local-simulator	node_modules/youch@3.2.3	Vendor-pinned simulator dependencies; major replacements/overrides deferred
+zod	high	local-simulator	node_modules/zod@3.22.3	Vendor-pinned simulator dependencies; major replacements/overrides deferred
