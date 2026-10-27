@@ -1,0 +1,71 @@
+path	status	redirect	self_canonical	noindex	robots_allowed	sitemap	ssr_title	ssr_description	storefront_published	available_for_sale	shopify_updated_at	html_depth_from_home	collection_link_sources
+/collections/alt-history	200		true	false	true	true	n/a	n/a	API-confirmed collection	n/a	n/a	unreachable	none
+/collections/neon-speed	200		true	false	true	true	n/a	n/a	API-confirmed collection	n/a	n/a	unreachable	none
+/products/after-the-collapse	200		true	false	true	true	true	true	true	true	2026-10-23T12:36:38Z	2	https://render-lab.org/collections/tyrants-ruin
+/products/after-the-smoke-echoes-of-war	200		true	false	true	true	true	true	true	true	2026-10-17T07:21:11Z	2	https://render-lab.org/collections/echoes-of-war
+/products/art-the-clown	200		true	false	true	true	true	true	true	true	2026-10-23T12:36:59Z	2	https://render-lab.org/collections/red-requiem
+/products/ascension-beyond-time	200		true	false	true	true	true	true	true	true	2026-10-23T12:36:58Z	2	https://render-lab.org/collections/the-veil-between-worlds
+/products/backroad-bruiser-1952-chevrolet-rat-rod	200		true	false	true	true	true	true	true	true	2026-10-23T12:36:59Z	2	https://render-lab.org/collections/chrome-thunder | https://render-lab.org/collections/chrome-thunder?direction=previous&cursor=eyJsYXN0X2lkIjo4NzM0Nzg5OTI3MDczLCJsYXN0X3ZhbHVlIjoiMDAwbDk1cGFiNjYiLCJvZmZzZXQiOjEyfQ%3D%3D
+/products/blade	200		true	false	true	true	true	true	true	true	2026-10-23T12:36:38Z	2	https://render-lab.org/collections/blood-shadow
+/products/blonde-static-urban-icon	200		true	false	true	true	true	true	true	true	2026-10-20T07:28:10Z	2	https://render-lab.org/collections/urban-icon
+/products/blue-collar-thunder-1960-ford-f-100	200		true	false	true	true	true	true	true	true	2026-10-24T01:39:09Z	2	https://render-lab.org/collections/chrome-thunder | https://render-lab.org/collections/chrome-thunder?direction=previous&cursor=eyJsYXN0X2lkIjo4NzM0Nzg5OTI3MDczLCJsYXN0X3ZhbHVlIjoiMDAwbDk1cGFiNjYiLCJvZmZzZXQiOjEyfQ%3D%3D
+/products/carnivora-no-01-open-trap	200		true	false	true	true	true	true	true	true	2026-10-24T01:39:13Z	2	https://render-lab.org/collections/carnivora
+/products/carnivora-no-03-hanging-nectar	200		true	false	true	true	true	true	true	true	2026-10-23T10:43:57Z	2	https://render-lab.org/collections/carnivora
+/products/carnivora-no-05-aperture	200		true	false	true	true	true	true	true	true	2026-10-23T10:44:08Z	2	https://render-lab.org/collections/carnivora
+/products/carnivora-no-06-nectar-chamber	200		true	false	true	true	true	true	true	true	2026-10-23T10:44:04Z	2	https://render-lab.org/collections/carnivora
+/products/carnivora-no-07-lantern	200		true	false	true	true	true	true	true	true	2026-10-24T01:39:14Z	2	https://render-lab.org/collections/carnivora
+/products/carnivora-no-08-vascular-edge	200		true	false	true	true	true	true	true	true	2026-10-24T01:39:11Z	2	https://render-lab.org/collections/carnivora
+/products/carnivora-no-10-vascular-light	200		true	false	true	true	true	true	true	true	2026-10-23T10:44:22Z	2	https://render-lab.org/collections/carnivora
+/products/cathedral-of-the-void	200		true	false	true	true	true	true	true	true	2026-10-25T02:28:19Z	2	https://render-lab.org/collections/the-veil-between-worlds
+/products/chemical-smile-tyler-durden	200		true	false	true	true	true	true	true	true	2026-10-23T12:36:56Z	2	https://render-lab.org/collections/reel-legends
+/products/city-dogg-urban-icon	200		true	false	true	true	true	true	true	true	2026-10-20T07:28:11Z	2	https://render-lab.org/collections/urban-icon
+/products/cyclone-warning-1970-mercury-cyclone-spoiler	200		true	false	true	true	true	true	true	true	2026-10-23T12:59:37Z	3	https://render-lab.org/collections/chrome-thunder?direction=next&cursor=eyJsYXN0X2lkIjo4NzM0Nzg5Nzk2MDAxLCJsYXN0X3ZhbHVlIjoiMDAwaDN1eGl1MmMiLCJvZmZzZXQiOjExfQ%3D%3D
+/products/deadpool	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:18Z	2	https://render-lab.org/collections/blood-shadow
+/products/deathstroke	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:19Z	2	https://render-lab.org/collections/blood-shadow
+/products/divine-intervention-jules-winnfield	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:26Z	2	https://render-lab.org/collections/reel-legends
+/products/eliminator-1970-mercury-cougar	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:27Z	3	https://render-lab.org/collections/chrome-thunder?direction=next&cursor=eyJsYXN0X2lkIjo4NzM0Nzg5Nzk2MDAxLCJsYXN0X3ZhbHVlIjoiMDAwaDN1eGl1MmMiLCJvZmZzZXQiOjExfQ%3D%3D
+/products/empire-in-white-tony-montana	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:27Z	2	https://render-lab.org/collections/reel-legends
+/products/executive-violence-patrick-bateman	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:18Z	2	https://render-lab.org/collections/reel-legends
+/products/eyes-of-doom	200		true	false	true	true	true	true	true	true	2026-10-23T12:57:47Z	2	https://render-lab.org/collections/tyrants-ruin
+/products/fields-of-memory-echoes-of-war	200		true	false	true	true	true	true	true	true	2026-10-17T07:21:11Z	2	https://render-lab.org/collections/echoes-of-war
+/products/freddy	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:39Z	2	https://render-lab.org/collections/red-requiem
+/products/frozen-ground-echoes-of-war	200		true	false	true	true	true	true	true	true	2026-10-17T07:21:11Z	2	https://render-lab.org/collections/echoes-of-war
+/products/ghost-rider	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:19Z	2	https://render-lab.org/collections/blood-shadow
+/products/ghostface	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:37Z	2	https://render-lab.org/collections/red-requiem
+/products/hard-exit-heat	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:19Z	2	https://render-lab.org/collections/reel-legends
+/products/iron-will	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:18Z	2	https://render-lab.org/collections/tyrants-ruin
+/products/jungle-ghosts-echoes-of-war	200		true	false	true	true	true	true	true	true	2026-10-17T07:21:10Z	2	https://render-lab.org/collections/echoes-of-war
+/products/keeper-of-the-threshold	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:48Z	2	https://render-lab.org/collections/the-veil-between-worlds
+/products/king-over-the-fallen-city	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:08Z	2	https://render-lab.org/collections/tyrants-ruin
+/products/machine-memory-terminator	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:27Z	2	https://render-lab.org/collections/reel-legends
+/products/march-through-ashes	200		true	false	true	true	true	true	true	true	2026-10-23T12:57:48Z	2	https://render-lab.org/collections/tyrants-ruin
+/products/master-of-ruin	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:09Z	2	https://render-lab.org/collections/tyrants-ruin
+/products/michael	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:48Z	2	https://render-lab.org/collections/red-requiem
+/products/midnight-shake-vincent-vega	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:18Z	2	https://render-lab.org/collections/reel-legends
+/products/moon-knight	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:18Z	2	https://render-lab.org/collections/blood-shadow
+/products/neon-diva-royale-urban-icon	200		true	false	true	true	true	true	true	true	2026-10-20T07:28:11Z	2	https://render-lab.org/collections/urban-icon
+/products/no-mans-land-echoes-of-war	200		true	false	true	true	true	true	true	true	2026-10-17T07:21:12Z	2	https://render-lab.org/collections/echoes-of-war
+/products/pennywise	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:35Z	2	https://render-lab.org/collections/red-requiem
+/products/phantom-hauler-1948-ford-pickup	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:37Z	2	https://render-lab.org/collections/chrome-thunder | https://render-lab.org/collections/chrome-thunder?direction=previous&cursor=eyJsYXN0X2lkIjo4NzM0Nzg5OTI3MDczLCJsYXN0X3ZhbHVlIjoiMDAwbDk1cGFiNjYiLCJvZmZzZXQiOjEyfQ%3D%3D
+/products/pink-crown-urban-icon	200		true	false	true	true	true	true	true	true	2026-10-20T07:28:11Z	2	https://render-lab.org/collections/urban-icon
+/products/quarter-mile-1964-ford-fairlane-thunderbolt	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:37Z	2	https://render-lab.org/collections/chrome-thunder | https://render-lab.org/collections/chrome-thunder?direction=previous&cursor=eyJsYXN0X2lkIjo4NzM0Nzg5OTI3MDczLCJsYXN0X3ZhbHVlIjoiMDAwbDk1cGFiNjYiLCJvZmZzZXQiOjEyfQ%3D%3D
+/products/road-runner-red-1970-plymouth-road-runner	200		true	false	true	true	true	true	true	true	2026-10-24T01:39:08Z	3	https://render-lab.org/collections/chrome-thunder?direction=next&cursor=eyJsYXN0X2lkIjo4NzM0Nzg5Nzk2MDAxLCJsYXN0X3ZhbHVlIjoiMDAwaDN1eGl1MmMiLCJvZmZzZXQiOjExfQ%3D%3D
+/products/rust-ritual-1936-ford-rat-rod	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:37Z	2	https://render-lab.org/collections/chrome-thunder | https://render-lab.org/collections/chrome-thunder?direction=previous&cursor=eyJsYXN0X2lkIjo4NzM0Nzg5OTI3MDczLCJsYXN0X3ZhbHVlIjoiMDAwbDk1cGFiNjYiLCJvZmZzZXQiOjEyfQ%3D%3D
+/products/spawn	200		true	false	true	true	true	true	true	true	2026-10-23T12:36:57Z	2	https://render-lab.org/collections/blood-shadow
+/products/still-standing-rocky-balboa	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:23Z	2	https://render-lab.org/collections/reel-legends
+/products/street-authority-1970-dodge-charger-r-t	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:28Z	2	https://render-lab.org/collections/chrome-thunder | https://render-lab.org/collections/chrome-thunder?direction=previous&cursor=eyJsYXN0X2lkIjo4NzM0Nzg5OTI3MDczLCJsYXN0X3ZhbHVlIjoiMDAwbDk1cGFiNjYiLCJvZmZzZXQiOjEyfQ%3D%3D
+/products/street-empire-urban-icon	200		true	false	true	true	true	true	true	true	2026-10-20T07:28:12Z	2	https://render-lab.org/collections/urban-icon
+/products/the-cleaner-leon	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:19Z	2	https://render-lab.org/collections/reel-legends
+/products/the-forbidden-workshop	200		true	false	true	true	true	true	true	true	2026-10-23T12:57:57Z	2	https://render-lab.org/collections/tyrants-ruin
+/products/the-hand-of-creation	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:49Z	2	https://render-lab.org/collections/the-veil-between-worlds
+/products/the-last-radiance	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:47Z	2	https://render-lab.org/collections/the-veil-between-worlds
+/products/the-long-march-echoes-of-war	200		true	false	true	true	true	true	true	true	2026-10-17T07:21:15Z	2	https://render-lab.org/collections/echoes-of-war
+/products/the-producer-urban-icon	200		true	false	true	true	true	true	true	true	2026-10-20T07:28:10Z	2	https://render-lab.org/collections/urban-icon
+/products/the-sky-unbound	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:48Z	2	https://render-lab.org/collections/the-veil-between-worlds
+/products/throne-of-dominion	200		true	false	true	true	true	true	true	true	2026-10-23T12:57:48Z	2	https://render-lab.org/collections/tyrants-ruin
+/products/trans-am-rebel-1970-amc-javelin	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:38Z	2	https://render-lab.org/collections/chrome-thunder | https://render-lab.org/collections/chrome-thunder?direction=previous&cursor=eyJsYXN0X2lkIjo4NzM0Nzg5OTI3MDczLCJsYXN0X3ZhbHVlIjoiMDAwbDk1cGFiNjYiLCJvZmZzZXQiOjEyfQ%3D%3D
+/products/war-within-echoes-of-war	200		true	false	true	true	true	true	true	true	2026-10-17T07:21:11Z	2	https://render-lab.org/collections/echoes-of-war
+/products/west-coast-shadow-urban-icon	200		true	false	true	true	true	true	true	true	2026-10-20T07:28:11Z	2	https://render-lab.org/collections/urban-icon
+/products/where-eternity-falls	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:53Z	2	https://render-lab.org/collections/the-veil-between-worlds
+/products/winter-soldier	200		true	false	true	true	true	true	true	true	2026-10-23T12:36:54Z	2	https://render-lab.org/collections/blood-shadow
+/products/wolverine	200		true	false	true	true	true	true	true	true	2026-10-23T12:58:18Z	2	https://render-lab.org/collections/blood-shadow

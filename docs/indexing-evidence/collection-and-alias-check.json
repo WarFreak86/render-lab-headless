@@ -1,0 +1,39 @@
+{
+  "data": {
+    "a": {
+      "handle": "alt-history",
+      "title": "Alt History",
+      "description": "Alternate-history metal wall art from Render-Lab, reimagining familiar eras and visual language through bold speculative artwork.",
+      "products": {
+        "nodes": [],
+        "pageInfo": {
+          "hasNextPage": false
+        }
+      }
+    },
+    "n": {
+      "handle": "neon-speed",
+      "title": "Neon Speed",
+      "description": "High-energy Render-Lab metal wall art driven by neon light, speed, motion, and futuristic automotive aesthetics.",
+      "products": {
+        "nodes": [],
+        "pageInfo": {
+          "hasNextPage": false
+        }
+      }
+    },
+    "p0": {
+      "handle": "cathedral-of-the-void",
+      "updatedAt": "2026-10-25T02:28:19Z"
+    },
+    "p1": {
+      "handle": "art-the-clown",
+      "updatedAt": "2026-10-23T12:36:59Z"
+    }
+  },
+  "extensions": {
+    "cost": {
+      "requestedQueryCost": 10
+    }
+  }
+}

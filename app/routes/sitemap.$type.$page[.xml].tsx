@@ -2,6 +2,7 @@ import type {Route} from './+types/sitemap.$type.$page[.xml]';
 import {getSitemap} from '@shopify/hydrogen';
 import {filterSuppressedSitemapXml} from '~/lib/merchandising';
 import {getProductionRequest} from '~/lib/seo';
+import {withProductSitemapLastmod} from '~/lib/product-sitemap';
 
 export async function loader({
   request,
@@ -16,7 +17,10 @@ export async function loader({
   });
   const headers = new Headers(response.headers);
   headers.set('Cache-Control', `max-age=${60 * 60 * 24}`);
-  const xml = filterSuppressedSitemapXml(await response.text());
+  let xml = filterSuppressedSitemapXml(await response.text());
+  if (params.type === 'products' && response.ok) {
+    xml = await withProductSitemapLastmod(xml, storefront);
+  }
 
   return new Response(xml, {
     status: response.status,

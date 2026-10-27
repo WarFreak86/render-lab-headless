@@ -1,0 +1,2093 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Indexing Investigation — Oct 27, 2026</title>
+    <style>
+      :root {
+        --bg: #fff;
+        --fg: #0a0a0a;
+        --fg-2: #454545;
+        --fg-3: #8f8f8f;
+        --rule: #ebebeb;
+        --rule-2: #dcdcdc;
+        --sunk: #fafafa;
+
+        --accent: var(--fg);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        margin: 0;
+        padding: 0 24px 120px;
+        font-size: 18px;
+        line-height: 1.65;
+        letter-spacing: -0.003em;
+        font-family:
+          Geist,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          Helvetica,
+          Arial,
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .shell {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      header {
+        padding: 40px 0 0;
+        max-width: 660px;
+      }
+      h1 {
+        font-size: clamp(34px, 6vw, 56px);
+        font-weight: 700;
+        line-height: 1.03;
+        letter-spacing: -0.035em;
+        margin: 0;
+        text-wrap: balance;
+      }
+      .byline {
+        margin: 24px 0 0;
+        font-size: 16px;
+        color: var(--fg-2);
+      }
+      .body {
+        display: grid;
+        grid-template-columns: minmax(0, 660px) 1fr;
+        gap: 0 64px;
+        margin: 48px 0 0;
+      }
+
+      article {
+        grid-column: 1;
+        grid-row: 1;
+        min-width: 0;
+      }
+      .rail {
+        grid-column: 2;
+        grid-row: 1;
+        font-size: 14px;
+        color: var(--fg-3);
+        padding-top: 6px;
+      }
+      .rail .sticky {
+        position: sticky;
+        top: 40px;
+      }
+      .toc-label {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--fg-3);
+        margin: 0 0 10px;
+      }
+      .toc ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .toc li {
+        margin: 0 0 7px;
+      }
+      .toc a {
+        color: var(--fg-2);
+        text-decoration: none;
+      }
+      .toc a:hover {
+        color: var(--fg);
+      }
+
+      @media (max-width: 900px) {
+        .body {
+          grid-template-columns: 1fr;
+        }
+        .rail {
+          display: none;
+        }
+      }
+      article p {
+        margin: 0 0 26px;
+        text-wrap: pretty;
+      }
+      h2 {
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+        margin: 60px 0 22px;
+        text-wrap: balance;
+      }
+      h3 {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        margin: 38px 0 14px;
+      }
+      .finding {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 26px;
+      }
+      .finding li {
+        margin: 0 0 8px;
+        color: var(--fg-2);
+      }
+      .finding b {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      a {
+        color: var(--fg);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-color: var(--rule-2);
+      }
+      strong {
+        font-weight: 600;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.86em;
+        background: var(--sunk);
+        border: 1px solid var(--rule);
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+      ul,
+      ol {
+        margin: 0 0 26px;
+        padding-left: 22px;
+      }
+      li {
+        margin: 0 0 11px;
+      }
+      li::marker {
+        color: var(--fg-3);
+      }
+      .note {
+        border-left: 2px solid var(--fg);
+        padding: 2px 0 2px 22px;
+        margin: 0 0 26px;
+      }
+      .note p {
+        margin: 0;
+        color: var(--fg-2);
+      }
+      .note p + p {
+        margin-top: 14px;
+      }
+      .tw {
+        overflow-x: auto;
+        margin: 0 0 30px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 15.5px;
+        min-width: 440px;
+      }
+      th {
+        text-align: left;
+        font-weight: 500;
+        color: var(--fg-3);
+        padding: 0 20px 10px 0;
+        border-bottom: 1px solid var(--rule-2);
+        white-space: nowrap;
+      }
+      td {
+        padding: 13px 20px 13px 0;
+        border-bottom: 1px solid var(--rule);
+        vertical-align: top;
+        color: var(--fg-2);
+      }
+      td:first-child {
+        color: var(--fg);
+      }
+      td.n,
+      th.n {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      td:last-child,
+      th:last-child {
+        padding-right: 0;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      figure {
+        margin: 0 0 30px;
+      }
+      figcaption {
+        font-size: 14px;
+        color: var(--fg-3);
+        margin-top: 8px;
+      }
+      .bars {
+        display: grid;
+        grid-template-columns: minmax(90px, 170px) 1fr auto;
+        gap: 10px 12px;
+        align-items: center;
+        font-size: 14px;
+      }
+      .bars .label {
+        color: var(--fg-2);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .bars .track {
+        display: block;
+        height: 20px;
+        background: var(--sunk);
+      }
+      .bars .bar {
+        display: block;
+        height: 100%;
+        background: var(--accent);
+        opacity: 0.16;
+      }
+      .bars .value {
+        font-variant-numeric: tabular-nums;
+        min-width: 3ch;
+        text-align: right;
+      }
+      svg {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid var(--rule);
+        margin: 60px 0;
+      }
+      footer {
+        max-width: 660px;
+        margin: 64px 0 0;
+        padding: 26px 0 0;
+        border-top: 1px solid var(--rule);
+        font-size: 15px;
+        color: var(--fg-3);
+      }
+      @media print {
+        @page {
+          margin: 14mm 16mm;
+        }
+        body {
+          background: #fff;
+          color: #111;
+          padding: 14mm 16mm 6mm;
+          font-size: 11pt;
+        }
+        .shell,
+        .body {
+          display: block;
+          max-width: none;
+        }
+        header {
+          padding: 0;
+          max-width: none;
+        }
+        h1 {
+          font-size: 26pt;
+        }
+        h2 {
+          font-size: 15pt;
+          margin: 22pt 0 10pt;
+        }
+        h3 {
+          font-size: 12pt;
+          margin: 14pt 0 6pt;
+        }
+        article,
+        footer {
+          max-width: none;
+        }
+        .rail {
+          display: none;
+        }
+        h1,
+        h2,
+        h3 {
+          break-after: avoid;
+        }
+        table,
+        figure,
+        .note,
+        svg {
+          break-inside: avoid;
+        }
+        tr,
+        td,
+        th {
+          break-inside: avoid;
+        }
+        p,
+        li {
+          orphans: 3;
+          widows: 3;
+        }
+        thead {
+          display: table-header-group;
+        }
+        .tw {
+          overflow: visible;
+        }
+        table {
+          font-size: 10pt;
+          min-width: 0;
+        }
+        .byline,
+        footer,
+        figcaption {
+          font-size: 9.5pt;
+        }
+        svg,
+        .bars .bar,
+        .bars .track {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        a {
+          text-decoration: none;
+        }
+      }
+
+      a,
+      code {
+        overflow-wrap: anywhere;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <h1>Indexing Investigation — Oct 27, 2026</h1>
+        <p class="byline">
+          Render-Lab · Focused investigation of 70 supplied URLs
+        </p>
+      </header>
+      <div class="body">
+        <article>
+          <h2 id="decision">Decision</h2>
+          <ul>
+            <li>
+              <strong
+                >P1 confirmed technical defect, repaired in the proposed
+                code:</strong
+              >
+              product sitemap dates come from Shopify's unreliable
+              sitemap-resource timestamps. Resolve each listed product's actual
+              <code>Product.updatedAt</code>; omit dates when unavailable,
+              invalid, or future-dated. Review and approve deployment
+              separately.
+            </li>
+            <li>
+              <strong>P2 confirmed collection weakness, reported only:</strong>
+              Alt History and Neon Speed are published but empty, and have no
+              incoming links from the crawled HTML graph. Decide whether to
+              populate and link them, or retire them, before requesting
+              indexing. This change does not modify content, membership, sitemap
+              policy, or navigation.
+            </li>
+            <li>
+              <strong
+                >Probable crawl scheduling delay for the 68 products, not a
+                proven cause:</strong
+              >
+              their public technical checks pass and GSC reportedly has no crawl
+              date. The sitemap defect does not establish why Google has not
+              fetched them. Indexing is not fixed or guaranteed by this PR.
+            </li>
+          </ul>
+          <h2 id="scope-and-evidence">Scope and evidence</h2>
+          <p>
+            The user supplied the exact 70 affected URLs and reported
+            “Discovered - currently not indexed”, with “N/A” last crawl dates.
+            Public checks covered every supplied URL, all five sitemap
+            partitions, 91 Storefront API products, and 127 HTML fetch
+            observations including fragment variants and collection pagination.
+            A parsed HTML document was inspected without executing client
+            JavaScript. Links were normalized for homepage reachability; product
+            variant query strings were normalized to product paths.
+          </p>
+          <p>
+            The row-level results are in affected-url-audit.tsv; source URL list
+            is in affected-paths.txt. summary.json records the API timestamp
+            comparison, partition counts, publication/availability observations,
+            and checkout check. XML snapshots are dated observations, not new
+            production output; files prefixed <code>proposed-</code> are local
+            repair verification output.
+          </p>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Check</th>
+                  <th scope="col">Products (68)</th>
+                  <th scope="col">Collections (2)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Public GET response</td>
+                  <td>68 return 200; no redirect</td>
+                  <td>Both 200; no redirect</td>
+                </tr>
+                <tr>
+                  <td>Canonical, the preferred URL declared in HTML</td>
+                  <td>One self-reference each</td>
+                  <td>One self-reference each</td>
+                </tr>
+                <tr>
+                  <td>HTML robots and X-Robots-Tag</td>
+                  <td>No noindex</td>
+                  <td>No noindex</td>
+                </tr>
+                <tr>
+                  <td>Googlebot robots.txt rules</td>
+                  <td>All clean paths allowed</td>
+                  <td>Both clean paths allowed</td>
+                </tr>
+                <tr>
+                  <td>Sitemap inclusion</td>
+                  <td>68/68</td>
+                  <td>2/2</td>
+                </tr>
+                <tr>
+                  <td>Server-rendered content</td>
+                  <td>
+                    All actual Shopify titles and descriptions present in HTML
+                  </td>
+                  <td>Titles and collection copy present, no product cards</td>
+                </tr>
+                <tr>
+                  <td>Shopify publication/availability</td>
+                  <td>
+                    All returned by configured Storefront API; publishedAt
+                    present; all availableForSale=true
+                  </td>
+                  <td>Both returned by API; products.nodes=[]; no next page</td>
+                </tr>
+                <tr>
+                  <td>Crawlable collection product links</td>
+                  <td>68/68 have ordinary HTML anchors</td>
+                  <td>No products to link</td>
+                </tr>
+                <tr>
+                  <td>Homepage HTML-link depth</td>
+                  <td>65 at depth 2; 3 at depth 3</td>
+                  <td>Both unreachable in the audited graph</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Robots checks used the production rules in the captured robots.txt:
+            clean product and collection paths are allowed; cart, account,
+            search and selected filter combinations are restricted. Googlebot
+            has no more-specific group overriding these clean-path results. The
+            table concerns the supplied URLs, not all possible filtered or
+            localized URL forms.
+          </p>
+          <p>
+            Publication is verified for the configured Storefront API context,
+            not every Shopify sales channel or market. No Admin publication
+            settings, customer data, checkout sessions, or mutations were
+            accessed. The public checkout-domain homepage returned 200 with
+            <code>&lt;meta name="robots" content="noindex"&gt;</code>; its
+            transactional robots restrictions remain in place. No checkout SEO
+            code was changed.
+          </p>
+          <h2 id="confirmed-product-sitemap-defect">
+            Confirmed product sitemap defect
+          </h2>
+          <p>
+            The local route calls Hydrogen 2026.4.5 <code>getSitemap</code>,
+            which queries
+            <code>sitemap(type: PRODUCT).resources(page).items.updatedAt</code>.
+            Hydrogen directly writes that field into
+            <code>&lt;lastmod&gt;</code>. Neither the route nor the installed
+            Hydrogen generator creates a local current-time fallback. The
+            unreliable value originates in the Shopify PRODUCT sitemap resource.
+          </p>
+          <p>Evidence collected without editing Shopify:</p>
+          <ul>
+            <li>
+              The user observed the shared product dates move from 08:39:24Z to
+              08:40:03Z on October 27.
+            </li>
+            <li>
+              Our direct sitemap API observation reported shared product dates
+              of <code>2026-10-27T08:48:08Z</code>; a later independent query
+              reported <code>2026-10-27T08:48:41Z</code>.
+            </li>
+            <li>
+              Cathedral of the Void's actual product updatedAt remained
+              <code>2026-10-25T02:28:19Z</code>. Art the Clown returned
+              <code>2026-10-23T12:36:59Z</code>.
+            </li>
+            <li>
+              The initial public product partition was cached with all 91
+              product dates at <code>2026-10-26T18:23:47Z</code>. A later
+              query-string observation returned
+              <code>2026-10-27T08:48:07Z</code>. Consecutive cached requests can
+              therefore appear stable while still carrying inaccurate dates.
+            </li>
+            <li>
+              All 91 public product dates disagreed with their actual product
+              records. The actual records had 53 distinct timestamps.
+            </li>
+          </ul>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Partition</th>
+                  <th scope="col">Public response</th>
+                  <th scope="col">Result</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>/sitemap/products/1.xml</td>
+                  <td>200; 91 products</td>
+                  <td>
+                    Replace unreliable shared dates with per-product timestamps
+                  </td>
+                </tr>
+                <tr>
+                  <td>/sitemap/products/2.xml</td>
+                  <td>200; homepage fallback only</td>
+                  <td>
+                    API has no product items; preserve the existing fallback
+                    without lastmod
+                  </td>
+                </tr>
+                <tr>
+                  <td>/sitemap/collections/1.xml</td>
+                  <td>200; 15 collections</td>
+                  <td>Historical individual dates; unchanged</td>
+                </tr>
+                <tr>
+                  <td>/sitemap/pages/1.xml</td>
+                  <td>200; 2 pages</td>
+                  <td>Historical individual dates; unchanged</td>
+                </tr>
+                <tr>
+                  <td>/sitemap/blogs/1.xml</td>
+                  <td>200; homepage fallback</td>
+                  <td>Unchanged</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            The sitemap index advertises two product partitions even though the
+            second has no products. This is existing Shopify/Hydrogen behavior,
+            not evidence of missing products: all 91 API-visible products are
+            present in partition 1. No pagination rewrite is justified.
+          </p>
+          <h3>Repair and tradeoffs</h3>
+          <p>
+            The child sitemap route retains Hydrogen's membership, partition
+            handling, canonical host, suppression filter, cache headers and
+            other XML fields. For successful product partitions only, a small
+            helper looks up the actual listed products by exact handle, using
+            alias batches of at most 50. It replaces product lastmod values with
+            valid, non-future <code>Product.updatedAt</code> values. Lookup
+            failure or missing data removes the optional lastmod field for
+            affected entries; it never substitutes request time or
+            sitemap-resource time.
+          </p>
+          <p>
+            The 91-product partition adds two small read-only API requests,
+            using the existing Storefront client cache behavior. The HTTP
+            sitemap cache remains 24 hours, so production verification must
+            account for existing cached output after an approved deployment.
+            Product.updatedAt is Shopify's actual modification timestamp, and
+            can include inventory changes as well as editorial edits.
+            Availability is visible storefront content, making this materially
+            better than request time, but it is not an editorial-only change
+            history. No dates are backdated or invented.
+          </p>
+          <p>
+            No copy, prices, artwork, inventory, variants, checkout,
+            fulfillment, DNS, publication configuration, structured data, or
+            unrelated SEO behavior changed.
+          </p>
+          <h2 id="collection-findings-and-scheduling-interpretation">
+            Collection findings and scheduling interpretation
+          </h2>
+          <p>
+            <code>/collections/alt-history</code> and
+            <code>/collections/neon-speed</code> have titles and descriptions
+            but zero products in the API and zero product cards in server HTML.
+            Neither has an incoming link from another page in the crawled
+            homepage/collection/product graph. They are discoverable through the
+            sitemap but provide no artwork browsing experience. This is a
+            catalog/navigation decision, not a confirmed rendering bug; there is
+            no authorized automatic content repair.
+          </p>
+          <p>
+            The strongest remaining alternative is that these pages are being
+            deferred because they are empty and weakly connected. That is
+            plausible, but no crawl date means Google has not yet provided
+            evidence of a content assessment. Repeated indexing requests will
+            not add useful content or links.
+          </p>
+          <p>
+            For the 68 products, ordinary HTML links, server HTML, publication,
+            canonical and robots checks show no shared technical blocker.
+            Google's scheduling remains the leading hypothesis, with unknown
+            site history, Google crawl demand and host statistics. We cannot
+            infer a penalty, a specific quality rejection, a crawl budget
+            problem, or a guaranteed recovery date.
+          </p>
+          <p>
+            The 23 other published products provide public technical comparisons
+            only. For example,
+            <code>/products/still-standing-echoes-of-war</code>,
+            <code>/products/first-line-echoes-of-war</code>, and
+            <code>/products/concrete-saint-urban-icon</code> use the same
+            storefront routes and pass the public checks. They are not verified
+            indexed controls. The OpenSEO project lists the domain ownership
+            account, but URL inspection returns <code>not_connected</code>; no
+            independently confirmed indexed example or GSC crawl/performance
+            history was available. No GSC project connection setting was
+            changed.
+          </p>
+          <h2 id="manual-inspection-shortlist-after-an-approved-deployment">
+            Manual inspection shortlist after an approved deployment
+          </h2>
+          <p>
+            Verify the public sitemap output first; then inspect these five URLs
+            in GSC. Live Test is useful for current access; the indexed
+            inspection result is needed for Google's actual crawl/index state.
+          </p>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">URL</th>
+                  <th scope="col">Action and reason</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>https://render-lab.org/products/cathedral-of-the-void</td>
+                  <td>
+                    Live Test and request indexing once; direct timestamp
+                    comparison proves the repaired case
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    https://render-lab.org/products/carnivora-no-01-open-trap
+                  </td>
+                  <td>
+                    Live Test and request once; representative of a different
+                    populated collection
+                  </td>
+                </tr>
+                <tr>
+                  <td>https://render-lab.org/products/art-the-clown</td>
+                  <td>
+                    Live Test and request once; another collection and a
+                    separately verified actual timestamp
+                  </td>
+                </tr>
+                <tr>
+                  <td>https://render-lab.org/collections/alt-history</td>
+                  <td>
+                    Inspect now to record the baseline; defer indexing request
+                    until intentionally populated and linked
+                  </td>
+                </tr>
+                <tr>
+                  <td>https://render-lab.org/collections/neon-speed</td>
+                  <td>
+                    Inspect now to record the baseline; defer indexing request
+                    until intentionally populated and linked
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Do not repeatedly request the same URLs. Submit or resubmit the
+            existing sitemap once after verifying the deployed output, rather
+            than submitting every product individually. Sitemap submission and
+            indexing requests do not guarantee indexing.
+          </p>
+          <h2 id="gsc-follow-up-measured-from-deployment-day">
+            GSC follow-up, measured from deployment day
+          </h2>
+          <p>
+            Record the deployment date and a fresh baseline export of this exact
+            70-URL cohort. Keep cohort counts separate from the site's overall
+            counts so new products do not distort results. If deployment were
+            October 27, the checks would be November 3 and November 10; no
+            deployment has occurred as part of this investigation.
+          </p>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Metric</th>
+                  <th scope="col">Day 7</th>
+                  <th scope="col">Day 14</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Pages report</td>
+                  <td>
+                    Count cohort URLs still Discovered; count Indexed,
+                    Crawled-not-indexed, and new exclusion reasons; note
+                    report's update date
+                  </td>
+                  <td>
+                    Compare the same cohort and transitions to baseline and day
+                    7; distinguish a first crawl from actual indexing
+                  </td>
+                </tr>
+                <tr>
+                  <td>URL Inspection</td>
+                  <td>
+                    Record last crawl, crawl allowed, fetch result, indexing
+                    allowed, user canonical and Google-selected canonical for
+                    shortlist
+                  </td>
+                  <td>
+                    Reinspect shortlist and any changed exclusions; investigate
+                    unexpected canonical choices or fetch failures
+                  </td>
+                </tr>
+                <tr>
+                  <td>Sitemaps</td>
+                  <td>
+                    Status Success, Last read after deployment, discovered URL
+                    count, partition fetch/parse errors
+                  </td>
+                  <td>
+                    Confirm another successful read if available; dates remain
+                    accurate/stable when products did not change
+                  </td>
+                </tr>
+                <tr>
+                  <td>Settings &gt; Crawl stats</td>
+                  <td>
+                    Host status, robots availability, DNS/server connectivity,
+                    total crawl requests, response-time trend and 4xx/5xx
+                  </td>
+                  <td>
+                    Compare trends and host errors; these are sitewide, not
+                    proof of crawling this exact cohort
+                  </td>
+                </tr>
+                <tr>
+                  <td>Performance &gt; Search results</td>
+                  <td>
+                    Filter affected pages for impressions, clicks and query
+                    coverage; allow GSC reporting lag
+                  </td>
+                  <td>
+                    Compare impressions/pages with impressions; no impressions
+                    alone does not prove non-indexing
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            If a product gets a first crawl but remains Crawled-not-indexed,
+            inspect Google's rendered HTML and canonical decision before
+            proposing further work. If there are still no crawl dates, check
+            sitemap last-read freshness, host health and a larger representative
+            inspection sample. Report the continuing uncertainty; do not change
+            product content or add schema without a separate evidence-backed
+            decision.
+          </p>
+          <h2 id="validation-and-limitations">Validation and limitations</h2>
+          <ul>
+            <li>
+              Final full local suite: 39 files, 290 tests passed; targeted
+              sitemap suite: 14 tests passed.
+            </li>
+            <li>
+              Typecheck including Hydrogen codegen and React Router type
+              generation passed; standalone TypeScript check passed. Codegen
+              removed stale pre-existing blog types, so that unrelated
+              generated-file change was restored.
+            </li>
+            <li>
+              Final lint and whitespace checks are recorded in the PR.
+              Regression coverage includes different partitions, changed request
+              times, individual product edits, invalid/missing/future
+              timestamps, API failures, partial error metadata, bounded batches,
+              suppression, fallback membership and untouched non-product
+              sitemaps.
+            </li>
+            <li>
+              A live read-only run of the repaired helper completed two
+              timestamp batches for all 91 products and returned 53 distinct
+              dates. Seven captured XML documents parsed successfully. Both
+              proposed product partition outputs parsed, remained stable, and
+              matched all actual per-product timestamps. This is well-formedness
+              and entry/date validation, not an external XSD validator
+              certification.
+            </li>
+            <li>
+              External Shopify validation was not run: automatic approval review
+              rejected uploading source and task text, and the user selected
+              local validation only.
+            </li>
+            <li>
+              Public checks are one investigation window, not historical
+              Googlebot logs or a guarantee of availability in every region.
+              HTML link checks show actual anchors without running JavaScript;
+              they do not substitute for Google's rendered snapshot.
+            </li>
+          </ul>
+          <p>
+            No deployment or merge was performed. The current main branch
+            workflow deploys only on main pushes or manual dispatch. This PR
+            uses a separate branch and a <code>[skip ci]</code> commit as an
+            additional safeguard. Approval of this PR does not itself verify
+            indexing; GSC must later confirm it.
+          </p>
+          <h2 id="sources">Sources</h2>
+          <ul>
+            <li>
+              <a
+                href="https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap"
+                target="_blank"
+                rel="noopener"
+                >Google: sitemap lastmod must be consistently and verifiably
+                accurate</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://support.google.com/webmasters/answer/9012289?hl=en"
+                target="_blank"
+                rel="noopener"
+                >Google: URL Inspection and Discovered - currently not
+                indexed</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://developers.google.com/search/docs/crawling-indexing/ask-google-to-recrawl"
+                target="_blank"
+                rel="noopener"
+                >Google: requesting recrawls does not guarantee indexing</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://shopify.dev/docs/api/storefront/2026-04/objects/Product#field-Product.fields.updatedAt"
+                target="_blank"
+                rel="noopener"
+                >Shopify: Product.updatedAt and inventory updates</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://shopify.dev/docs/api/hydrogen/2026-04/utilities/getsitemap"
+                target="_blank"
+                rel="noopener"
+                >Shopify Hydrogen getSitemap</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://render-lab.org/sitemap.xml"
+                target="_blank"
+                rel="noopener"
+                >Public sitemap index</a
+              >,
+              <a
+                href="https://render-lab.org/sitemap/products/1.xml"
+                target="_blank"
+                rel="noopener"
+                >product partition 1</a
+              >,
+              <a
+                href="https://render-lab.org/sitemap/products/2.xml"
+                target="_blank"
+                rel="noopener"
+                >product partition 2</a
+              >,
+              <a
+                href="https://render-lab.org/robots.txt"
+                target="_blank"
+                rel="noopener"
+                >robots</a
+              >
+            </li>
+          </ul>
+          <p>
+            Prepared using the
+            <a
+              href="https://openseo.so/docs/skills/seo-audit"
+              target="_blank"
+              rel="noopener"
+              >OpenSEO SEO Audit skill</a
+            >, constrained to the requested indexing investigation. No paid
+            keyword, backlink, or AI-visibility research was needed. A fresh
+            self-review checked the empty-collection alternative, all 70 rows,
+            partition behavior, causal uncertainty, and the proposed validation
+            claims.
+          </p>
+          <h2 id="how-this-report-was-made">How this report was made</h2>
+          <p>
+            Prepared using the
+            <a
+              href="https://openseo.so/docs/skills/seo-audit"
+              target="_blank"
+              rel="noopener"
+              >OpenSEO SEO Audit skill</a
+            >. Public HTTP and HTML checks plus read-only Storefront API
+            queries. GSC status supplied by the user; direct inspection
+            unavailable.
+          </p>
+          <details>
+            <summary>Evidence and methodology: all 70 URL checks</summary>
+            <p>
+              Canonical=true means exactly one self-referencing canonical.
+              Noindex=false means no HTML or response-header exclusion. Link
+              depth is measured from the homepage using ordinary anchors;
+              unreachable applies to the two empty collections. All clean paths
+              are allowed by robots.txt. All 68 product titles and descriptions
+              were present in server HTML, published in the configured
+              Storefront API and available for sale.
+            </p>
+            <div class="tw">
+              <table>
+                <thead>
+                  <tr>
+                    <th>URL</th>
+                    <th>HTTP</th>
+                    <th>Self canonical</th>
+                    <th>Noindex</th>
+                    <th>Sitemap</th>
+                    <th>HTML depth</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/collections/alt-history"
+                        target="_blank"
+                        rel="noopener"
+                        >/collections/alt-history</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>unreachable</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/collections/neon-speed"
+                        target="_blank"
+                        rel="noopener"
+                        >/collections/neon-speed</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>unreachable</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/after-the-collapse"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/after-the-collapse</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/after-the-smoke-echoes-of-war"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/after-the-smoke-echoes-of-war</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/art-the-clown"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/art-the-clown</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/ascension-beyond-time"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/ascension-beyond-time</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/backroad-bruiser-1952-chevrolet-rat-rod"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/backroad-bruiser-1952-chevrolet-rat-rod</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/blade"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/blade</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/blonde-static-urban-icon"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/blonde-static-urban-icon</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/blue-collar-thunder-1960-ford-f-100"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/blue-collar-thunder-1960-ford-f-100</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/carnivora-no-01-open-trap"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/carnivora-no-01-open-trap</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/carnivora-no-03-hanging-nectar"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/carnivora-no-03-hanging-nectar</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/carnivora-no-05-aperture"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/carnivora-no-05-aperture</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/carnivora-no-06-nectar-chamber"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/carnivora-no-06-nectar-chamber</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/carnivora-no-07-lantern"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/carnivora-no-07-lantern</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/carnivora-no-08-vascular-edge"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/carnivora-no-08-vascular-edge</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/carnivora-no-10-vascular-light"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/carnivora-no-10-vascular-light</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/cathedral-of-the-void"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/cathedral-of-the-void</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/chemical-smile-tyler-durden"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/chemical-smile-tyler-durden</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/city-dogg-urban-icon"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/city-dogg-urban-icon</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/cyclone-warning-1970-mercury-cyclone-spoiler"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/cyclone-warning-1970-mercury-cyclone-spoiler</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>3</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/deadpool"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/deadpool</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/deathstroke"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/deathstroke</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/divine-intervention-jules-winnfield"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/divine-intervention-jules-winnfield</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/eliminator-1970-mercury-cougar"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/eliminator-1970-mercury-cougar</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>3</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/empire-in-white-tony-montana"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/empire-in-white-tony-montana</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/executive-violence-patrick-bateman"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/executive-violence-patrick-bateman</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/eyes-of-doom"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/eyes-of-doom</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/fields-of-memory-echoes-of-war"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/fields-of-memory-echoes-of-war</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/freddy"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/freddy</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/frozen-ground-echoes-of-war"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/frozen-ground-echoes-of-war</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/ghost-rider"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/ghost-rider</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/ghostface"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/ghostface</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/hard-exit-heat"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/hard-exit-heat</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/iron-will"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/iron-will</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/jungle-ghosts-echoes-of-war"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/jungle-ghosts-echoes-of-war</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/keeper-of-the-threshold"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/keeper-of-the-threshold</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/king-over-the-fallen-city"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/king-over-the-fallen-city</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/machine-memory-terminator"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/machine-memory-terminator</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/march-through-ashes"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/march-through-ashes</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/master-of-ruin"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/master-of-ruin</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/michael"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/michael</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/midnight-shake-vincent-vega"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/midnight-shake-vincent-vega</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/moon-knight"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/moon-knight</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/neon-diva-royale-urban-icon"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/neon-diva-royale-urban-icon</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/no-mans-land-echoes-of-war"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/no-mans-land-echoes-of-war</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/pennywise"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/pennywise</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/phantom-hauler-1948-ford-pickup"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/phantom-hauler-1948-ford-pickup</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/pink-crown-urban-icon"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/pink-crown-urban-icon</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/quarter-mile-1964-ford-fairlane-thunderbolt"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/quarter-mile-1964-ford-fairlane-thunderbolt</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/road-runner-red-1970-plymouth-road-runner"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/road-runner-red-1970-plymouth-road-runner</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>3</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/rust-ritual-1936-ford-rat-rod"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/rust-ritual-1936-ford-rat-rod</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/spawn"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/spawn</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/still-standing-rocky-balboa"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/still-standing-rocky-balboa</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/street-authority-1970-dodge-charger-r-t"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/street-authority-1970-dodge-charger-r-t</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/street-empire-urban-icon"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/street-empire-urban-icon</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/the-cleaner-leon"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/the-cleaner-leon</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/the-forbidden-workshop"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/the-forbidden-workshop</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/the-hand-of-creation"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/the-hand-of-creation</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/the-last-radiance"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/the-last-radiance</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/the-long-march-echoes-of-war"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/the-long-march-echoes-of-war</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/the-producer-urban-icon"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/the-producer-urban-icon</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/the-sky-unbound"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/the-sky-unbound</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/throne-of-dominion"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/throne-of-dominion</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/trans-am-rebel-1970-amc-javelin"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/trans-am-rebel-1970-amc-javelin</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/war-within-echoes-of-war"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/war-within-echoes-of-war</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/west-coast-shadow-urban-icon"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/west-coast-shadow-urban-icon</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/where-eternity-falls"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/where-eternity-falls</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/winter-soldier"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/winter-soldier</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a
+                        href="https://render-lab.org/products/wolverine"
+                        target="_blank"
+                        rel="noopener"
+                        >/products/wolverine</a
+                      >
+                    </td>
+                    <td>200</td>
+                    <td>true</td>
+                    <td>false</td>
+                    <td>true</td>
+                    <td>2</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </article>
+        <aside class="rail">
+          <div class="sticky">
+            <p class="toc-label">Contents</p>
+            <nav class="toc">
+              <ol>
+                <li><a href="#decision">Decision</a></li>
+                <li><a href="#scope-and-evidence">Scope and evidence</a></li>
+                <li>
+                  <a href="#confirmed-product-sitemap-defect"
+                    >Confirmed product sitemap defect</a
+                  >
+                </li>
+                <li>
+                  <a href="#collection-findings-and-scheduling-interpretation"
+                    >Collection findings and scheduling interpretation</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#manual-inspection-shortlist-after-an-approved-deployment"
+                    >Manual inspection shortlist after an approved deployment</a
+                  >
+                </li>
+                <li>
+                  <a href="#gsc-follow-up-measured-from-deployment-day"
+                    >GSC follow-up, measured from deployment day</a
+                  >
+                </li>
+                <li>
+                  <a href="#validation-and-limitations"
+                    >Validation and limitations</a
+                  >
+                </li>
+                <li><a href="#sources">Sources</a></li>
+                <li>
+                  <a href="#how-this-report-was-made"
+                    >How this report was made</a
+                  >
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>
