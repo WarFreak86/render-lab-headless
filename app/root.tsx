@@ -31,6 +31,7 @@ import galleryStyles from '~/styles/gallery-evolution.css?url';
 import mobileCommerceStyles from '~/styles/mobile-commerce.css?url';
 import {PageLayout} from './components/PageLayout';
 import {PinterestAnalytics} from './components/PinterestAnalytics';
+import {GoogleAnalytics} from './components/GoogleAnalytics';
 
 import '@fontsource/cormorant-garamond/latin-500.css';
 import '@fontsource/cormorant-garamond/latin-600.css';
@@ -227,6 +228,7 @@ export default function App() {
       consent={data.consent}
     >
       <PinterestAnalytics />
+      <GoogleAnalytics />
       <PageLayout {...data}>
         <Outlet />
       </PageLayout>
