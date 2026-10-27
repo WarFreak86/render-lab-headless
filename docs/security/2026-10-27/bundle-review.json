@@ -1,0 +1,23 @@
+{
+  "mapSources": 167,
+  "packages": {
+    "react-router": [
+      "../../node_modules/react-router/dist/development/chunk-QUQL4437.mjs",
+      "../../node_modules/react-router/dist/development/chunk-S54KXAEJ.mjs"
+    ],
+    "vite": [],
+    "source-map-js": [],
+    "shell-quote": [],
+    "@graphql-tools/utils": [],
+    "miniflare": [],
+    "undici": [],
+    "ws": [],
+    "body-parser": [],
+    "zod": []
+  },
+  "compiledRouteDiscoveryInitial": true,
+  "notes": [
+    "Source-map inventory of proposed local Oxygen server bundle; not a live deployment inspection.",
+    "Runtime framework code remains bundled; build/test/simulator packages below have no entries in server source map."
+  ]
+}

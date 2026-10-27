@@ -1,0 +1,1471 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "@fastify/busboy": {
+      "name": "@fastify/busboy",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1240982,
+          "name": "@fastify/busboy",
+          "dependency": "@fastify/busboy",
+          "title": "@fastify/busboy vulnerable to Denial of Service via prototype-named multipart part header",
+          "url": "https://github.com/advisories/GHSA-x8mw-p69m-v3mx",
+          "severity": "high",
+          "cwe": [
+            "CWE-754"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=1.0.0 <3.2.1"
+        },
+        {
+          "source": 1241276,
+          "name": "@fastify/busboy",
+          "dependency": "@fastify/busboy",
+          "title": "@fastify/busboy vulnerable to CRLF injection via multipart Content-Disposition filename and name",
+          "url": "https://github.com/advisories/GHSA-gxm5-99cw-xjw9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-93"
+          ],
+          "cvss": {
+            "score": 5.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:L/A:N"
+          },
+          "range": "<3.2.2"
+        }
+      ],
+      "effects": [
+        "undici"
+      ],
+      "range": "<=3.2.1",
+      "nodes": [
+        "node_modules/miniflare/node_modules/@fastify/busboy"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/mini-oxygen",
+        "version": "0.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "@graphql-codegen/add": {
+      "name": "@graphql-codegen/add",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@graphql-codegen/plugin-helpers"
+      ],
+      "effects": [],
+      "range": "1.13.6-alpha-01e83c2c.25 - 1.13.6-alpha-e05b7bda.36 || 1.14.1-alpha-02e7bdc6.12 - 7.0.0-alpha-20260430125644-b20ffe821614c625689575ab43d971db7e7ab327",
+      "nodes": [
+        "node_modules/@graphql-codegen/add"
+      ],
+      "fixAvailable": true
+    },
+    "@graphql-codegen/plugin-helpers": {
+      "name": "@graphql-codegen/plugin-helpers",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@graphql-tools/utils"
+      ],
+      "effects": [
+        "@graphql-codegen/add",
+        "@graphql-codegen/schema-ast",
+        "@graphql-codegen/typescript",
+        "@graphql-codegen/typescript-operations",
+        "@graphql-codegen/visitor-plugin-common"
+      ],
+      "range": "1.13.6-alpha-01e83c2c.25 - 1.13.6-alpha-e05b7bda.36 || 1.14.1-alpha-02e7bdc6.12 - 7.4.1",
+      "nodes": [
+        "node_modules/@graphql-codegen/plugin-helpers"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/hydrogen-codegen",
+        "version": "0.2.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@graphql-codegen/schema-ast": {
+      "name": "@graphql-codegen/schema-ast",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@graphql-codegen/plugin-helpers",
+        "@graphql-tools/utils"
+      ],
+      "effects": [
+        "@graphql-codegen/typescript"
+      ],
+      "range": "1.13.6-alpha-01e83c2c.25 - 1.13.6-alpha-e05b7bda.36 || 1.14.1-alpha-02e7bdc6.12 - 6.1.0",
+      "nodes": [
+        "node_modules/@graphql-codegen/schema-ast"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/hydrogen-codegen",
+        "version": "0.2.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@graphql-codegen/typescript": {
+      "name": "@graphql-codegen/typescript",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@graphql-codegen/plugin-helpers",
+        "@graphql-codegen/schema-ast",
+        "@graphql-codegen/visitor-plugin-common"
+      ],
+      "effects": [
+        "@graphql-codegen/typescript-operations",
+        "@shopify/graphql-codegen"
+      ],
+      "range": "1.13.6-alpha-01e83c2c.25 - 1.13.6-alpha-e05b7bda.36 || 1.14.1-alpha-02e7bdc6.12 - 6.0.0-alpha-20260430125644-b20ffe821614c625689575ab43d971db7e7ab327 || 6.0.1-alpha-20260502160734-b8d4179e8ad9ae452ace9c1dee36c8dd1dc0a688 - 6.0.1-alpha-20260506131057-3452f127737a96e67180eff01da10092b2c5bad0",
+      "nodes": [
+        "node_modules/@graphql-codegen/typescript"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/hydrogen-codegen",
+        "version": "0.2.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@graphql-codegen/typescript-operations": {
+      "name": "@graphql-codegen/typescript-operations",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@graphql-codegen/plugin-helpers",
+        "@graphql-codegen/typescript",
+        "@graphql-codegen/visitor-plugin-common"
+      ],
+      "effects": [],
+      "range": "1.13.6-alpha-01e83c2c.25 - 1.13.6-alpha-e05b7bda.36 || 1.14.1-alpha-02e7bdc6.12 - 6.0.0-alpha-20260430125644-b20ffe821614c625689575ab43d971db7e7ab327 || 6.0.1-alpha-20260506131057-3452f127737a96e67180eff01da10092b2c5bad0",
+      "nodes": [
+        "node_modules/@graphql-codegen/typescript-operations"
+      ],
+      "fixAvailable": true
+    },
+    "@graphql-codegen/visitor-plugin-common": {
+      "name": "@graphql-codegen/visitor-plugin-common",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@graphql-codegen/plugin-helpers",
+        "@graphql-tools/utils"
+      ],
+      "effects": [
+        "@graphql-codegen/typescript",
+        "@graphql-codegen/typescript-operations"
+      ],
+      "range": "1.13.6-alpha-01e83c2c.25 - 1.13.6-alpha-e05b7bda.36 || 1.14.1-alpha-02e7bdc6.12 - 7.2.9-alpha-20261008113150-6f952a000a92677bc734a0094218c0a510ecc3ce || 7.3.0-alpha-20260930101424-b690e1a9bbb7bc65f39b67112cbeca529460e183 - 7.3.0-alpha-20261012105234-33471d80f2bfd12d5b21cec6ef384bdfd57907b1",
+      "nodes": [
+        "node_modules/@graphql-codegen/visitor-plugin-common"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/hydrogen-codegen",
+        "version": "0.2.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@graphql-tools/batch-execute": {
+      "name": "@graphql-tools/batch-execute",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@graphql-tools/utils"
+      ],
+      "effects": [],
+      "range": "<=10.1.0",
+      "nodes": [
+        "node_modules/@graphql-tools/batch-execute"
+      ],
+      "fixAvailable": true
+    },
+    "@graphql-tools/delegate": {
+      "name": "@graphql-tools/delegate",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@graphql-tools/executor",
+        "@graphql-tools/utils"
+      ],
+      "effects": [],
+      "range": "<=12.1.4",
+      "nodes": [
+        "node_modules/@graphql-tools/delegate"
+      ],
+      "fixAvailable": true
+    },
+    "@graphql-tools/executor": {
+      "name": "@graphql-tools/executor",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@graphql-tools/utils"
+      ],
+      "effects": [
+        "@graphql-tools/delegate"
+      ],
+      "range": "<=2.0.0-rc-20260806160344-fea2a9cb67cc8f883edfb5fdf4843ab4c69bd409",
+      "nodes": [
+        "node_modules/@graphql-tools/executor"
+      ],
+      "fixAvailable": true
+    },
+    "@graphql-tools/utils": {
+      "name": "@graphql-tools/utils",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1241230,
+          "name": "@graphql-tools/utils",
+          "dependency": "@graphql-tools/utils",
+          "title": "GraphQL Tools has prototype pollution in well-established utility function `mergeDeep`",
+          "url": "https://github.com/advisories/GHSA-7mx3-vvmw-hjmv",
+          "severity": "high",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=12.0.0"
+        },
+        {
+          "source": 1242879,
+          "name": "@graphql-tools/utils",
+          "dependency": "@graphql-tools/utils",
+          "title": "GraphQL Tools: Prototype pollution in mergeIncrementalResult via non-primitive path segments",
+          "url": "https://github.com/advisories/GHSA-c4qx-w738-7hr3",
+          "severity": "high",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=10.10.1 <=12.0.1"
+        }
+      ],
+      "effects": [
+        "@graphql-codegen/plugin-helpers",
+        "@graphql-codegen/schema-ast",
+        "@graphql-codegen/visitor-plugin-common",
+        "@graphql-tools/batch-execute",
+        "@graphql-tools/delegate",
+        "@graphql-tools/executor",
+        "@graphql-tools/wrap"
+      ],
+      "range": "<=12.0.1",
+      "nodes": [
+        "node_modules/@graphql-tools/batch-execute/node_modules/@graphql-tools/utils",
+        "node_modules/@graphql-tools/delegate/node_modules/@graphql-tools/utils",
+        "node_modules/@graphql-tools/executor/node_modules/@graphql-tools/utils",
+        "node_modules/@graphql-tools/utils",
+        "node_modules/@graphql-tools/wrap/node_modules/@graphql-tools/utils"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/hydrogen-codegen",
+        "version": "0.2.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@graphql-tools/wrap": {
+      "name": "@graphql-tools/wrap",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@graphql-tools/utils"
+      ],
+      "effects": [],
+      "range": "<=11.1.24",
+      "nodes": [
+        "node_modules/@graphql-tools/wrap"
+      ],
+      "fixAvailable": true
+    },
+    "@react-router/dev": {
+      "name": "@react-router/dev",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@react-router/node"
+      ],
+      "effects": [],
+      "range": "<=7.17.0",
+      "nodes": [
+        "node_modules/@react-router/dev"
+      ],
+      "fixAvailable": {
+        "name": "@react-router/dev",
+        "version": "7.18.4",
+        "isSemVerMajor": false
+      }
+    },
+    "@react-router/node": {
+      "name": "@react-router/node",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "react-router"
+      ],
+      "effects": [
+        "@react-router/dev"
+      ],
+      "range": "<=7.17.0",
+      "nodes": [
+        "node_modules/@react-router/node"
+      ],
+      "fixAvailable": {
+        "name": "@react-router/dev",
+        "version": "7.18.4",
+        "isSemVerMajor": false
+      }
+    },
+    "@shopify/graphql-codegen": {
+      "name": "@shopify/graphql-codegen",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@graphql-codegen/add",
+        "@graphql-codegen/typescript",
+        "@graphql-codegen/typescript-operations"
+      ],
+      "effects": [
+        "@shopify/hydrogen-codegen"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@shopify/graphql-codegen"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/hydrogen-codegen",
+        "version": "0.2.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@shopify/hydrogen": {
+      "name": "@shopify/hydrogen",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@react-router/dev",
+        "react-router"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-snapshot-20261009120113 || 2025.5.0 - 2026.1.4 || 2026.4.2 - 2026.4.8",
+      "nodes": [
+        "node_modules/@shopify/hydrogen"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/hydrogen",
+        "version": "2026.10.2",
+        "isSemVerMajor": false
+      }
+    },
+    "@shopify/hydrogen-codegen": {
+      "name": "@shopify/hydrogen-codegen",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@shopify/graphql-codegen"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-snapshot-20250321210338 || >=0.2.2",
+      "nodes": [
+        "node_modules/@shopify/hydrogen-codegen"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/hydrogen-codegen",
+        "version": "0.2.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@shopify/mini-oxygen": {
+      "name": "@shopify/mini-oxygen",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "body-parser",
+        "miniflare",
+        "undici"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-snapshot-20250429141628 || >=0.1.0",
+      "nodes": [
+        "node_modules/@shopify/mini-oxygen"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/mini-oxygen",
+        "version": "0.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "body-parser": {
+      "name": "body-parser",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1123977,
+          "name": "body-parser",
+          "dependency": "body-parser",
+          "title": "body-parser vulnerable to denial of service when invalid limit value silently disables size enforcement",
+          "url": "https://github.com/advisories/GHSA-v422-hmwv-36x6",
+          "severity": "low",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": "<1.20.6"
+        },
+        {
+          "source": 1243073,
+          "name": "body-parser",
+          "dependency": "body-parser",
+          "title": "body-parser vulnerable to Denial of Service via trailing bytes after a compressed request body",
+          "url": "https://github.com/advisories/GHSA-27r3-jxmh-p828",
+          "severity": "high",
+          "cwe": [
+            "CWE-248"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<1.20.9"
+        }
+      ],
+      "effects": [
+        "@shopify/mini-oxygen"
+      ],
+      "range": "<=1.20.8",
+      "nodes": [
+        "node_modules/body-parser"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/mini-oxygen",
+        "version": "0.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "cookie": {
+      "name": "cookie",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1103907,
+          "name": "cookie",
+          "dependency": "cookie",
+          "title": "cookie accepts cookie name, path, and domain with out of bounds characters",
+          "url": "https://github.com/advisories/GHSA-pxg6-pf52-xh8x",
+          "severity": "low",
+          "cwe": [
+            "CWE-74"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<0.7.0"
+        }
+      ],
+      "effects": [
+        "youch"
+      ],
+      "range": "<0.7.0",
+      "nodes": [
+        "node_modules/youch/node_modules/cookie"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/mini-oxygen",
+        "version": "0.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "miniflare": {
+      "name": "miniflare",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "undici",
+        "ws",
+        "youch",
+        "zod"
+      ],
+      "effects": [
+        "@shopify/mini-oxygen"
+      ],
+      "range": "<=0.0.0-fff677e35 || 0.20230628.0 - 4.20260518.0",
+      "nodes": [
+        "node_modules/miniflare"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/mini-oxygen",
+        "version": "0.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "qs": {
+      "name": "qs",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1119502,
+          "name": "qs",
+          "dependency": "qs",
+          "title": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays when encodeValuesOnly is set",
+          "url": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-476"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": ">=6.11.1 <=6.15.1"
+        },
+        {
+          "source": 1158506,
+          "name": "qs",
+          "dependency": "qs",
+          "title": "qs array-limit bypass via bracket-key comma parsing",
+          "url": "https://github.com/advisories/GHSA-x5fp-wj9c-mxmx",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": ">=6.14.2 <=6.15.3"
+        },
+        {
+          "source": 1158507,
+          "name": "qs",
+          "dependency": "qs",
+          "title": "qs: Denial of Service via Attacker Controlled isBuffer",
+          "url": "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-248",
+            "CWE-703"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": ">=2.2.5 <6.16.0"
+        }
+      ],
+      "effects": [],
+      "range": "2.2.5 - 6.15.3",
+      "nodes": [
+        "node_modules/qs"
+      ],
+      "fixAvailable": true
+    },
+    "react-router": {
+      "name": "react-router",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        {
+          "source": 1124268,
+          "name": "react-router",
+          "dependency": "react-router",
+          "title": "React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass)",
+          "url": "https://github.com/advisories/GHSA-wrjc-x8rr-h8h6",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-601"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=6.0.0 <7.18.0"
+        },
+        {
+          "source": 1124271,
+          "name": "react-router",
+          "dependency": "react-router",
+          "title": "React Router: RSCErrorHandler Missing Protocol Validation (XSS)",
+          "url": "https://github.com/advisories/GHSA-h8fp-f39c-q6mh",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-79"
+          ],
+          "cvss": {
+            "score": 6.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:H/I:L/A:N"
+          },
+          "range": ">=7.11.0 <7.18.0"
+        },
+        {
+          "source": 1124272,
+          "name": "react-router",
+          "dependency": "react-router",
+          "title": "React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration",
+          "url": "https://github.com/advisories/GHSA-337j-9hxr-rhxg",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-470"
+          ],
+          "cvss": {
+            "score": 6.1,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N"
+          },
+          "range": ">=6.4.0 <7.18.0"
+        },
+        {
+          "source": 1124276,
+          "name": "react-router",
+          "dependency": "react-router",
+          "title": "React Router: Unauthenticated Denial of Service via Inefficient Route Matching",
+          "url": "https://github.com/advisories/GHSA-chx6-hx7r-mcp5",
+          "severity": "high",
+          "cwe": [
+            "CWE-400",
+            "CWE-407"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=7.0.0 <7.18.0"
+        },
+        {
+          "source": 1138769,
+          "name": "react-router",
+          "dependency": "react-router",
+          "title": "React Router: RSC Mode CSRF Bypass Allows Action Execution Before 400 Response",
+          "url": "https://github.com/advisories/GHSA-qwww-vcr4-c8h2",
+          "severity": "high",
+          "cwe": [
+            "CWE-352"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=7.12.0 <7.18.2"
+        }
+      ],
+      "effects": [
+        "@react-router/node",
+        "@shopify/hydrogen",
+        "react-router-dom"
+      ],
+      "range": "6.0.0 - 7.18.1",
+      "nodes": [
+        "node_modules/react-router"
+      ],
+      "fixAvailable": {
+        "name": "@react-router/dev",
+        "version": "7.18.4",
+        "isSemVerMajor": false
+      }
+    },
+    "react-router-dom": {
+      "name": "react-router-dom",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "react-router"
+      ],
+      "effects": [],
+      "range": "6.0.0-alpha.0 - 7.17.0",
+      "nodes": [
+        "node_modules/react-router-dom"
+      ],
+      "fixAvailable": {
+        "name": "react-router-dom",
+        "version": "7.18.4",
+        "isSemVerMajor": false
+      }
+    },
+    "undici": {
+      "name": "undici",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@fastify/busboy",
+        {
+          "source": 1112496,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "Undici has an unbounded decompression chain in HTTP responses on Node.js Fetch API via Content-Encoding leads to resource exhaustion",
+          "url": "https://github.com/advisories/GHSA-g9mf-h72j-4rw9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<6.23.0"
+        },
+        {
+          "source": 1114594,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "Undici has an HTTP Request/Response Smuggling issue",
+          "url": "https://github.com/advisories/GHSA-2mjp-6q6p-2qxm",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-444"
+          ],
+          "cvss": {
+            "score": 6.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:L"
+          },
+          "range": "<6.24.0"
+        },
+        {
+          "source": 1114638,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "Undici has Unbounded Memory Consumption in WebSocket permessage-deflate Decompression",
+          "url": "https://github.com/advisories/GHSA-vrm6-8vpv-qv8q",
+          "severity": "high",
+          "cwe": [
+            "CWE-409"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<6.24.0"
+        },
+        {
+          "source": 1114640,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "Undici has Unhandled Exception in WebSocket Client Due to Invalid server_max_window_bits Validation",
+          "url": "https://github.com/advisories/GHSA-v9p9-hfj2-hcw8",
+          "severity": "high",
+          "cwe": [
+            "CWE-248"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<6.24.0"
+        },
+        {
+          "source": 1114642,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "Undici has CRLF Injection in undici via `upgrade` option",
+          "url": "https://github.com/advisories/GHSA-4992-7rv2-5pvq",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-93"
+          ],
+          "cvss": {
+            "score": 4.6,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:L/I:L/A:N"
+          },
+          "range": "<6.24.0"
+        },
+        {
+          "source": 1121187,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to TLS certificate validation bypass via dropped requestTls in SOCKS5 ProxyAgent",
+          "url": "https://github.com/advisories/GHSA-vmh5-mc38-953g",
+          "severity": "high",
+          "cwe": [
+            "CWE-295"
+          ],
+          "cvss": {
+            "score": 7.4,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N"
+          },
+          "range": ">=7.23.0 <7.28.0"
+        },
+        {
+          "source": 1121241,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to HTTP header injection via Set-Cookie percent-decoding",
+          "url": "https://github.com/advisories/GHSA-p88m-4jfj-68fv",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-93"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N"
+          },
+          "range": ">=7.0.0 <7.28.0"
+        },
+        {
+          "source": 1121242,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to HTTP header injection via Set-Cookie percent-decoding",
+          "url": "https://github.com/advisories/GHSA-p88m-4jfj-68fv",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-93"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N"
+          },
+          "range": "<6.27.0"
+        },
+        {
+          "source": 1121244,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici WebSocket client vulnerable to denial of service via fragment count bypass",
+          "url": "https://github.com/advisories/GHSA-vxpw-j846-p89q",
+          "severity": "high",
+          "cwe": [
+            "CWE-400",
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=7.0.0 <7.28.0"
+        },
+        {
+          "source": 1121245,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici WebSocket client vulnerable to denial of service via fragment count bypass",
+          "url": "https://github.com/advisories/GHSA-vxpw-j846-p89q",
+          "severity": "high",
+          "cwe": [
+            "CWE-400",
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<6.27.0"
+        },
+        {
+          "source": 1121247,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to cross-origin request routing via SOCKS5 proxy pool reuse",
+          "url": "https://github.com/advisories/GHSA-hm92-r4w5-c3mj",
+          "severity": "high",
+          "cwe": [
+            "CWE-346"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H"
+          },
+          "range": ">=7.23.0 <7.28.0"
+        },
+        {
+          "source": 1121254,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to Set-Cookie SameSite attribute downgrade via permissive substring matching",
+          "url": "https://github.com/advisories/GHSA-g8m3-5g58-fq7m",
+          "severity": "low",
+          "cwe": [
+            "CWE-183"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": ">=7.0.0 <7.28.0"
+        },
+        {
+          "source": 1121255,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to Set-Cookie SameSite attribute downgrade via permissive substring matching",
+          "url": "https://github.com/advisories/GHSA-g8m3-5g58-fq7m",
+          "severity": "low",
+          "cwe": [
+            "CWE-183"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": "<6.27.0"
+        },
+        {
+          "source": 1121428,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to cross-user information disclosure via shared cache whitespace bypass",
+          "url": "https://github.com/advisories/GHSA-pr7r-676h-xcf6",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-524"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=7.0.0 <7.28.0"
+        },
+        {
+          "source": 1130715,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to downstream response desynchronization via retry interceptor",
+          "url": "https://github.com/advisories/GHSA-8xcm-r25x-g524",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-444"
+          ],
+          "cvss": {
+            "score": 4.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N"
+          },
+          "range": ">=7.0.0 <7.29.0"
+        },
+        {
+          "source": 1130716,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to downstream response desynchronization via retry interceptor",
+          "url": "https://github.com/advisories/GHSA-8xcm-r25x-g524",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-444"
+          ],
+          "cvss": {
+            "score": 4.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N"
+          },
+          "range": "<6.28.0"
+        },
+        {
+          "source": 1130718,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives",
+          "url": "https://github.com/advisories/GHSA-4cwx-7wf7-3272",
+          "severity": "high",
+          "cwe": [
+            "CWE-200",
+            "CWE-248",
+            "CWE-525"
+          ],
+          "cvss": {
+            "score": 7.4,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:H"
+          },
+          "range": ">=7.0.0 <7.29.0"
+        },
+        {
+          "source": 1130726,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to CRLF Injection via blob-like body 'type' property",
+          "url": "https://github.com/advisories/GHSA-m8rv-5g2x-5cg5",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-93"
+          ],
+          "cvss": {
+            "score": 4.2,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:N"
+          },
+          "range": ">=7.0.0 <7.29.0"
+        },
+        {
+          "source": 1130727,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to CRLF Injection via blob-like body 'type' property",
+          "url": "https://github.com/advisories/GHSA-m8rv-5g2x-5cg5",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-93"
+          ],
+          "cvss": {
+            "score": 4.2,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:N"
+          },
+          "range": "<6.28.0"
+        },
+        {
+          "source": 1130729,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to cross-user information disclosure via whitespace around equals in Cache-Control directives",
+          "url": "https://github.com/advisories/GHSA-jr45-8vmc-qm54",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-436",
+            "CWE-524"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=7.0.0 <7.29.0"
+        },
+        {
+          "source": 1130731,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields",
+          "url": "https://github.com/advisories/GHSA-v3r7-h72x-cjcm",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-74"
+          ],
+          "cvss": {
+            "score": 4.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N"
+          },
+          "range": ">=7.0.0 <7.29.0"
+        },
+        {
+          "source": 1130732,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields",
+          "url": "https://github.com/advisories/GHSA-v3r7-h72x-cjcm",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-74"
+          ],
+          "cvss": {
+            "score": 4.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N"
+          },
+          "range": "<6.28.0"
+        },
+        {
+          "source": 1137242,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to HTTP response queue poisoning via keep-alive socket reuse",
+          "url": "https://github.com/advisories/GHSA-35p6-xmwp-9g52",
+          "severity": "low",
+          "cwe": [
+            "CWE-367"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": ">=7.0.0 <7.28.0"
+        },
+        {
+          "source": 1137243,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to HTTP response queue poisoning via keep-alive socket reuse",
+          "url": "https://github.com/advisories/GHSA-35p6-xmwp-9g52",
+          "severity": "low",
+          "cwe": [
+            "CWE-367"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": "<6.27.0"
+        },
+        {
+          "source": 1239933,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to Denial of Service via unhandled error in WebSocket permessage-deflate decompression",
+          "url": "https://github.com/advisories/GHSA-3wwx-pv8p-q78v",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-248"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=7.28.0 <7.29.1"
+        },
+        {
+          "source": 1240036,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to Denial of Service via orphaned RetryHandler response body",
+          "url": "https://github.com/advisories/GHSA-pmjh-fq2x-6v4x",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-772"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=7.11.0 <7.29.1"
+        },
+        {
+          "source": 1240038,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to downstream response splitting via retry interceptor",
+          "url": "https://github.com/advisories/GHSA-r53p-7pc4-xj5r",
+          "severity": "low",
+          "cwe": [
+            "CWE-444"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": ">=7.0.0 <7.29.1"
+        },
+        {
+          "source": 1240039,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to downstream response splitting via retry interceptor",
+          "url": "https://github.com/advisories/GHSA-r53p-7pc4-xj5r",
+          "severity": "low",
+          "cwe": [
+            "CWE-444"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": "<6.28.1"
+        },
+        {
+          "source": 1240041,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to Denial of Service via unrequested WebSocket subprotocol",
+          "url": "https://github.com/advisories/GHSA-rfgv-xxqx-mfg5",
+          "severity": "high",
+          "cwe": [
+            "CWE-248",
+            "CWE-252"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=7.0.0 <7.29.1"
+        },
+        {
+          "source": 1240044,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to Denial of Service via unbounded decompression of compressed responses",
+          "url": "https://github.com/advisories/GHSA-3xpg-4rpp-hhhm",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=7.15.0 <7.29.1"
+        },
+        {
+          "source": 1240046,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to cross-user cookie disclosure via Set-Cookie caching in shared caches",
+          "url": "https://github.com/advisories/GHSA-2jfj-6hjv-fm6j",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-200",
+            "CWE-524"
+          ],
+          "cvss": {
+            "score": 6.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:N"
+          },
+          "range": ">=7.0.0 <7.29.1"
+        },
+        {
+          "source": 1240048,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to response truncation via oversized chunked responses in the dump interceptor",
+          "url": "https://github.com/advisories/GHSA-2gqq-gqf2-x968",
+          "severity": "low",
+          "cwe": [
+            "CWE-20",
+            "CWE-248"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": ">=7.1.0 <7.29.1"
+        },
+        {
+          "source": 1240050,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool",
+          "url": "https://github.com/advisories/GHSA-w293-vg96-wgc3",
+          "severity": "high",
+          "cwe": [
+            "CWE-295"
+          ],
+          "cvss": {
+            "score": 7.4,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N"
+          },
+          "range": ">=7.24.1 <7.29.1"
+        },
+        {
+          "source": 1240052,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to caching and replay of unsafe HTTP method responses",
+          "url": "https://github.com/advisories/GHSA-8436-99hf-9mmv",
+          "severity": "low",
+          "cwe": [
+            "CWE-345"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": ">=7.0.0 <7.29.1"
+        },
+        {
+          "source": 1240055,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to Denial of Service via WebSocketStream unclean close",
+          "url": "https://github.com/advisories/GHSA-rx4f-c7p8-82vq",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-248",
+            "CWE-754"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=7.0.0 <7.29.1"
+        },
+        {
+          "source": 1243078,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to Denial of Service via unbounded memory in the EventSource parser",
+          "url": "https://github.com/advisories/GHSA-4qv8-2p9j-2685",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=7.0.0 <7.30.1"
+        },
+        {
+          "source": 1243081,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to Subresource Integrity bypass via non-lowercase algorithm tokens",
+          "url": "https://github.com/advisories/GHSA-f72v-6w45-q472",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-178"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N"
+          },
+          "range": ">=7.15.0 <7.30.1"
+        },
+        {
+          "source": 1243113,
+          "name": "undici",
+          "dependency": "undici",
+          "title": "undici vulnerable to Denial of Service via unhandled error on excessive content-encodings",
+          "url": "https://github.com/advisories/GHSA-xjj6-f33q-929c",
+          "severity": "high",
+          "cwe": [
+            "CWE-248",
+            "CWE-459"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=7.18.0 <7.30.1"
+        }
+      ],
+      "effects": [
+        "@shopify/mini-oxygen",
+        "miniflare"
+      ],
+      "range": "<=6.28.0 || 7.0.0 - 7.30.0",
+      "nodes": [
+        "node_modules/jsdom/node_modules/undici",
+        "node_modules/miniflare/node_modules/undici",
+        "node_modules/undici"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/mini-oxygen",
+        "version": "0.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "ws": {
+      "name": "ws",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1119108,
+          "name": "ws",
+          "dependency": "ws",
+          "title": "ws: Uninitialized memory disclosure",
+          "url": "https://github.com/advisories/GHSA-58qx-3vcg-4xpx",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-908"
+          ],
+          "cvss": {
+            "score": 4.4,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=8.0.0 <8.20.1"
+        },
+        {
+          "source": 1123259,
+          "name": "ws",
+          "dependency": "ws",
+          "title": "ws: Memory exhaustion DoS from tiny fragments and data chunks",
+          "url": "https://github.com/advisories/GHSA-96hv-2xvq-fx4p",
+          "severity": "high",
+          "cwe": [
+            "CWE-400",
+            "CWE-770",
+            "CWE-1050"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=8.0.0 <8.21.0"
+        }
+      ],
+      "effects": [
+        "miniflare"
+      ],
+      "range": "8.0.0 - 8.20.1",
+      "nodes": [
+        "node_modules/miniflare/node_modules/ws"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/mini-oxygen",
+        "version": "0.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "youch": {
+      "name": "youch",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "cookie"
+      ],
+      "effects": [
+        "miniflare"
+      ],
+      "range": "2.0.4 - 3.3.3",
+      "nodes": [
+        "node_modules/youch"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/mini-oxygen",
+        "version": "0.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "zod": {
+      "name": "zod",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1243066,
+          "name": "zod",
+          "dependency": "zod",
+          "title": "Zod can exhaust memory while validating oversized constrained collections",
+          "url": "https://github.com/advisories/GHSA-mrhx-c7xc-m3w5",
+          "severity": "high",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<4.6.6"
+        }
+      ],
+      "effects": [
+        "miniflare"
+      ],
+      "range": "<4.6.6",
+      "nodes": [
+        "node_modules/zod"
+      ],
+      "fixAvailable": {
+        "name": "@shopify/mini-oxygen",
+        "version": "0.0.5",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 2,
+      "moderate": 6,
+      "high": 20,
+      "critical": 0,
+      "total": 28
+    },
+    "dependencies": {
+      "prod": 141,
+      "dev": 790,
+      "optional": 121,
+      "peer": 26,
+      "peerOptional": 0,
+      "total": 1024
+    }
+  }
+}
