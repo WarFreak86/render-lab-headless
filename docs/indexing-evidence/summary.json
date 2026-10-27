@@ -1,0 +1,1401 @@
+{
+  "observedAt": "2026-10-27T08:44:28.344Z",
+  "scope": {
+    "affected": 70,
+    "products": 68,
+    "collections": 2,
+    "publicPages": 127,
+    "storefrontProducts": 91
+  },
+  "partitions": [
+    {
+      "url": "https://render-lab.org/sitemap/products/1.xml",
+      "status": 200,
+      "urls": 91,
+      "productUrls": 91,
+      "lastmodValues": [
+        "2026-10-26T18:23:47Z"
+      ],
+      "httpDate": "Tue, 27 Oct 2026 08:48:07 GMT"
+    },
+    {
+      "url": "https://render-lab.org/sitemap/products/2.xml",
+      "status": 200,
+      "urls": 1,
+      "productUrls": 0,
+      "lastmodValues": [
+        null
+      ],
+      "httpDate": "Tue, 27 Oct 2026 08:48:07 GMT"
+    },
+    {
+      "url": "https://render-lab.org/sitemap/pages/1.xml",
+      "status": 200,
+      "urls": 2,
+      "productUrls": 0,
+      "lastmodValues": [
+        "2026-10-21T11:03:32Z",
+        "2026-08-19T19:50:24Z"
+      ],
+      "httpDate": "Tue, 27 Oct 2026 08:48:07 GMT"
+    },
+    {
+      "url": "https://render-lab.org/sitemap/collections/1.xml",
+      "status": 200,
+      "urls": 15,
+      "productUrls": 0,
+      "lastmodValues": [
+        "2026-10-24T11:19:43Z",
+        "2026-10-18T04:03:33Z",
+        "2026-10-21T11:24:35Z",
+        "2026-10-22T06:45:15Z",
+        "2026-10-18T04:03:32Z",
+        "2026-10-23T13:34:25Z",
+        "2026-10-21T11:37:53Z",
+        "2026-10-23T13:34:13Z",
+        "2026-10-23T13:33:28Z",
+        "2026-09-18T03:52:38Z",
+        "2026-09-18T03:53:24Z",
+        "2026-10-08T03:18:50Z",
+        "2026-10-12T20:02:22Z"
+      ],
+      "httpDate": "Tue, 27 Oct 2026 08:48:07 GMT"
+    },
+    {
+      "url": "https://render-lab.org/sitemap/blogs/1.xml",
+      "status": 200,
+      "urls": 1,
+      "productUrls": 0,
+      "lastmodValues": [
+        "2026-08-19T19:50:23Z"
+      ],
+      "httpDate": "Tue, 27 Oct 2026 08:48:08 GMT"
+    }
+  ],
+  "apiSitemaps": [
+    {
+      "page": 1,
+      "first": {
+        "sitemap": {
+          "resources": {
+            "items": [
+              {
+                "handle": "after-the-collapse",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "after-the-smoke-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "art-the-clown",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "ascension-beyond-time",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "spawn",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "backroad-bruiser-1952-chevrolet-rat-rod",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "venom",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "blackout-1987-buick-gnx",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "blonde-static-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "blade",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "blue-collar-thunder-1960-ford-f-100",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "boss-green-1970-ford-mustang-boss",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-01-open-trap",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-02-crown-of-dew",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-03-hanging-nectar",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-04-lure",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-05-aperture",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-06-nectar-chamber",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-07-lantern",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-08-vascular-edge",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-09-devour",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-10-vascular-light",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carry-the-weight-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "cathedral-of-the-void",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "chemical-smile-tyler-durden",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "city-dogg-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "winter-soldier",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "concrete-saint-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "red-hood",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "cyclone-warning-1970-mercury-cyclone-spoiler",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "divine-intervention-jules-winnfield",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "eliminator-1970-mercury-cougar",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "empire-in-white-tony-montana",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "executive-violence-patrick-bateman",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "eyes-of-doom",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "fields-of-memory-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "firebird-rising-1972-pontiac-firebird-trans-am",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "fireglass-1934-ford-three-window",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "first-line-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "first-strike-1964-pontiac-gto",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "freddy",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "frozen-ground-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "ghostface",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "hard-exit-heat",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "ghost-rider",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "iron-will",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "jason",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "jungle-ghosts-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "keeper-of-the-threshold",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "king-over-the-fallen-city",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "leatherface",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "machine-memory-terminator",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "march-through-ashes",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "master-of-ruin",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "michael",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "midnight-shake-vincent-vega",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "neon-diva-royale-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "night-driver-travis-bickle",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "no-mans-land-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "moon-knight",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "pennywise",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "phantom-hauler-1948-ford-pickup",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "pink-crown-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "purple-crown-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "purple-menace-1970-dodge-challenger",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "quarter-mile-1964-ford-fairlane-thunderbolt",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "queens-cipher-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "deadpool",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "road-runner-red-1970-plymouth-road-runner",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "rust-ritual-1936-ford-rat-rod",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "wolverine",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "southern-thunder-1971-holden-monaro-gts",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "still-standing-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "still-standing-rocky-balboa",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "street-authority-1970-dodge-charger-r-t",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "street-empire-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-cleaner-leon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-forbidden-workshop",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-hand-of-creation",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "deathstroke",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-last-radiance",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-long-march-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-nun",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-producer-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-sky-unbound",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "throne-of-dominion",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "trans-am-rebel-1970-amc-javelin",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "war-within-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "west-coast-shadow-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "where-eternity-falls",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "willys-wild-1941-willys-coupe",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              }
+            ]
+          }
+        }
+      },
+      "second": {
+        "sitemap": {
+          "resources": {
+            "items": [
+              {
+                "handle": "after-the-collapse",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "after-the-smoke-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "art-the-clown",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "ascension-beyond-time",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "spawn",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "backroad-bruiser-1952-chevrolet-rat-rod",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "venom",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "blackout-1987-buick-gnx",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "blonde-static-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "blade",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "blue-collar-thunder-1960-ford-f-100",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "boss-green-1970-ford-mustang-boss",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-01-open-trap",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-02-crown-of-dew",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-03-hanging-nectar",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-04-lure",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-05-aperture",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-06-nectar-chamber",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-07-lantern",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-08-vascular-edge",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-09-devour",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carnivora-no-10-vascular-light",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "carry-the-weight-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "cathedral-of-the-void",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "chemical-smile-tyler-durden",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "city-dogg-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "winter-soldier",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "concrete-saint-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "red-hood",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "cyclone-warning-1970-mercury-cyclone-spoiler",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "divine-intervention-jules-winnfield",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "eliminator-1970-mercury-cougar",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "empire-in-white-tony-montana",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "executive-violence-patrick-bateman",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "eyes-of-doom",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "fields-of-memory-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "firebird-rising-1972-pontiac-firebird-trans-am",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "fireglass-1934-ford-three-window",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "first-line-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "first-strike-1964-pontiac-gto",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "freddy",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "frozen-ground-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "ghostface",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "hard-exit-heat",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "ghost-rider",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "iron-will",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "jason",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "jungle-ghosts-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "keeper-of-the-threshold",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "king-over-the-fallen-city",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "leatherface",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "machine-memory-terminator",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "march-through-ashes",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "master-of-ruin",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "michael",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "midnight-shake-vincent-vega",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "neon-diva-royale-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "night-driver-travis-bickle",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "no-mans-land-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "moon-knight",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "pennywise",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "phantom-hauler-1948-ford-pickup",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "pink-crown-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "purple-crown-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "purple-menace-1970-dodge-challenger",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "quarter-mile-1964-ford-fairlane-thunderbolt",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "queens-cipher-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "deadpool",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "road-runner-red-1970-plymouth-road-runner",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "rust-ritual-1936-ford-rat-rod",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "wolverine",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "southern-thunder-1971-holden-monaro-gts",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "still-standing-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "still-standing-rocky-balboa",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "street-authority-1970-dodge-charger-r-t",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "street-empire-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-cleaner-leon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-forbidden-workshop",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-hand-of-creation",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "deathstroke",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-last-radiance",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-long-march-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-nun",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-producer-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "the-sky-unbound",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "throne-of-dominion",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "trans-am-rebel-1970-amc-javelin",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "war-within-echoes-of-war",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "west-coast-shadow-urban-icon",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "where-eternity-falls",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              },
+              {
+                "handle": "willys-wild-1941-willys-coupe",
+                "updatedAt": "2026-10-27T08:48:08Z"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "page": 2,
+      "first": {
+        "sitemap": {
+          "resources": {
+            "items": []
+          }
+        }
+      },
+      "second": {
+        "sitemap": {
+          "resources": {
+            "items": []
+          }
+        }
+      }
+    }
+  ],
+  "distinctActualProductUpdatedAt": 53,
+  "productTimestamps": [
+    {
+      "handle": "fields-of-memory-echoes-of-war",
+      "updatedAt": "2026-10-17T07:21:11Z",
+      "publishedAt": "2026-09-01T12:20:00Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "still-standing-echoes-of-war",
+      "updatedAt": "2026-10-17T07:21:13Z",
+      "publishedAt": "2026-09-01T12:20:01Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "no-mans-land-echoes-of-war",
+      "updatedAt": "2026-10-17T07:21:12Z",
+      "publishedAt": "2026-09-01T12:20:01Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "frozen-ground-echoes-of-war",
+      "updatedAt": "2026-10-17T07:21:11Z",
+      "publishedAt": "2026-09-01T12:20:01Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "first-line-echoes-of-war",
+      "updatedAt": "2026-10-17T07:21:11Z",
+      "publishedAt": "2026-09-01T12:20:01Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "carry-the-weight-echoes-of-war",
+      "updatedAt": "2026-10-17T07:21:12Z",
+      "publishedAt": "2026-09-01T12:20:01Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "the-long-march-echoes-of-war",
+      "updatedAt": "2026-10-17T07:21:15Z",
+      "publishedAt": "2026-09-01T12:20:02Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "jungle-ghosts-echoes-of-war",
+      "updatedAt": "2026-10-17T07:21:10Z",
+      "publishedAt": "2026-09-01T12:20:02Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "after-the-smoke-echoes-of-war",
+      "updatedAt": "2026-10-17T07:21:11Z",
+      "publishedAt": "2026-09-01T12:20:02Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "war-within-echoes-of-war",
+      "updatedAt": "2026-10-17T07:21:11Z",
+      "publishedAt": "2026-09-01T12:20:02Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "the-producer-urban-icon",
+      "updatedAt": "2026-10-20T07:28:10Z",
+      "publishedAt": "2026-09-03T20:34:12Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "blonde-static-urban-icon",
+      "updatedAt": "2026-10-20T07:28:10Z",
+      "publishedAt": "2026-09-03T22:37:25Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "neon-diva-royale-urban-icon",
+      "updatedAt": "2026-10-20T07:28:11Z",
+      "publishedAt": "2026-09-03T22:37:25Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "pink-crown-urban-icon",
+      "updatedAt": "2026-10-20T07:28:11Z",
+      "publishedAt": "2026-09-03T22:37:25Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "west-coast-shadow-urban-icon",
+      "updatedAt": "2026-10-20T07:28:11Z",
+      "publishedAt": "2026-09-03T22:37:25Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "city-dogg-urban-icon",
+      "updatedAt": "2026-10-20T07:28:11Z",
+      "publishedAt": "2026-09-03T22:37:25Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "concrete-saint-urban-icon",
+      "updatedAt": "2026-10-20T07:28:11Z",
+      "publishedAt": "2026-09-03T22:37:25Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "queens-cipher-urban-icon",
+      "updatedAt": "2026-10-20T07:28:12Z",
+      "publishedAt": "2026-09-03T22:37:25Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "purple-crown-urban-icon",
+      "updatedAt": "2026-10-20T07:28:12Z",
+      "publishedAt": "2026-09-03T22:37:25Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "street-empire-urban-icon",
+      "updatedAt": "2026-10-20T07:28:12Z",
+      "publishedAt": "2026-09-03T22:37:25Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "eyes-of-doom",
+      "updatedAt": "2026-10-23T12:57:47Z",
+      "publishedAt": "2026-09-14T22:31:38Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "march-through-ashes",
+      "updatedAt": "2026-10-23T12:57:48Z",
+      "publishedAt": "2026-09-14T22:31:39Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "throne-of-dominion",
+      "updatedAt": "2026-10-23T12:57:48Z",
+      "publishedAt": "2026-09-14T22:31:39Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "the-forbidden-workshop",
+      "updatedAt": "2026-10-23T12:57:57Z",
+      "publishedAt": "2026-09-14T22:31:39Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "king-over-the-fallen-city",
+      "updatedAt": "2026-10-23T12:58:08Z",
+      "publishedAt": "2026-09-14T22:31:39Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "master-of-ruin",
+      "updatedAt": "2026-10-23T12:58:09Z",
+      "publishedAt": "2026-09-14T22:31:39Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "iron-will",
+      "updatedAt": "2026-10-23T12:58:18Z",
+      "publishedAt": "2026-09-14T22:31:39Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "after-the-collapse",
+      "updatedAt": "2026-10-23T12:36:38Z",
+      "publishedAt": "2026-09-14T22:26:13Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "blade",
+      "updatedAt": "2026-10-23T12:36:38Z",
+      "publishedAt": "2026-09-15T17:06:27Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "deadpool",
+      "updatedAt": "2026-10-23T12:58:18Z",
+      "publishedAt": "2026-09-15T17:06:27Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "deathstroke",
+      "updatedAt": "2026-10-23T12:58:19Z",
+      "publishedAt": "2026-09-15T17:06:27Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "ghost-rider",
+      "updatedAt": "2026-10-23T12:58:19Z",
+      "publishedAt": "2026-09-15T17:06:28Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "moon-knight",
+      "updatedAt": "2026-10-23T12:58:18Z",
+      "publishedAt": "2026-09-15T17:06:28Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "red-hood",
+      "updatedAt": "2026-10-23T12:36:40Z",
+      "publishedAt": "2026-09-15T17:06:28Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "spawn",
+      "updatedAt": "2026-10-23T12:36:57Z",
+      "publishedAt": "2026-09-15T17:06:29Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "venom",
+      "updatedAt": "2026-10-23T12:36:59Z",
+      "publishedAt": "2026-09-15T17:06:29Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "winter-soldier",
+      "updatedAt": "2026-10-23T12:36:54Z",
+      "publishedAt": "2026-09-15T17:06:29Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "wolverine",
+      "updatedAt": "2026-10-23T12:58:18Z",
+      "publishedAt": "2026-09-15T17:06:30Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "chemical-smile-tyler-durden",
+      "updatedAt": "2026-10-23T12:36:56Z",
+      "publishedAt": "2026-09-17T02:31:57Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "hard-exit-heat",
+      "updatedAt": "2026-10-23T12:58:19Z",
+      "publishedAt": "2026-09-17T02:31:58Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "the-cleaner-leon",
+      "updatedAt": "2026-10-23T12:58:19Z",
+      "publishedAt": "2026-09-17T02:31:58Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "executive-violence-patrick-bateman",
+      "updatedAt": "2026-10-23T12:58:18Z",
+      "publishedAt": "2026-09-17T02:31:59Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "midnight-shake-vincent-vega",
+      "updatedAt": "2026-10-23T12:58:18Z",
+      "publishedAt": "2026-09-17T02:32:00Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "still-standing-rocky-balboa",
+      "updatedAt": "2026-10-23T12:58:23Z",
+      "publishedAt": "2026-09-17T02:32:00Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "divine-intervention-jules-winnfield",
+      "updatedAt": "2026-10-23T12:58:26Z",
+      "publishedAt": "2026-09-17T02:32:01Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "night-driver-travis-bickle",
+      "updatedAt": "2026-10-23T12:58:26Z",
+      "publishedAt": "2026-09-17T02:32:01Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "machine-memory-terminator",
+      "updatedAt": "2026-10-23T12:58:27Z",
+      "publishedAt": "2026-09-17T02:31:24Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "empire-in-white-tony-montana",
+      "updatedAt": "2026-10-23T12:58:27Z",
+      "publishedAt": "2026-09-17T02:31:05Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "fireglass-1934-ford-three-window",
+      "updatedAt": "2026-10-25T02:28:11Z",
+      "publishedAt": "2026-09-17T15:28:28Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "purple-menace-1970-dodge-challenger",
+      "updatedAt": "2026-10-23T12:58:27Z",
+      "publishedAt": "2026-09-17T15:28:28Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "street-authority-1970-dodge-charger-r-t",
+      "updatedAt": "2026-10-23T12:58:28Z",
+      "publishedAt": "2026-09-17T15:28:29Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "boss-green-1970-ford-mustang-boss",
+      "updatedAt": "2026-10-25T02:28:14Z",
+      "publishedAt": "2026-09-17T15:28:29Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "eliminator-1970-mercury-cougar",
+      "updatedAt": "2026-10-23T12:58:27Z",
+      "publishedAt": "2026-09-17T15:28:30Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "cyclone-warning-1970-mercury-cyclone-spoiler",
+      "updatedAt": "2026-10-23T12:59:37Z",
+      "publishedAt": "2026-09-17T15:28:31Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "road-runner-red-1970-plymouth-road-runner",
+      "updatedAt": "2026-10-24T01:39:08Z",
+      "publishedAt": "2026-09-17T15:28:31Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "southern-thunder-1971-holden-monaro-gts",
+      "updatedAt": "2026-10-23T12:58:27Z",
+      "publishedAt": "2026-09-17T15:28:32Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "firebird-rising-1972-pontiac-firebird-trans-am",
+      "updatedAt": "2026-10-23T12:58:34Z",
+      "publishedAt": "2026-09-17T15:28:32Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "blackout-1987-buick-gnx",
+      "updatedAt": "2026-10-24T01:38:31Z",
+      "publishedAt": "2026-09-17T15:28:33Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "willys-wild-1941-willys-coupe",
+      "updatedAt": "2026-10-23T12:58:38Z",
+      "publishedAt": "2026-09-17T15:28:34Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "phantom-hauler-1948-ford-pickup",
+      "updatedAt": "2026-10-23T12:58:37Z",
+      "publishedAt": "2026-09-17T15:28:34Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "rust-ritual-1936-ford-rat-rod",
+      "updatedAt": "2026-10-23T12:58:37Z",
+      "publishedAt": "2026-09-17T15:28:35Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "backroad-bruiser-1952-chevrolet-rat-rod",
+      "updatedAt": "2026-10-23T12:36:59Z",
+      "publishedAt": "2026-09-17T15:28:35Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "blue-collar-thunder-1960-ford-f-100",
+      "updatedAt": "2026-10-24T01:39:09Z",
+      "publishedAt": "2026-09-17T15:28:36Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "quarter-mile-1964-ford-fairlane-thunderbolt",
+      "updatedAt": "2026-10-23T12:58:37Z",
+      "publishedAt": "2026-09-17T15:28:36Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "first-strike-1964-pontiac-gto",
+      "updatedAt": "2026-10-24T01:39:09Z",
+      "publishedAt": "2026-09-17T15:28:37Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "trans-am-rebel-1970-amc-javelin",
+      "updatedAt": "2026-10-23T12:58:38Z",
+      "publishedAt": "2026-09-17T15:28:37Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "carnivora-no-01-open-trap",
+      "updatedAt": "2026-10-24T01:39:13Z",
+      "publishedAt": "2026-09-28T13:58:57Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "carnivora-no-02-crown-of-dew",
+      "updatedAt": "2026-10-25T02:28:17Z",
+      "publishedAt": "2026-09-28T13:58:58Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "carnivora-no-03-hanging-nectar",
+      "updatedAt": "2026-10-23T10:43:57Z",
+      "publishedAt": "2026-09-28T13:58:58Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "carnivora-no-04-lure",
+      "updatedAt": "2026-10-24T01:39:12Z",
+      "publishedAt": "2026-09-28T13:58:58Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "carnivora-no-05-aperture",
+      "updatedAt": "2026-10-23T10:44:08Z",
+      "publishedAt": "2026-09-28T13:58:59Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "carnivora-no-06-nectar-chamber",
+      "updatedAt": "2026-10-23T10:44:04Z",
+      "publishedAt": "2026-09-28T13:58:59Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "carnivora-no-07-lantern",
+      "updatedAt": "2026-10-24T01:39:14Z",
+      "publishedAt": "2026-09-28T13:58:59Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "carnivora-no-08-vascular-edge",
+      "updatedAt": "2026-10-24T01:39:11Z",
+      "publishedAt": "2026-09-28T13:59:00Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "carnivora-no-09-devour",
+      "updatedAt": "2026-10-24T01:39:10Z",
+      "publishedAt": "2026-09-28T13:59:00Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "carnivora-no-10-vascular-light",
+      "updatedAt": "2026-10-23T10:44:22Z",
+      "publishedAt": "2026-09-28T13:59:00Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "art-the-clown",
+      "updatedAt": "2026-10-23T12:36:59Z",
+      "publishedAt": "2026-10-08T01:03:55Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "freddy",
+      "updatedAt": "2026-10-23T12:58:39Z",
+      "publishedAt": "2026-10-08T01:03:54Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "ghostface",
+      "updatedAt": "2026-10-23T12:58:37Z",
+      "publishedAt": "2026-10-08T01:03:50Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "pennywise",
+      "updatedAt": "2026-10-23T12:58:35Z",
+      "publishedAt": "2026-10-08T01:03:56Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "jason",
+      "updatedAt": "2026-10-23T12:58:38Z",
+      "publishedAt": "2026-10-08T01:03:50Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "leatherface",
+      "updatedAt": "2026-10-23T12:58:42Z",
+      "publishedAt": "2026-10-08T01:03:51Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "michael",
+      "updatedAt": "2026-10-23T12:58:48Z",
+      "publishedAt": "2026-10-08T01:03:53Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "the-nun",
+      "updatedAt": "2026-10-23T12:58:49Z",
+      "publishedAt": "2026-10-08T01:03:52Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "ascension-beyond-time",
+      "updatedAt": "2026-10-23T12:36:58Z",
+      "publishedAt": "2026-10-12T20:01:54Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "cathedral-of-the-void",
+      "updatedAt": "2026-10-25T02:28:19Z",
+      "publishedAt": "2026-10-12T20:01:55Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "keeper-of-the-threshold",
+      "updatedAt": "2026-10-23T12:58:48Z",
+      "publishedAt": "2026-10-12T20:01:55Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "the-hand-of-creation",
+      "updatedAt": "2026-10-23T12:58:49Z",
+      "publishedAt": "2026-10-12T20:01:56Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "the-last-radiance",
+      "updatedAt": "2026-10-23T12:58:47Z",
+      "publishedAt": "2026-10-12T20:01:56Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "the-sky-unbound",
+      "updatedAt": "2026-10-23T12:58:48Z",
+      "publishedAt": "2026-10-12T20:02:21Z",
+      "availableForSale": true
+    },
+    {
+      "handle": "where-eternity-falls",
+      "updatedAt": "2026-10-23T12:58:53Z",
+      "publishedAt": "2026-10-12T20:01:57Z",
+      "availableForSale": true
+    }
+  ],
+  "checkout": {
+    "url": "https://checkout.render-lab.org/",
+    "status": 200,
+    "metaRobots": "noindex",
+    "robotsTxtStatus": 200
+  },
+  "notes": [
+    "GSC exclusions and N/A crawl dates supplied by user; not independently inspected in GSC.",
+    "Configured Storefront API read access; Admin channel publication configuration not inspected.",
+    "127 crawl observations include fragment variants; links normalized when computing home reachability."
+  ]
+}
