@@ -1,28 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none">
-  <style>
-    .stroke {
-      stroke: #000;
-    }
-    .fill {
-      fill: #000;
-    }
-    @media (prefers-color-scheme: dark) {
-      .stroke {
-        stroke: #fff;
-      }
-      .fill {
-        fill: #fff;
-      }
-    }
-  </style>
-  <path
-    class="stroke"
-    fill-rule="evenodd"
-    d="M16.1 16.04 1 8.02 6.16 5.3l5.82 3.09 4.88-2.57-5.82-3.1L16.21 0l15.1 8.02-5.17 2.72-5.5-2.91-4.88 2.57 5.5 2.92-5.16 2.72Z"
-  />
-  <path
-    class="fill"
-    fill-rule="evenodd"
-    d="M16.1 32 1 23.98l5.16-2.72 5.82 3.08 4.88-2.57-5.82-3.08 5.17-2.73 15.1 8.02-5.17 2.72-5.5-2.92-4.88 2.58 5.5 2.92L16.1 32Z"
-  />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="70 100 1140 1110" width="64" height="64">
+  <title>Render-Lab</title>
+  <defs>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#151a1d"/><stop offset="1" stop-color="#1a2326"/></linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#08c9dc"/><stop offset="1" stop-color="#048ce2"/></linearGradient>
+    <linearGradient id="lower" x1="0" y1="0" x2="1" y2="0"><stop offset=".55" stop-color="#161c20"/><stop offset=".78" stop-color="#19343a"/><stop offset="1" stop-color="#04cee2"/></linearGradient>
+  </defs>
+  <rect x="70" y="100" width="1140" height="1110" fill="#fff"/>
+  <path fill="url(#ink)" d="M140 313 289 165h804v159l-53 55V219H310l-97 94Z"/>
+  <path fill="url(#lower)" d="M139 369h561c114 0 201 88 201 199 0 114-86 199-201 199h-76l110 129v218L350 653h341c49 0 84-35 84-84s-35-82-80-82H251Z"/>
+  <path fill="url(#ink)" d="M139 609h54v470h451l51 54H139Z"/>
+  <path fill="url(#cyan)" d="m796 817 114-112v293h223l-118 111H796Z"/>
 </svg>
