@@ -59,9 +59,9 @@ export function GoogleAnalytics() {
       if (!allowed(canTrack)) return;
       const p = event.products?.[0];
       if (!p?.id) return;
-      const price = Number(p.price?.amount);
+      const price = Number(p.price);
       tag()('event', 'view_item', {
-        currency: p.price?.currencyCode,
+        currency: 'USD',
         value: Number.isFinite(price) ? price : undefined,
         items: [{
           item_id: p.variantId || p.id,
