@@ -341,3 +341,103 @@
     margin-bottom: 2rem;
   }
 }
+
+/* Distinct buyer advice appears after the product grid on selected collections. */
+.collection-buying-guide {
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  background: #080808;
+  padding-block: clamp(4rem, 7vw, 7rem);
+}
+
+.collection-buying-guide__inner {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 6rem);
+  grid-template-columns: minmax(16rem, 0.75fr) minmax(0, 1.25fr);
+}
+
+.collection-buying-guide__eyebrow {
+  color: var(--color-gold-bright);
+  font-size: 0.65rem;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.collection-buying-guide__intro h2 {
+  max-width: 14ch;
+  margin-top: 1.25rem;
+  font-size: clamp(2.5rem, 4vw, 4.6rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+.collection-buying-guide__intro > p:last-child {
+  max-width: 38rem;
+  margin-top: 1.5rem;
+  color: rgba(245, 242, 234, 0.7);
+  line-height: 1.85;
+}
+
+.collection-buying-guide__details {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.collection-buying-guide__tips {
+  display: grid;
+  gap: 1.8rem;
+}
+
+.collection-buying-guide__tip h3,
+.collection-buying-guide__links h3 {
+  color: var(--color-text);
+  font-size: 1.12rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.collection-buying-guide__tip p {
+  max-width: 47rem;
+  margin-top: 0.55rem;
+  color: rgba(245, 242, 234, 0.68);
+  font-size: 0.96rem;
+  line-height: 1.8;
+}
+
+.collection-buying-guide__links {
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+  padding-top: 1.75rem;
+}
+
+.collection-buying-guide__links ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.4rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.collection-buying-guide__links a {
+  color: var(--color-gold-bright);
+  text-decoration: underline;
+  text-decoration-color: rgba(215, 172, 91, 0.4);
+  text-underline-offset: 0.25em;
+}
+
+.collection-buying-guide__links a:hover,
+.collection-buying-guide__links a:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+.collection-buying-guide__materials-link {
+  display: inline-block;
+  margin-top: 1.75rem;
+}
+
+@media (max-width: 47.9375rem) {
+  .collection-buying-guide__inner {
+    grid-template-columns: 1fr;
+  }
+}
