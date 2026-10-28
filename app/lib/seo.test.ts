@@ -257,6 +257,8 @@ describe('ProductGroup structured data', () => {
     });
     expect(canvas.offers.url).toBe(canvas.url);
     expect(canvas.offers.url).not.toContain('?variant=');
+    expect(metal.offers.shippingDetails.shippingRate).toMatchObject({value: 10.56, currency: 'USD'});
+    expect(canvas.offers.shippingDetails.shippingRate).toMatchObject({value: 18.29, currency: 'USD'});
   });
 
   it('includes genuine product subject matter in distinct variant descriptions', () => {
@@ -312,6 +314,42 @@ describe('ProductGroup structured data', () => {
     );
   });
 
+  it('emits verified U.S. shipping rates for all material and size tiers', () => {
+    const samples = [
+      ['Metal', '12x16', 10.56],
+      ['Metal', '18x24', 20.58],
+      ['Metal', '24x32', 31.84],
+      ['Canvas', '12x16', 9.19],
+      ['Canvas', '18x24', 18.29],
+      ['Canvas', '24x32', 18.29],
+      ['Poster', '12x16', 4.9],
+      ['Poster', '18x24', 4.9],
+      ['Poster', '24x32', 5.9],
+    ] as const;
+    for (const [material, size, amount] of samples) {
+      const variant = materialVariant({
+        material, size, sku: `RL-TEST-${material}-${size}`,
+      });
+      const group = productGroup([variant]);
+      expect(group.hasVariant[0].offers.shippingDetails).toMatchObject({
+        shippingDestination: {'@type': 'DefinedRegion', addressCountry: 'US'},
+        shippingRate: {'@type': 'MonetaryAmount', value: amount, currency: 'USD'},
+        deliveryTime: {
+          handlingTime: {minValue: 2, maxValue: 4, unitCode: 'DAY'},
+          transitTime: {minValue: 5, maxValue: 8, unitCode: 'DAY'},
+        },
+      });
+    }
+  });
+
+  it('omits shipping claims for unsupported formats or currencies', () => {
+    const unsupported = materialVariant({material: 'Acrylic', size: '18x24'});
+    const foreignCurrency = materialVariant({id: '222', sku: 'RL-EUR'});
+    foreignCurrency.price.currencyCode = 'EUR';
+    const group = productGroup([unsupported, foreignCurrency]);
+    expect(group.hasVariant.every((variant) => !('shippingDetails' in variant.offers))).toBe(true);
+  });
+
   it('maps unavailable variants without assuming future stock', () => {
     const group = productGroup([materialVariant({availableForSale: false})]);
 
@@ -327,7 +365,7 @@ describe('ProductGroup structured data', () => {
     expect(optionUrlRender).toBe(firstRender);
     expect(firstRender).not.toContain('AggregateRating');
     expect(firstRender).not.toContain('Review');
-    expect(firstRender).not.toContain('shippingDetails');
+    expect(firstRender).toContain('shippingDetails');
     expect(firstRender).toContain('hasMerchantReturnPolicy');
     expect(firstRender).not.toContain('priceValidUntil');
     expect(safeJsonLd({value: '</script>'})).not.toContain('</script>');
