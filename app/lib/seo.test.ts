@@ -45,6 +45,14 @@ describe('launch SEO helpers', () => {
     expect(JSON.stringify(getGlobalStructuredData())).not.toContain(
       'myshopify.dev',
     );
+    const organization = getGlobalStructuredData()['@graph'][0];
+    expect(organization).toMatchObject({
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        '@id': 'https://render-lab.org/#merchant-return-policy',
+        merchantReturnLink: 'https://render-lab.org/policies/refund-policy',
+      },
+    });
   });
 
   it('uses real commerce values and never invents ratings', () => {
@@ -234,6 +242,9 @@ describe('ProductGroup structured data', () => {
         price: '79.00',
         priceCurrency: 'USD',
         url: `${canonical}?Material=Metal&Size=16x12`,
+        hasMerchantReturnPolicy: {
+          '@id': 'https://render-lab.org/#merchant-return-policy',
+        },
       },
     });
     expect(canvas).toMatchObject({
@@ -317,7 +328,7 @@ describe('ProductGroup structured data', () => {
     expect(firstRender).not.toContain('AggregateRating');
     expect(firstRender).not.toContain('Review');
     expect(firstRender).not.toContain('shippingDetails');
-    expect(firstRender).not.toContain('hasMerchantReturnPolicy');
+    expect(firstRender).toContain('hasMerchantReturnPolicy');
     expect(firstRender).not.toContain('priceValidUntil');
     expect(safeJsonLd({value: '</script>'})).not.toContain('</script>');
   });
