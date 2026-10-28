@@ -61,14 +61,14 @@ export function CollectionView({
   );
 }
 
-interface CollectionBuyingGuide {
+interface CollectionBuyingGuideData {
   title: string;
   introduction: string;
   tips: {heading: string; text: string}[];
   recommendations: {label: string; to: string}[];
 }
 
-const COLLECTION_BUYING_GUIDES: Record<string, CollectionBuyingGuide> = {
+const COLLECTION_BUYING_GUIDES: Record<string, CollectionBuyingGuideData> = {
   'chrome-thunder': {
     title: 'Choosing classic car wall art',
     introduction:
@@ -146,7 +146,10 @@ function CollectionBuyingGuide({handle}: {handle: string}) {
   if (!guide) return null;
 
   return (
-    <section className="collection-buying-guide" aria-labelledby="collection-buying-guide-title">
+    <section
+      className="collection-buying-guide"
+      aria-labelledby="collection-buying-guide-title"
+    >
       <div className="container container--wide collection-buying-guide__inner">
         <div className="collection-buying-guide__intro">
           <p className="collection-buying-guide__eyebrow">Artwork buying guide</p>
@@ -171,7 +174,10 @@ function CollectionBuyingGuide({handle}: {handle: string}) {
                 </li>
               ))}
             </ul>
-            <Link className="collection-buying-guide__materials-link" to="/materials">
+            <Link
+              className="collection-buying-guide__materials-link"
+              to="/materials"
+            >
               Compare metal and canvas finishes
             </Link>
           </div>
