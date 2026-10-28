@@ -1,7 +1,6 @@
 import '~/styles/collection-storytelling.css';
 import '~/styles/catalog-cards.css';
 import {CollectionHero} from './CollectionHero';
-import {CollectionStatement} from './CollectionStatement';
 import {CollectionControls} from './CollectionControls';
 import {CollectionProductGrid} from './CollectionProductGrid';
 import {CollectionArtist} from './CollectionArtist';
@@ -55,7 +54,6 @@ export function CollectionView({
           />
         </div>
       </div>
-      <CollectionStatement hero={data.hero} hasArtist={Boolean(data.artist)} />
       {data.artist ? <CollectionArtist artist={data.artist} /> : null}
     </div>
   );
