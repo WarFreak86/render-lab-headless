@@ -257,8 +257,8 @@ describe('ProductGroup structured data', () => {
     });
     expect(canvas.offers.url).toBe(canvas.url);
     expect(canvas.offers.url).not.toContain('?variant=');
-    expect(metal.offers.shippingDetails.shippingRate).toMatchObject({value: 10.56, currency: 'USD'});
-    expect(canvas.offers.shippingDetails.shippingRate).toMatchObject({value: 18.29, currency: 'USD'});
+    expect(metal.offers.shippingDetails?.shippingRate).toMatchObject({value: 10.56, currency: 'USD'});
+    expect(canvas.offers.shippingDetails?.shippingRate).toMatchObject({value: 18.29, currency: 'USD'});
   });
 
   it('includes genuine product subject matter in distinct variant descriptions', () => {
