@@ -261,6 +261,68 @@ function getVariantDimensions(variant: ProductGroupVariantInput) {
   };
 }
 
+/**
+ * U.S. single-item rates verified against the 2026-10-28 GMC product export
+ * and the Gelato-based rates used at checkout. Omit unsupported options rather
+ * than advertising an unverified shipping price in structured data.
+ */
+const GELATO_US_SHIPPING_RATES: Record<string, Record<string, number>> = {
+  canvas: {'12x16': 9.19, '18x24': 18.29, '24x32': 18.29},
+  metal: {'12x16': 10.56, '18x24': 20.58, '24x32': 31.84},
+  poster: {'12x16': 4.9, '18x24': 4.9, '24x32': 5.9},
+};
+
+function getVariantShippingDetails(variant: ProductGroupVariantInput) {
+  const options = getVariantOptions(variant);
+  const material = options.find(({name}) => /^(material|finish)$/i.test(name))
+    ?.value.toLowerCase();
+  const size = options.find(({name}) => /^size$/i.test(name))?.value
+    .toLowerCase()
+    .replace(/×/g, 'x')
+    .replace(/\s+/g, '');
+  const dimensions = size?.match(/^(\d+)x(\d+)$/);
+  const sizeKey = dimensions
+    ? [Number(dimensions[1]), Number(dimensions[2])]
+        .sort((a, b) => a - b)
+        .join('x')
+    : undefined;
+  const rate = material && sizeKey
+    ? GELATO_US_SHIPPING_RATES[material]?.[sizeKey]
+    : undefined;
+
+  if (rate === undefined || variant.price?.currencyCode !== 'USD') {
+    return undefined;
+  }
+
+  return {
+    '@type': 'OfferShippingDetails' as const,
+    shippingDestination: {
+      '@type': 'DefinedRegion' as const,
+      addressCountry: 'US',
+    },
+    shippingRate: {
+      '@type': 'MonetaryAmount' as const,
+      value: rate,
+      currency: 'USD',
+    },
+    deliveryTime: {
+      '@type': 'ShippingDeliveryTime' as const,
+      handlingTime: {
+        '@type': 'QuantitativeValue' as const,
+        minValue: 2,
+        maxValue: 4,
+        unitCode: 'DAY',
+      },
+      transitTime: {
+        '@type': 'QuantitativeValue' as const,
+        minValue: 5,
+        maxValue: 8,
+        unitCode: 'DAY',
+      },
+    },
+  };
+}
+
 function getVariesBy(variants: ProductGroupVariantInput[]) {
   const options = new Map<string, {name: string; values: Set<string>}>();
 
@@ -331,6 +393,7 @@ export function getProductGroupStructuredData({
       throw new Error(`ProductGroup variant ${variant.id} requires a price`);
     }
 
+    const shippingDetails = getVariantShippingDetails(variant);
     const variantOptions = getVariantOptions(variant);
     const variantName = variantOptions.length
       ? `${title} — ${variantOptions.map((option) => option.value).join(' / ')}`
@@ -361,6 +424,7 @@ export function getProductGroupStructuredData({
         price,
         priceCurrency,
         url: variantUrl,
+        ...(shippingDetails ? {shippingDetails} : {}),
         hasMerchantReturnPolicy: {'@id': MERCHANT_RETURN_POLICY_ID},
       },
     };
