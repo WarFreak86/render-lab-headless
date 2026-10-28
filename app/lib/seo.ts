@@ -9,6 +9,7 @@ export const SEARCH_ROBOTS_DIRECTIVE = 'noindex, follow';
 export const MAX_META_DESCRIPTION_LENGTH = 160;
 
 const BRAND_SUFFIX = 'Render-Lab';
+const MERCHANT_RETURN_POLICY_ID = getProductionUrl('/#merchant-return-policy');
 const PRODUCT_TITLE_BRAND_PATTERN = /\|\s*render-lab\s*$/i;
 const COLLECTION_PAGINATION_PARAMS = new Set(['cursor', 'direction']);
 
@@ -95,6 +96,11 @@ export function getGlobalStructuredData() {
         '@id': organizationId,
         name: 'Render-Lab',
         url: PRODUCTION_ORIGIN,
+        hasMerchantReturnPolicy: {
+          '@type': 'MerchantReturnPolicy',
+          '@id': MERCHANT_RETURN_POLICY_ID,
+          merchantReturnLink: getProductionUrl('/policies/refund-policy'),
+        },
       },
       {
         '@type': 'WebSite',
@@ -149,6 +155,7 @@ export function getCommerceStructuredData({
             price: variant.price.amount,
             priceCurrency: variant.price.currencyCode,
             url: canonical,
+            hasMerchantReturnPolicy: {'@id': MERCHANT_RETURN_POLICY_ID},
           },
         }
       : {}),
@@ -354,6 +361,7 @@ export function getProductGroupStructuredData({
         price,
         priceCurrency,
         url: variantUrl,
+        hasMerchantReturnPolicy: {'@id': MERCHANT_RETURN_POLICY_ID},
       },
     };
   });
