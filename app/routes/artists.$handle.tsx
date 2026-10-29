@@ -1,9 +1,17 @@
+import {
+  isLiveCollectionHandle,
+  LIVE_COLLECTION_QUERY,
+} from '~/lib/catalog-collections';
 import {Image} from '@shopify/hydrogen';
 import artistStyles from '~/styles/artists.css?url';
 import {Link, redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/artists.$handle';
 import {getProductionUrl} from '~/lib/config';
-import {isRetiredArtistHandle, isStorefrontArtistReady} from '~/lib/navigation';
+import {
+  normalizeCreatorCredit,
+  isRetiredArtistHandle,
+  isStorefrontArtistReady,
+} from '~/lib/navigation';
 
 export const links = () => [{rel: 'stylesheet', href: artistStyles}];
 
@@ -11,7 +19,8 @@ export const meta: Route.MetaFunction = ({data}) => {
   const artist = data?.artist;
   const title = `${artist?.name ?? 'Artist'} | Render-Lab`;
   const description =
-    artist?.biography || 'Discover this Render-Lab artist and their collections.';
+    artist?.biography ||
+    'Discover this Render-Lab artist and their collections.';
   const canonical = getProductionUrl(`/artists/${artist?.handle ?? ''}`);
   return [
     {title},
@@ -22,7 +31,10 @@ export const meta: Route.MetaFunction = ({data}) => {
     {tagName: 'link', rel: 'canonical', href: canonical},
     {property: 'og:title', content: title},
     {property: 'og:description', content: description},
-    {property: 'og:type', content: artist?.handle === 'render-lab-studio' ? 'website' : 'profile'},
+    {
+      property: 'og:type',
+      content: artist?.handle === 'render-lab-studio' ? 'website' : 'profile',
+    },
     {property: 'og:url', content: canonical},
     ...(artist?.image
       ? [
@@ -41,17 +53,22 @@ export async function loader({context, params}: Route.LoaderArgs) {
   if (!handle) throw new Response('Artist not found', {status: 404});
   // Retired fictional personas are no longer customer-facing profiles.
   if (isRetiredArtistHandle(handle)) throw redirect('/artists', 301);
-  if (!isStorefrontArtistReady(handle)) throw new Response('Artist not found', {status: 404});
+  if (!isStorefrontArtistReady(handle))
+    throw new Response('Artist not found', {status: 404});
 
   const {metaobject, collections} = await context.storefront.query(
     ARTIST_PROFILE_QUERY,
     {
-      variables: {handle: {type: 'artist', handle}},
+      variables: {
+        handle: {type: 'artist', handle},
+        collectionQuery: LIVE_COLLECTION_QUERY,
+      },
       cache: context.storefront.CacheNone(),
     },
   );
 
-  if (!metaobject) throw new Response(`Artist ${handle} not found`, {status: 404});
+  if (!metaobject)
+    throw new Response(`Artist ${handle} not found`, {status: 404});
 
   const photoReference = metaobject.photo?.reference;
   const artist = {
@@ -66,14 +83,26 @@ export async function loader({context, params}: Route.LoaderArgs) {
   const artistCollections = collections.nodes
     .filter((collection) => {
       const reference = collection.artist?.reference;
-      return reference && 'id' in reference && reference.id === artist.id;
+      return (
+        isLiveCollectionHandle(collection.handle) &&
+        reference &&
+        'id' in reference &&
+        reference.id === artist.id
+      );
     })
     .map((collection) => ({
       id: collection.id,
       handle: collection.handle,
       title: collection.title,
       description: collection.description,
-      image: collection.image,
+      image: collection.image
+        ? {
+            ...collection.image,
+            altText: normalizeCreatorCredit(
+              collection.image.altText || collection.title,
+            ),
+          }
+        : null,
     }));
 
   return {artist, collections: artistCollections};
@@ -102,13 +131,20 @@ export default function ArtistProfileRoute() {
           )}
         </div>
         <div className="artist-profile__copy">
-          <p className="artist-profile__eyebrow">{artist.handle === 'render-lab-studio' ? 'In-house creative studio' : 'Artist & creative director'}</p>
+          <p className="artist-profile__eyebrow">
+            {artist.handle === 'render-lab-studio'
+              ? 'In-house creative studio'
+              : 'Artist & creative director'}
+          </p>
           <h1>{artist.name}</h1>
           {artist.biography ? <p>{artist.biography}</p> : null}
         </div>
       </section>
 
-      <section className="artist-profile__collections" aria-labelledby="artist-work-heading">
+      <section
+        className="artist-profile__collections"
+        aria-labelledby="artist-work-heading"
+      >
         <div className="artist-profile__section-heading">
           <p>Collections</p>
           <h2 id="artist-work-heading">Collections by {artist.name}</h2>
@@ -133,19 +169,26 @@ export default function ArtistProfileRoute() {
                       sizes="(min-width: 64rem) 31vw, (min-width: 40rem) 46vw, 92vw"
                     />
                   ) : (
-                    <div className="artist-collection-card__placeholder" aria-hidden="true" />
+                    <div
+                      className="artist-collection-card__placeholder"
+                      aria-hidden="true"
+                    />
                   )}
                 </div>
                 <div className="artist-collection-card__copy">
                   <h3>{collection.title}</h3>
-                  {collection.description ? <p>{collection.description}</p> : null}
+                  {collection.description ? (
+                    <p>{collection.description}</p>
+                  ) : null}
                   <span>Browse collection →</span>
                 </div>
               </Link>
             ))}
           </div>
         ) : (
-          <p className="artist-profile__empty">No published collections are linked to this artist yet.</p>
+          <p className="artist-profile__empty">
+            No published collections are linked to this artist yet.
+          </p>
         )}
       </section>
     </div>
@@ -155,6 +198,7 @@ export default function ArtistProfileRoute() {
 const ARTIST_PROFILE_QUERY = `#graphql
   query ArtistProfile(
     $handle: MetaobjectHandleInput!
+    $collectionQuery: String!
     $country: CountryCode
     $language: LanguageCode
   ) @inContext(country: $country, language: $language) {
@@ -177,7 +221,7 @@ const ARTIST_PROFILE_QUERY = `#graphql
         }
       }
     }
-    collections(first: 100) {
+    collections(first: 100, query: $collectionQuery) {
       nodes {
         id
         handle

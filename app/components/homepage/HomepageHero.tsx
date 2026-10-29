@@ -21,10 +21,10 @@ export function HomepageHero({
       className="home-hero home-hero--v2"
       aria-labelledby="home-hero-title"
     >
-      <div className="home-hero__media" aria-hidden="true">
+      <div className="home-hero__media">
         <Image
-          alt=""
-          data={{...HOMEPAGE_HERO_IMAGE, altText: ''}}
+          alt={HOMEPAGE_HERO_IMAGE.altText}
+          data={HOMEPAGE_HERO_IMAGE}
           fetchPriority="high"
           loading="eager"
           sizes="100vw"
@@ -36,7 +36,8 @@ export function HomepageHero({
             Render-Lab / Wall Art
           </p>
           <h1 id="home-hero-title">
-            <span>Modern Wall Art</span> <span>for Unordinary Spaces</span>
+            <span>Modern Metal Wall Art</span>{' '}
+            <span>&amp; Canvas Prints for Unordinary Spaces</span>
           </h1>
           <p className="home-hero__copy">
             Bold imagery. Premium materials. Work designed to become part of the

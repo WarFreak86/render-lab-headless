@@ -1,3 +1,4 @@
+import {isLiveCollectionHandle} from '~/lib/catalog-collections';
 import {useLoaderData} from 'react-router';
 import type {Route} from './+types/search';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
@@ -13,10 +14,7 @@ import type {
   PredictiveSearchQuery,
 } from 'storefrontapi.generated';
 import {getProductionUrl} from '~/lib/config';
-import {
-  isSuppressedCollection,
-  isSuppressedProduct,
-} from '~/lib/merchandising';
+import {isSuppressedCollection, isSuppressedProduct} from '~/lib/merchandising';
 import {SEARCH_ROBOTS_DIRECTIVE} from '~/lib/seo';
 
 export const meta: Route.MetaFunction = () => {
@@ -231,7 +229,10 @@ export const SEARCH_QUERY = `#graphql
 async function regularSearch({
   request,
   context,
-}: Pick<Route.LoaderArgs, 'request' | 'context'>): Promise<RegularSearchReturn> {
+}: Pick<
+  Route.LoaderArgs,
+  'request' | 'context'
+>): Promise<RegularSearchReturn> {
   const {storefront} = context;
   const url = new URL(request.url);
   const variables = getPaginationVariables(request, {pageBy: 8});
@@ -399,7 +400,10 @@ const PREDICTIVE_SEARCH_QUERY = `#graphql
 async function predictiveSearch({
   request,
   context,
-}: Pick<Route.ActionArgs, 'request' | 'context'>): Promise<PredictiveSearchReturn> {
+}: Pick<
+  Route.ActionArgs,
+  'request' | 'context'
+>): Promise<PredictiveSearchReturn> {
   const {storefront} = context;
   const url = new URL(request.url);
   const term = String(url.searchParams.get('q') || '').trim();
@@ -433,7 +437,9 @@ async function predictiveSearch({
   const filteredItems = {
     ...items,
     collections: items.collections.filter(
-      (collection) => !isSuppressedCollection(collection),
+      (collection) =>
+        isLiveCollectionHandle(collection.handle) &&
+        !isSuppressedCollection(collection),
     ),
     products: items.products.filter(
       (product) =>

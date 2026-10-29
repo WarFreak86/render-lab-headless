@@ -1,3 +1,4 @@
+import {isStorefrontArtistReady, normalizeCreatorCredit} from './navigation';
 import type {
   CurrencyCode,
   ProductCollectionSortKeys,
@@ -252,7 +253,7 @@ function normalizeImage(
   if (!image?.url) return null;
   return {
     url: image.url,
-    altText: safeAltText(image.altText, fallbackAlt),
+    altText: normalizeCreatorCredit(safeAltText(image.altText, fallbackAlt)),
     width: image.width,
     height: image.height,
   };
@@ -263,7 +264,8 @@ function normalizeCollectionArtist(
 ): CollectionArtistData | undefined {
   const reference = artist?.reference;
   const name = cleanText(reference?.name?.value);
-  if (!reference || !name) return undefined;
+  if (!reference || !name || !isStorefrontArtistReady(reference.handle))
+    return undefined;
 
   return {
     id: reference.id,

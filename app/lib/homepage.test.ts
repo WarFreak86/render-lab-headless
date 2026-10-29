@@ -1,6 +1,7 @@
 import {
   HOMEPAGE_EDITORIAL_FALLBACK,
   normalizeHomepageData,
+  cleanProductDescription,
   type HomepageCommerceInput,
 } from '~/lib/homepage';
 
@@ -16,7 +17,8 @@ function commerce(): HomepageCommerceInput {
     id: 'product-release',
     handle: 'real-release',
     title: 'Real Release',
-    description: 'Printed on brushed aluminum. Additional product details follow.',
+    description:
+      'Printed on brushed aluminum. Additional product details follow.',
     productType: 'Wall Art',
     availableForSale: true,
     featuredImage: art('release'),
@@ -97,10 +99,9 @@ describe('homepage data normalization', () => {
       '/collections/posters',
       '/collections',
     ]);
-    expect(data.featuredCollections.slice(0, 2).map((collection) => collection.to)).toEqual([
-      '/collections/echoes-of-war',
-      '/collections/neon-memento',
-    ]);
+    expect(
+      data.featuredCollections.slice(0, 2).map((collection) => collection.to),
+    ).toEqual(['/collections/echoes-of-war']);
   });
 
   it('pins Chrome & Thunder in featured cards without changing the current hero', () => {
@@ -121,11 +122,9 @@ describe('homepage data normalization', () => {
       collections: [...source.collections, chrome],
     });
 
-    expect(data.featuredCollections.slice(0, 3).map((collection) => collection.to)).toEqual([
-      '/collections/chrome-thunder',
-      '/collections/echoes-of-war',
-      '/collections/neon-memento',
-    ]);
+    expect(
+      data.featuredCollections.slice(0, 3).map((collection) => collection.to),
+    ).toEqual(['/collections/chrome-thunder', '/collections/echoes-of-war']);
     expect(data.hero?.to).toBe('/collections/echoes-of-war');
   });
 
@@ -168,12 +167,9 @@ describe('homepage data normalization', () => {
     });
   });
 
-  it('uses Limited Editions for a featured release when available', () => {
+  it('excludes retired Limited Editions from homepage releases', () => {
     const data = normalizeHomepageData(commerce());
-    expect(data.featuredDrop).toMatchObject({
-      title: 'Real Release',
-      to: '/products/real-release',
-    });
+    expect(data.featuredDrop).toBeNull();
   });
 
   it('does not mislabel an arbitrary active product as a featured release', () => {
@@ -223,7 +219,7 @@ describe('homepage data normalization', () => {
     ]);
   });
 
-  it('links a former drop product through the regular product route', () => {
+  it('does not expose a former drop through the homepage', () => {
     const source = commerce();
     const formerDrop = {
       ...source.products[0],
@@ -237,16 +233,14 @@ describe('homepage data normalization', () => {
     if (!collection) throw new Error('Missing limited-editions fixture');
     collection.products = {nodes: [formerDrop]};
     const data = normalizeHomepageData(source);
-    expect(data.featuredDrop).toMatchObject({
-      handle: 'marine-heavyweight-oversized-hoodie',
-      to: '/products/marine-heavyweight-oversized-hoodie',
-    });
+    expect(data.featuredDrop).toBeNull();
+    expect(JSON.stringify(data)).not.toContain('marine-heavyweight');
   });
 
-  it('removes embedded Shopify styling from featured-release copy', () => {
+  it('removes embedded Shopify styling from featured artwork copy', () => {
     const source = commerce();
     const collection = source.collections.find(
-      (item) => item.handle === 'limited-editions',
+      (item) => item.handle === 'echoes-of-war',
     );
     if (!collection) throw new Error('Missing limited-editions fixture');
     collection.products = {
@@ -259,6 +253,36 @@ describe('homepage data normalization', () => {
       ],
     };
     const data = normalizeHomepageData(source);
-    expect(data.featuredDrop?.description).toBe('Clean release copy.');
+    expect(data.featuredProducts[0]?.description).toBe('Clean release copy.');
   });
+});
+
+it('selects distinct featured products only from live series and uses actual material options', () => {
+  const input = commerce();
+  const series = input.collections.find(
+    ({handle}) => handle === 'echoes-of-war',
+  )!;
+  const product = {
+    ...input.products[0],
+    options: [{name: 'Material', optionValues: [{name: 'Canvas'}]}],
+  };
+  series.products = {nodes: [product, product]};
+  const output = normalizeHomepageData(input);
+  expect(output.featuredProducts).toHaveLength(1);
+  expect(output.featuredProducts[0]).toMatchObject({
+    materials: ['Canvas'],
+    series: 'Echoes of War',
+    price: {amount: '80.0', currencyCode: 'USD'},
+  });
+  expect(JSON.stringify(output)).not.toContain('neon-memento');
+});
+
+it('summarizes HTML paragraphs at sentence boundaries without splitting creator initials', () => {
+  expect(
+    cleanProductDescription(
+      '<p>A world by J.B. Render.</p><p>Explore the complete collection of dark, gallery-ready botanical artwork.</p><p>Third sentence.</p>',
+    ),
+  ).toBe(
+    'A world by J.B. Render. Explore the complete collection of dark, gallery-ready botanical artwork.',
+  );
 });

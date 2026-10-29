@@ -1,3 +1,4 @@
+import {SERIES_COLLECTION_HANDLES} from '~/lib/catalog-collections';
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {MemoryRouter} from 'react-router';
@@ -75,6 +76,9 @@ const data: HomepageData = {
     },
   ],
   featuredDrop: product,
+  featuredProducts: [
+    {...product, series: 'Echoes of War', materials: ['Metal', 'Canvas']},
+  ],
 };
 
 function renderHomepage(
@@ -94,7 +98,7 @@ describe('homepage presentation', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: 'Modern Wall Art for Unordinary Spaces',
+        name: 'Modern Metal Wall Art & Canvas Prints for Unordinary Spaces',
       }),
     ).toBeInTheDocument();
     expect(
@@ -126,18 +130,15 @@ describe('homepage presentation', () => {
     expect(
       screen.getByRole('heading', {level: 2, name: 'Made for the wall.'}),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'Shop Metal'})).toHaveAttribute(
-      'href',
-      '/collections/metal-wall-art',
-    );
-    expect(screen.getByRole('link', {name: 'Shop Canvas'})).toHaveAttribute(
-      'href',
-      '/collections/canvas-art',
-    );
-    expect(screen.getByRole('link', {name: 'Shop Posters'})).toHaveAttribute(
-      'href',
-      '/collections/posters',
-    );
+    expect(
+      screen.getByRole('link', {name: 'Shop Aluminum Metal Wall Art'}),
+    ).toHaveAttribute('href', '/collections/metal-wall-art');
+    expect(
+      screen.getByRole('link', {name: 'Shop Gallery-Wrapped Canvas Prints'}),
+    ).toHaveAttribute('href', '/collections/canvas-art');
+    expect(
+      screen.getByRole('link', {name: 'Shop Archival Matte Art Posters'}),
+    ).toHaveAttribute('href', '/collections/posters');
   });
 
   it('renders only the genuine artist and in-house studio credits', () => {
@@ -145,19 +146,25 @@ describe('homepage presentation', () => {
     expect(
       screen.getByRole('heading', {level: 2, name: 'The artist & the studio.'}),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', {name: 'View J.B. Render'})).toHaveAttribute(
-      'href',
-      '/artists/jb-render',
-    );
+    expect(
+      screen.getByRole('link', {name: 'View J.B. Render'}),
+    ).toHaveAttribute('href', '/artists/jb-render');
     expect(
       screen.getByRole('link', {name: 'View Render-Lab Studio'}),
     ).toHaveAttribute('href', '/artists/render-lab-studio');
-    expect(screen.queryByRole('link', {name: 'View Nico Vale'})).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', {name: 'View Mara Voss'})).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', {name: 'View Dante Mercer'})).not.toBeInTheDocument();
     expect(
-      screen.getByRole('link', {name: 'Meet our studio'}),
-    ).toHaveAttribute('href', '/artists');
+      screen.queryByRole('link', {name: 'View Nico Vale'}),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', {name: 'View Mara Voss'}),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', {name: 'View Dante Mercer'}),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('link', {name: 'Meet our studio'})).toHaveAttribute(
+      'href',
+      '/artists',
+    );
   });
 
   it('omits the artist spotlight cleanly when Shopify has no artists', () => {
@@ -216,4 +223,38 @@ describe('homepage presentation', () => {
     );
     vi.unstubAllGlobals();
   });
+});
+
+it('renders every live series, accessible hero and genuine product price/materials', () => {
+  const {container} = renderHomepage({
+    ...data,
+    featuredCollections: SERIES_COLLECTION_HANDLES.map((handle) => ({
+      id: handle,
+      title: handle,
+      to: `/collections/${handle}`,
+      image,
+      description: 'A complete collection sentence without truncation.',
+    })),
+  });
+  expect(
+    container.querySelectorAll('.featured-collections-grid a'),
+  ).toHaveLength(9);
+  expect(
+    container.querySelectorAll('.featured-collections-grid h3'),
+  ).toHaveLength(9);
+  expect(
+    screen.getAllByText('A complete collection sentence without truncation.'),
+  ).toHaveLength(9);
+  expect(container.querySelector('.home-hero__media')).not.toHaveAttribute(
+    'aria-hidden',
+  );
+  expect(container.querySelector('.home-hero__media img')).toHaveAttribute(
+    'alt',
+    'Large-scale volcanic landscape metal wall art print displayed in a dark modern gallery living room',
+  );
+  expect(screen.getByText('From $80.00 — Metal · Canvas')).toBeInTheDocument();
+  expect(container.querySelector('.home-v2-products a')).toHaveAttribute(
+    'href',
+    '/products/real-work',
+  );
 });

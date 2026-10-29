@@ -163,7 +163,7 @@ describe('sitemap child routes', () => {
   it.each(['collections', 'pages', 'blogs'])(
     'leaves %s dates untouched',
     async (type) => {
-      const xml = `<urlset><url><loc>https://render-lab.org/${type}/example</loc><lastmod>2020-01-01T00:00:00Z</lastmod></url></urlset>`;
+      const xml = `<urlset><url><loc>https://render-lab.org/${type}/carnivora</loc><lastmod>2020-01-01T00:00:00Z</lastmod></url></urlset>`;
       mocks.getSitemap.mockResolvedValueOnce(new Response(xml));
       const query = vi.fn();
       const response = await loader({

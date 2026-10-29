@@ -244,6 +244,7 @@ export const HEADER_QUERY = `#graphql
   query Header(
     $country: CountryCode
     $headerMenuHandle: String!
+    $collectionQuery: String!
     $language: LanguageCode
   ) @inContext(language: $language, country: $country) {
     shop {
@@ -252,7 +253,7 @@ export const HEADER_QUERY = `#graphql
     menu(handle: $headerMenuHandle) {
       ...Menu
     }
-    collections(first: 100, sortKey: UPDATED_AT, reverse: true) {
+    collections(first: 100, query: $collectionQuery, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         id
         handle

@@ -3,7 +3,7 @@ import {Icon} from '~/components/Icon';
 
 const MATERIALS = [
   {
-    title: 'Metal',
+    title: 'Aluminum Metal Wall Art',
     description: 'Crisp detail. Clean edges. Built for impact.',
     to: '/collections/metal-wall-art',
     image:
@@ -11,7 +11,7 @@ const MATERIALS = [
     alt: 'Close-up of premium metal wall art with crisp rigid edge',
   },
   {
-    title: 'Canvas',
+    title: 'Gallery-Wrapped Canvas Prints',
     description: 'Texture, depth and a gallery-ready finish.',
     to: '/collections/canvas-art',
     image:
@@ -19,7 +19,7 @@ const MATERIALS = [
     alt: 'Close-up of slim wrapped canvas wall art with visible texture',
   },
   {
-    title: 'Posters',
+    title: 'Archival Matte Art Posters',
     description: 'Bold imagery in an accessible archival format.',
     to: '/collections/posters',
     image:
@@ -43,7 +43,10 @@ export interface ArtistSpotlightItem {
 
 export function EditorialBand() {
   return (
-    <section className="home-v2-editorial" aria-labelledby="home-v2-editorial-title">
+    <section
+      className="home-v2-editorial"
+      aria-labelledby="home-v2-editorial-title"
+    >
       <img
         alt="Dark mountain valley at dusk with dramatic clouds and warm light"
         loading="lazy"
@@ -54,7 +57,11 @@ export function EditorialBand() {
         <p className="home-v2-kicker">Render-Lab / Editorial</p>
         <h2 id="home-v2-editorial-title">More than decoration.</h2>
         <p>A higher standard for your space.</p>
-        <Link className="home-v2-link" prefetch="intent" to="/collections/wall-art">
+        <Link
+          className="home-v2-link"
+          prefetch="intent"
+          to="/collections/wall-art"
+        >
           Explore all wall art <Icon name="arrow-right" size={16} />
         </Link>
       </div>
@@ -64,7 +71,10 @@ export function EditorialBand() {
 
 export function MaterialShowcase() {
   return (
-    <section className="home-v2-materials" aria-labelledby="home-v2-materials-title">
+    <section
+      className="home-v2-materials"
+      aria-labelledby="home-v2-materials-title"
+    >
       <div className="container container--wide">
         <header className="home-v2-section-head">
           <p className="home-v2-kicker">Shop by material</p>
@@ -107,7 +117,10 @@ export function ArtistSpotlight({
   if (!artists.length) return null;
 
   return (
-    <section className="home-v2-artists" aria-labelledby="home-v2-artists-title">
+    <section
+      className="home-v2-artists"
+      aria-labelledby="home-v2-artists-title"
+    >
       <div className="container container--wide">
         <header className="home-v2-section-head home-v2-section-head--center">
           <p className="home-v2-kicker">Meet Render-Lab</p>
@@ -126,7 +139,9 @@ export function ArtistSpotlight({
               <div className="home-v2-artist-card__media">
                 {artist.image ? (
                   <img
-                    alt={artist.image.altText || `${artist.name} profile artwork`}
+                    alt={
+                      artist.image.altText || `${artist.name} profile artwork`
+                    }
                     loading="lazy"
                     src={artist.image.url}
                   />
@@ -138,7 +153,11 @@ export function ArtistSpotlight({
                 )}
               </div>
               <div className="home-v2-artist-card__copy">
-                <p className="home-v2-kicker">{artist.handle === "render-lab-studio" ? "Creative studio" : "Artist & creative director"}</p>
+                <p className="home-v2-kicker">
+                  {artist.handle === 'render-lab-studio'
+                    ? 'Creative studio'
+                    : 'Artist & creative director'}
+                </p>
                 <h3>{artist.name}</h3>
                 {artist.biography ? <p>{artist.biography}</p> : null}
                 <strong>
@@ -160,7 +179,10 @@ export function ArtistSpotlight({
 
 export function ClosingCta() {
   return (
-    <section className="home-v2-closing" aria-labelledby="home-v2-closing-title">
+    <section
+      className="home-v2-closing"
+      aria-labelledby="home-v2-closing-title"
+    >
       <img
         alt="Dark coastal landscape beneath a crimson moon with a lone figure"
         loading="lazy"
@@ -169,8 +191,14 @@ export function ClosingCta() {
       <span className="home-v2-closing__shade" aria-hidden="true" />
       <div className="home-v2-closing__copy">
         <p className="home-v2-kicker">Render-Lab / Wall art</p>
-        <h2 id="home-v2-closing-title">Find the piece that changes the room.</h2>
-        <Link className="home-v2-button" prefetch="intent" to="/collections/wall-art">
+        <h2 id="home-v2-closing-title">
+          Find the piece that changes the room.
+        </h2>
+        <Link
+          className="home-v2-button"
+          prefetch="intent"
+          to="/collections/wall-art"
+        >
           Explore wall art <Icon name="arrow-right" size={16} />
         </Link>
       </div>

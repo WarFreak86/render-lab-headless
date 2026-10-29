@@ -1,5 +1,9 @@
+import {normalizeCreatorCredit} from './navigation';
 import {isSuppressedMerchandisingAssetUrl} from './merchandising';
-import {storefrontSeriesCollections} from './catalog-collections';
+import {
+  isLiveCollectionHandle,
+  storefrontSeriesCollections,
+} from './catalog-collections';
 
 export interface HomepageImage {
   url: string;
@@ -10,7 +14,8 @@ export interface HomepageImage {
 
 export const HOMEPAGE_HERO_IMAGE = {
   url: 'https://cdn.shopify.com/s/files/1/0748/7701/0081/files/render-lab-home-volcanic-gallery.png?v=1789594138',
-  altText: 'Volcanic landscape wall art displayed in a modern gallery interior',
+  altText:
+    'Large-scale volcanic landscape metal wall art print displayed in a dark modern gallery living room',
   width: 1672,
   height: 941,
 } satisfies HomepageImage;
@@ -28,6 +33,10 @@ export interface HomepageProductInput {
   descriptionHtml?: string | null;
   productType?: string | null;
   availableForSale?: boolean | null;
+  options?: ReadonlyArray<{
+    name: string;
+    optionValues: ReadonlyArray<{name: string}>;
+  }>;
   featuredImage?: {
     url: string;
     altText?: string | null;
@@ -40,6 +49,7 @@ export interface HomepageProductInput {
 }
 
 export interface HomepageCollectionInput {
+  descriptionHtml?: string | null;
   id: string;
   handle: string;
   title: string;
@@ -111,6 +121,9 @@ export interface HomepageData {
   categories: HomepageCategory[];
   featuredCollections: HomepageCollectionFeature[];
   featuredDrop: HomepageProductFeature | null;
+  featuredProducts: Array<
+    HomepageProductFeature & {series: string; materials: string[]}
+  >;
 }
 
 export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
@@ -186,7 +199,9 @@ const UUID_LIKE_ALT = /^[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12}$/i;
 
 function imageAlt(altText: string | null | undefined, fallback: string) {
   const normalized = altText?.trim();
-  return normalized && !UUID_LIKE_ALT.test(normalized) ? normalized : fallback;
+  return normalizeCreatorCredit(
+    normalized && !UUID_LIKE_ALT.test(normalized) ? normalized : fallback,
+  );
 }
 
 function normalizeImage(
@@ -236,14 +251,16 @@ function normalizeCollectionHero(
     handle: collection.handle,
     title: collection.title,
     to: `/collections/${collection.handle}`,
-    description: cleanProductDescription(collection.description),
+    description: cleanProductDescription(
+      collection.descriptionHtml || collection.description,
+    ),
     productType: 'Collection',
     availableForSale: false,
     image,
   } satisfies HomepageProductFeature;
 }
 
-function cleanProductDescription(description?: string | null) {
+export function cleanProductDescription(description?: string | null) {
   const value = description
     ?.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
@@ -251,9 +268,25 @@ function cleanProductDescription(description?: string | null) {
     .replace(/&nbsp;|&#160;/gi, ' ')
     .replace(/&amp;/gi, '&')
     .replace(/\s+/g, ' ')
+    .replace(/\s+([,.;!?])/g, '$1')
     .trim();
   if (!value) return undefined;
-  return value.match(/^.*?[.!?](?:\s|$)/)?.[0]?.trim() || value.slice(0, 220);
+  // Keep initials such as J.B. Render intact and preserve whole sentences.
+  const protectedText = value.replace(/\b(?:[A-Z]\.){1,}/g, (initials) =>
+    initials.replaceAll('.', '\u2024'),
+  );
+  const sentences = protectedText.split(/(?<=[.!?])\s+/);
+  let start = 0;
+  // Skip a pair of short opening taglines when substantive copy follows.
+  while (
+    start + 2 < sentences.length &&
+    sentences.slice(start, start + 2).join(' ').length < 80
+  )
+    start++;
+  return sentences
+    .slice(start, start + 2)
+    .join(' ')
+    .replaceAll('\u2024', '.');
 }
 
 function prioritizedCollections(
@@ -300,14 +333,16 @@ export function normalizeHomepageData(
 ): HomepageData {
   const merchandisableCollections = commerce.collections.filter(
     (collection) =>
-      collection.products.nodes.length > 0 && collectionImage(collection),
+      isLiveCollectionHandle(collection.handle) &&
+      collection.products.nodes.length > 0 &&
+      collectionImage(collection),
   );
   const categoryCollections = prioritizedCollections(
     merchandisableCollections,
     CATEGORY_PRIORITY,
   );
-  // The Storefront query arrives newest-updated first. Published, non-empty series
-  // automatically flow into the homepage in that order without a code-maintained list.
+  // The Storefront query arrives newest-updated first. Only approved, non-empty
+  // series flow into the homepage in that order.
   const featuredCandidates = storefrontSeriesCollections(
     merchandisableCollections,
   );
@@ -360,7 +395,9 @@ export function normalizeHomepageData(
         id: collection.id,
         title: collection.title,
         to: `/collections/${collection.handle}`,
-        description: collection.description?.trim() || undefined,
+        description: cleanProductDescription(
+          collection.descriptionHtml || collection.description,
+        ),
         image,
       },
     ];
@@ -370,6 +407,33 @@ export function normalizeHomepageData(
     const normalized = normalizeProduct(product);
     return normalized ? [normalized] : [];
   });
+  // Round-robin across live series so the selection represents the gallery,
+  // deduplicating products that Shopify places in more than one collection.
+  const featuredProducts: HomepageData['featuredProducts'] = [];
+  const seenProducts = new Set<string>();
+  for (let index = 0; index < 6 && featuredProducts.length < 12; index++) {
+    for (const collection of featuredDisplayOrder) {
+      const product = collection.products.nodes[index];
+      if (!product || seenProducts.has(product.id)) continue;
+      const normalized = normalizeProduct(product);
+      if (!normalized?.price || !normalized.availableForSale) continue;
+      seenProducts.add(product.id);
+      const materialValues =
+        product.options
+          ?.filter(({name}) => /^(material|finish)$/i.test(name))
+          .flatMap(({optionValues}) =>
+            optionValues.map(({name}) => name.toLowerCase()),
+          ) ?? [];
+      featuredProducts.push({
+        ...normalized,
+        series: collection.title,
+        materials: ['Metal', 'Canvas', 'Poster'].filter((name) =>
+          materialValues.includes(name.toLowerCase()),
+        ),
+      });
+      if (featuredProducts.length === 12) break;
+    }
+  }
   const heroCollection = featuredCandidates[0];
   const hero =
     normalizeCollectionHero(heroCollection) ??
@@ -409,6 +473,7 @@ export function normalizeHomepageData(
     heroSecondaryCta,
     categories,
     featuredCollections,
+    featuredProducts,
     featuredDrop,
   };
 }

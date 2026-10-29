@@ -38,7 +38,7 @@ describe('collection directories', () => {
   it('recognizes the five collection-family routes', () => {
     expect(isCollectionDirectoryHandle('wall-art')).toBe(true);
     expect(isCollectionDirectoryHandle('metal-wall-art')).toBe(true);
-    expect(isCollectionDirectoryHandle('botanical-anomalies')).toBe(false);
+    expect(isCollectionDirectoryHandle('carnivora')).toBe(false);
   });
 
   it('provides a stable landing-page presentation without a Shopify parent collection', () => {
@@ -75,8 +75,8 @@ describe('collection directories', () => {
           title: 'Nightmare Lab — Halloween 2026',
         }),
         collection({
-          handle: 'botanical-anomalies',
-          title: 'Botanical Anomalies',
+          handle: 'carnivora',
+          title: 'Carnivora',
           description: 'Surreal botanical artwork.',
         }),
         collection({handle: 'wall-art', title: 'Wall Art'}),
@@ -89,12 +89,10 @@ describe('collection directories', () => {
       'wall-art',
     );
 
-    expect(entries.map((entry) => entry.title)).toEqual([
-      'Botanical Anomalies',
-    ]);
+    expect(entries.map((entry) => entry.title)).toEqual(['Carnivora']);
     expect(entries[0]).toMatchObject({
       description: 'Surreal botanical artwork.',
-      to: '/collections/botanical-anomalies',
+      to: '/collections/carnivora',
     });
   });
 
@@ -102,7 +100,7 @@ describe('collection directories', () => {
     const entries = buildCollectionDirectoryEntries(
       [
         collection({
-          handle: 'metal-canvas-only',
+          handle: 'reel-legends',
           title: 'Metal & Canvas Only',
           products: {
             nodes: [
@@ -114,7 +112,7 @@ describe('collection directories', () => {
           },
         }),
         collection({
-          handle: 'legacy-finish-series',
+          handle: 'urban-icon',
           title: 'Legacy Finish Series',
           products: {
             nodes: [
@@ -136,9 +134,7 @@ describe('collection directories', () => {
     expect(entries.map((entry) => entry.title)).toEqual([
       'Legacy Finish Series',
     ]);
-    expect(entries[0]?.to).toBe(
-      '/collections/legacy-finish-series?material=Poster',
-    );
+    expect(entries[0]?.to).toBe('/collections/urban-icon?material=Poster');
   });
 
   it('keeps suppressed collections out even when directory_groups explicitly places them', () => {
@@ -158,8 +154,8 @@ describe('collection directories', () => {
     const entries = buildCollectionDirectoryEntries(
       [
         collection({
-          handle: 'botanical-anomalies',
-          title: 'Botanical Anomalies',
+          handle: 'carnivora',
+          title: 'Carnivora',
           image: {
             url: 'https://cdn.shopify.com/collections/nightmare-lab-nl-001.png',
             altText: 'Old collection image',
@@ -178,8 +174,8 @@ describe('collection directories', () => {
       buildCollectionDirectoryEntries(
         [
           collection({
-            handle: 'botanical-anomalies',
-            title: 'Botanical Anomalies',
+            handle: 'carnivora',
+            title: 'Carnivora',
           }),
         ],
         'bundles',

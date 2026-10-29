@@ -25,14 +25,14 @@ vi.mock('@shopify/hydrogen', async (importOriginal) => {
 const collections = [
   {
     id: 'collection-machine',
-    handle: 'machine-monument',
-    title: 'Machine & Monument',
+    handle: 'chrome-thunder',
+    title: 'Chrome & Thunder',
     products: {nodes: [{id: 'product-machine'}]},
   },
   {
     id: 'collection-neon',
-    handle: 'neon-memento',
-    title: 'Neon Memento',
+    handle: 'urban-icon',
+    title: 'Urban Icon',
     products: {nodes: [{id: 'product-neon'}]},
   },
   {
@@ -57,7 +57,11 @@ const collections = [
 
 const artists = [
   {id: 'artist-jb', handle: 'jb-render', name: {value: 'J.B. Render'}},
-  {id: 'artist-studio', handle: 'render-lab-studio', name: {value: 'Render-Lab Studio'}},
+  {
+    id: 'artist-studio',
+    handle: 'render-lab-studio',
+    name: {value: 'Render-Lab Studio'},
+  },
   {id: 'artist-nico', handle: 'nico-vale', name: {value: 'Nico Vale'}},
   {id: 'artist-mara', handle: 'mara-voss', name: {value: 'Mara Voss'}},
   {id: 'artist-dante', handle: 'dante-mercer', name: {value: 'Dante Mercer'}},
@@ -121,26 +125,34 @@ describe('Header foundation', () => {
       screen.getByRole('menuitem', {name: 'All Wall Art'}),
     ).toHaveAttribute('href', '/collections/wall-art');
     expect(
-      screen.getByRole('menuitem', {name: 'Machine & Monument'}),
-    ).toHaveAttribute('href', '/collections/machine-monument');
-    expect(
-      screen.getByRole('menuitem', {name: 'Neon Memento'}),
-    ).toHaveAttribute('href', '/collections/neon-memento');
+      screen.getByRole('menuitem', {name: 'Chrome & Thunder'}),
+    ).toHaveAttribute('href', '/collections/chrome-thunder');
+    expect(screen.getByRole('menuitem', {name: 'Urban Icon'})).toHaveAttribute(
+      'href',
+      '/collections/urban-icon',
+    );
     expect(
       screen.queryByRole('menuitem', {name: 'Nightmare Lab'}),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole('menuitem', {name: 'Empty Series'}),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('menuitem', {name: 'J.B. Render'}),
-    ).toHaveAttribute('href', '/artists/jb-render');
+    expect(screen.getByRole('menuitem', {name: 'J.B. Render'})).toHaveAttribute(
+      'href',
+      '/artists/jb-render',
+    );
     expect(
       screen.getByRole('menuitem', {name: 'Render-Lab Studio'}),
     ).toHaveAttribute('href', '/artists/render-lab-studio');
-    expect(screen.queryByRole('menuitem', {name: 'Nico Vale'})).not.toBeInTheDocument();
-    expect(screen.queryByRole('menuitem', {name: 'Mara Voss'})).not.toBeInTheDocument();
-    expect(screen.queryByRole('menuitem', {name: 'Dante Mercer'})).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', {name: 'Nico Vale'}),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', {name: 'Mara Voss'}),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', {name: 'Dante Mercer'}),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole('menuitem', {name: 'View All Collections'}),
     ).toHaveAttribute('href', '/collections');
@@ -159,10 +171,14 @@ describe('Header foundation', () => {
     expect(shop).toHaveAttribute('aria-expanded', 'true');
     await user.keyboard('{ArrowDown}');
     await waitFor(() =>
-      expect(screen.getByRole('menuitem', {name: 'All Wall Art'})).toHaveFocus(),
+      expect(
+        screen.getByRole('menuitem', {name: 'All Wall Art'}),
+      ).toHaveFocus(),
     );
     await user.keyboard('{ArrowDown}');
-    expect(screen.getByRole('menuitem', {name: 'Metal Wall Art'})).toHaveFocus();
+    expect(
+      screen.getByRole('menuitem', {name: 'Metal Wall Art'}),
+    ).toHaveFocus();
     await user.keyboard('{Escape}');
     expect(shop).toHaveAttribute('aria-expanded', 'false');
     expect(shop).toHaveFocus();
@@ -175,7 +191,7 @@ describe('Header foundation', () => {
 
     await user.hover(shop);
     expect(shop).toHaveAttribute('aria-expanded', 'true');
-    await user.hover(screen.getByRole('menuitem', {name: 'Neon Memento'}));
+    await user.hover(screen.getByRole('menuitem', {name: 'Urban Icon'}));
     expect(shop).toHaveAttribute('aria-expanded', 'true');
   });
 
@@ -206,16 +222,19 @@ describe('Header foundation', () => {
       'href',
       '/collections/wall-art',
     );
-    expect(screen.getByRole('link', {name: 'Machine & Monument'})).toHaveAttribute(
+    expect(
+      screen.getByRole('link', {name: 'Chrome & Thunder'}),
+    ).toHaveAttribute('href', '/collections/chrome-thunder');
+    expect(screen.getByRole('link', {name: 'Urban Icon'})).toHaveAttribute(
       'href',
-      '/collections/machine-monument',
+      '/collections/urban-icon',
     );
-    expect(screen.getByRole('link', {name: 'Neon Memento'})).toHaveAttribute(
-      'href',
-      '/collections/neon-memento',
-    );
-    expect(screen.queryByRole('link', {name: 'Nightmare Lab'})).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', {name: 'Empty Series'})).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', {name: 'Nightmare Lab'}),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', {name: 'Empty Series'}),
+    ).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Materials'})).toHaveAttribute(
       'href',
       '/materials',

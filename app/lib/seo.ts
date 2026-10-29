@@ -86,7 +86,9 @@ export function safeJsonLd(value: unknown) {
   return JSON.stringify(value).replace(/</g, '\\u003c');
 }
 
-export function getGlobalStructuredData() {
+export function getGlobalStructuredData(
+  collections: ReadonlyArray<{title: string; to: string}> = [],
+) {
   const organizationId = getProductionUrl('/#organization');
   return {
     '@context': 'https://schema.org',
@@ -96,6 +98,14 @@ export function getGlobalStructuredData() {
         '@id': organizationId,
         name: 'Render-Lab',
         url: PRODUCTION_ORIGIN,
+        description:
+          'Independent visual art studio led by J.B. Render, producing limited-edition aluminum metal wall art, gallery-wrapped canvas prints, and archival posters.',
+        logo: getProductionUrl('/favicon.svg'),
+        founder: {
+          '@type': 'Person',
+          name: 'J.B. Render',
+          url: getProductionUrl('/artists/jb-render'),
+        },
         hasMerchantReturnPolicy: {
           '@type': 'MerchantReturnPolicy',
           '@id': MERCHANT_RETURN_POLICY_ID,
@@ -108,7 +118,32 @@ export function getGlobalStructuredData() {
         name: 'Render-Lab',
         url: PRODUCTION_ORIGIN,
         publisher: {'@id': organizationId},
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: getProductionUrl('/search?q={search_term_string}')
+              .replace('%7B', '{')
+              .replace('%7D', '}'),
+          },
+          'query-input': 'required name=search_term_string',
+        },
       },
+      ...(collections.length
+        ? [
+            {
+              '@type': 'ItemList',
+              '@id': getProductionUrl('/#featured-collections'),
+              name: 'Featured collections',
+              itemListElement: collections.map((collection, index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                name: collection.title,
+                url: getProductionUrl(collection.to),
+              })),
+            },
+          ]
+        : []),
     ],
   };
 }
@@ -274,10 +309,12 @@ const GELATO_US_SHIPPING_RATES: Record<string, Record<string, number>> = {
 
 function getVariantShippingDetails(variant: ProductGroupVariantInput) {
   const options = getVariantOptions(variant);
-  const material = options.find(({name}) => /^(material|finish)$/i.test(name))
+  const material = options
+    .find(({name}) => /^(material|finish)$/i.test(name))
     ?.value.toLowerCase();
-  const size = options.find(({name}) => /^size$/i.test(name))?.value
-    .toLowerCase()
+  const size = options
+    .find(({name}) => /^size$/i.test(name))
+    ?.value.toLowerCase()
     .replace(/×/g, 'x')
     .replace(/\s+/g, '');
   const dimensions = size?.match(/^(\d+)x(\d+)$/);
@@ -286,9 +323,10 @@ function getVariantShippingDetails(variant: ProductGroupVariantInput) {
         .sort((a, b) => a - b)
         .join('x')
     : undefined;
-  const rate = material && sizeKey
-    ? GELATO_US_SHIPPING_RATES[material]?.[sizeKey]
-    : undefined;
+  const rate =
+    material && sizeKey
+      ? GELATO_US_SHIPPING_RATES[material]?.[sizeKey]
+      : undefined;
 
   if (rate === undefined || variant.price?.currencyCode !== 'USD') {
     return undefined;
@@ -490,6 +528,11 @@ ${sitemapUrl ? `Sitemap: ${sitemapUrl}` : ''}`;
 export function getProductionRobotsTxt() {
   const sitemapUrl = getProductionUrl('/sitemap.xml');
   return `User-agent: *
+User-agent: Googlebot
+User-agent: Google-Extended
+User-agent: OAI-SearchBot
+User-agent: bingbot
+Allow: /
 ${generalDisallowRules(sitemapUrl)}
 
 # Google StoreBot needs cart access to inspect the checkout and payment methods.
