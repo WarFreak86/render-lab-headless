@@ -121,9 +121,10 @@ describe('Phase B1 route metadata', () => {
 
   it('uses the approved Phase C homepage metadata', () => {
     const entries = homepageMeta({data: undefined} as never);
-    const title = 'Modern Wall Art & Art Prints | Render-Lab';
+    const title =
+      'Dark Modern Wall Art, Metal Prints & Stretched Canvas | Render-Lab';
     const description =
-      'Discover premium Render-Lab wall art in metal, canvas and poster formats. Explore automotive, botanical, abstract, surreal and cinematic collections.';
+      'Shop bold metal wall art, gallery-wrapped canvas prints, and archival posters by J.B. Render and Render-Lab Studio. Explore dark gothic, classic muscle car, macro botanical, military, and cinematic art collections.';
 
     expect(entries).toContainEqual({title});
     expect(entries).toContainEqual({name: 'description', content: description});
@@ -322,9 +323,10 @@ describe('SEO audit metadata regressions', () => {
           },
         },
       } as never);
-      const actual = (getMetaContent(entries, 'name', 'description') as
-        | {content: string}
-        | undefined)?.content;
+      const actual = (
+        getMetaContent(entries, 'name', 'description') as
+          {content: string} | undefined
+      )?.content;
 
       expect(actual).toBeDefined();
       expect(actual?.length).toBeLessThanOrEqual(160);
@@ -348,7 +350,10 @@ describe('SEO audit metadata regressions', () => {
           handle: 'carnivora-no-01-open-trap',
           title: 'Open Trap',
           description: 'Visible description. '.repeat(30),
-          seo: {title: null, description: 'Shopify-authored Carnivora SEO copy.'},
+          seo: {
+            title: null,
+            description: 'Shopify-authored Carnivora SEO copy.',
+          },
           media: {nodes: []},
           selectedOrFirstAvailableVariant: null,
         },
@@ -374,9 +379,10 @@ describe('SEO audit metadata regressions', () => {
           },
         },
       } as never);
-      const actual = (getMetaContent(entries, 'name', 'description') as
-        | {content: string}
-        | undefined)?.content;
+      const actual = (
+        getMetaContent(entries, 'name', 'description') as
+          {content: string} | undefined
+      )?.content;
 
       expect(actual?.length).toBeGreaterThan(70);
       expect(actual?.length).toBeLessThanOrEqual(160);
@@ -419,9 +425,10 @@ describe('SEO audit metadata regressions', () => {
         },
       },
     } as never);
-    const actual = (getMetaContent(entries, 'name', 'description') as
-      | {content: string}
-      | undefined)?.content;
+    const actual = (
+      getMetaContent(entries, 'name', 'description') as
+        {content: string} | undefined
+    )?.content;
 
     expect(actual?.length).toBeGreaterThan(70);
     expect(actual?.length).toBeLessThanOrEqual(160);
@@ -449,9 +456,10 @@ describe('SEO audit metadata regressions', () => {
       },
       location: {search: ''},
     } as never);
-    const actual = (getMetaContent(entries, 'name', 'description') as
-      | {content: string}
-      | undefined)?.content;
+    const actual = (
+      getMetaContent(entries, 'name', 'description') as
+        {content: string} | undefined
+    )?.content;
 
     expect(actual?.length).toBeLessThanOrEqual(160);
     expect(entries).toContainEqual({

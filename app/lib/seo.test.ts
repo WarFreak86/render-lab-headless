@@ -31,7 +31,7 @@ describe('launch SEO helpers', () => {
     );
     const robots = getRobotsTxt('https://render-lab.org/');
     expect(robots).not.toContain('Disallow: /policies/');
-    expect(robots).toContain('User-agent: *\nDisallow: /cart');
+    expect(robots).toContain('Allow: /\nDisallow: /cart');
     expect(robots).toContain(
       'User-agent: Storebot-Google\nAllow: /cart\nDisallow: /account',
     );
@@ -249,7 +249,8 @@ describe('ProductGroup structured data', () => {
     });
     expect(canvas).toMatchObject({
       name: 'Example Artwork — Canvas / 24 x 18',
-      description: 'Example Artwork — Canvas / 24 x 18. An example description.',
+      description:
+        'Example Artwork — Canvas / 24 x 18. An example description.',
       material: 'Canvas',
       size: '24 x 18',
       image: productImage,
@@ -257,8 +258,14 @@ describe('ProductGroup structured data', () => {
     });
     expect(canvas.offers.url).toBe(canvas.url);
     expect(canvas.offers.url).not.toContain('?variant=');
-    expect(metal.offers.shippingDetails?.shippingRate).toMatchObject({value: 10.56, currency: 'USD'});
-    expect(canvas.offers.shippingDetails?.shippingRate).toMatchObject({value: 18.29, currency: 'USD'});
+    expect(metal.offers.shippingDetails?.shippingRate).toMatchObject({
+      value: 10.56,
+      currency: 'USD',
+    });
+    expect(canvas.offers.shippingDetails?.shippingRate).toMatchObject({
+      value: 18.29,
+      currency: 'USD',
+    });
   });
 
   it('includes genuine product subject matter in distinct variant descriptions', () => {
@@ -278,7 +285,11 @@ describe('ProductGroup structured data', () => {
 
     const descriptions = group.hasVariant.map((variant) => variant.description);
     expect(new Set(descriptions).size).toBe(2);
-    expect(descriptions.every((value) => value.includes('Theme: Automotive wall art'))).toBe(true);
+    expect(
+      descriptions.every((value) =>
+        value.includes('Theme: Automotive wall art'),
+      ),
+    ).toBe(true);
     expect(descriptions[0]).toContain('Metal');
     expect(descriptions[1]).toContain('Canvas');
   });
@@ -328,12 +339,18 @@ describe('ProductGroup structured data', () => {
     ] as const;
     for (const [material, size, amount] of samples) {
       const variant = materialVariant({
-        material, size, sku: `RL-TEST-${material}-${size}`,
+        material,
+        size,
+        sku: `RL-TEST-${material}-${size}`,
       });
       const group = productGroup([variant]);
       expect(group.hasVariant[0].offers.shippingDetails).toMatchObject({
         shippingDestination: {'@type': 'DefinedRegion', addressCountry: 'US'},
-        shippingRate: {'@type': 'MonetaryAmount', value: amount, currency: 'USD'},
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          value: amount,
+          currency: 'USD',
+        },
         deliveryTime: {
           handlingTime: {minValue: 2, maxValue: 4, unitCode: 'DAY'},
           transitTime: {minValue: 5, maxValue: 8, unitCode: 'DAY'},
@@ -347,7 +364,11 @@ describe('ProductGroup structured data', () => {
     const foreignCurrency = materialVariant({id: '222', sku: 'RL-EUR'});
     foreignCurrency.price.currencyCode = 'EUR';
     const group = productGroup([unsupported, foreignCurrency]);
-    expect(group.hasVariant.every((variant) => !('shippingDetails' in variant.offers))).toBe(true);
+    expect(
+      group.hasVariant.every(
+        (variant) => !('shippingDetails' in variant.offers),
+      ),
+    ).toBe(true);
   });
 
   it('maps unavailable variants without assuming future stock', () => {

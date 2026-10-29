@@ -1,6 +1,4 @@
-import '~/styles/home-v2.css';
-import '~/styles/home-v2-width-fix.css';
-import '~/styles/home-v2-artists-dynamic.css';
+import {FeaturedProducts} from './FeaturedProducts';
 import {HomepageHero} from './HomepageHero';
 import {FeaturedCollections} from './FeaturedCollections';
 import {
@@ -32,6 +30,7 @@ export function HomepageView({
         eyebrow="Distinct worlds. Original perspectives."
         title="Featured collections"
       />
+      <FeaturedProducts products={data.featuredProducts} />
       <EditorialBand />
       <MaterialShowcase />
       <ArtistSpotlight artists={artists} />

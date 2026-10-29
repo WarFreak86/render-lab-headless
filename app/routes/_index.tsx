@@ -1,7 +1,6 @@
+import homeStyles from '~/styles/home-bundle.css?url';
+import {LIVE_COLLECTION_QUERY} from '~/lib/catalog-collections';
 import {useLoaderData} from 'react-router';
-import homeStyles from '~/styles/home.css?url';
-import homeEnhancements from '~/styles/enhancements-home.css?url';
-import homeGalleryStyles from '~/styles/gallery-home.css?url';
 import type {Route} from './+types/_index';
 import {MockShopNotice} from '~/components/MockShopNotice';
 import {HomepageView} from '~/components/homepage/HomepageView';
@@ -14,14 +13,11 @@ import {
   normalizeHomepageData,
 } from '~/lib/homepage';
 
-const HOME_TITLE = 'Modern Wall Art & Art Prints | Render-Lab';
-export const links = () => [
-  {rel: 'stylesheet', href: homeStyles},
-  {rel: 'stylesheet', href: homeEnhancements},
-  {rel: 'stylesheet', href: homeGalleryStyles},
-];
+const HOME_TITLE =
+  'Dark Modern Wall Art, Metal Prints & Stretched Canvas | Render-Lab';
+export const links = () => [{rel: 'stylesheet', href: homeStyles}];
 const HOME_DESCRIPTION =
-  'Discover premium Render-Lab wall art in metal, canvas and poster formats. Explore automotive, botanical, abstract, surreal and cinematic collections.';
+  'Shop bold metal wall art, gallery-wrapped canvas prints, and archival posters by J.B. Render and Render-Lab Studio. Explore dark gothic, classic muscle car, macro botanical, military, and cinematic art collections.';
 
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/');
@@ -42,8 +38,10 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export async function loader({context}: Route.LoaderArgs) {
-  const {collections, products, artists} =
-    await context.storefront.query(HOMEPAGE_QUERY);
+  const {collections, artists} = await context.storefront.query(
+    HOMEPAGE_QUERY,
+    {variables: {collectionQuery: LIVE_COLLECTION_QUERY}},
+  );
 
   const homepageArtists = artists.nodes
     .filter((artist) => isStorefrontArtistReady(artist.handle))
@@ -68,7 +66,7 @@ export async function loader({context}: Route.LoaderArgs) {
     homepage: normalizeHomepageData(
       {
         collections: collections.nodes,
-        products: products.nodes,
+        products: [],
       },
       HOMEPAGE_EDITORIAL_FALLBACK,
     ),
@@ -91,6 +89,7 @@ const HOMEPAGE_QUERY = `#graphql
     handle
     title
     description
+    descriptionHtml
     image {
       id
       url
@@ -103,6 +102,7 @@ const HOMEPAGE_QUERY = `#graphql
         ...ProductCard
         description
         descriptionHtml
+        options { name optionValues { name } }
         productType
         availableForSale
       }
@@ -110,22 +110,14 @@ const HOMEPAGE_QUERY = `#graphql
   }
 
   query Homepage(
+    $collectionQuery: String!
     $country: CountryCode
     $language: LanguageCode
   )
     @inContext(country: $country, language: $language) {
-    collections(first: 100, sortKey: UPDATED_AT, reverse: true) {
+    collections(query: $collectionQuery, first: 100, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...HomepageCollection
-      }
-    }
-    products(first: 12, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...ProductCard
-        description
-        descriptionHtml
-        productType
-        availableForSale
       }
     }
     artists: metaobjects(type: "artist", first: 100) {

@@ -1,10 +1,14 @@
+import {normalizeCreatorCredit} from '~/lib/navigation';
 import {useLoaderData, Link} from 'react-router';
 import type {Route} from './+types/collections._index';
 import {Image} from '@shopify/hydrogen';
 import type {CollectionFragment} from 'storefrontapi.generated';
 import {getProductionUrl} from '~/lib/config';
 import {isSuppressedMerchandisingAssetUrl} from '~/lib/merchandising';
-import {storefrontSeriesCollectionsAlphabetical} from '~/lib/catalog-collections';
+import {
+  storefrontSeriesCollectionsAlphabetical,
+  LIVE_COLLECTION_QUERY,
+} from '~/lib/catalog-collections';
 
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/collections');
@@ -23,7 +27,9 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export async function loader({context}: Route.LoaderArgs) {
-  const {collections} = await context.storefront.query(COLLECTIONS_QUERY);
+  const {collections} = await context.storefront.query(COLLECTIONS_QUERY, {
+    variables: {collectionQuery: LIVE_COLLECTION_QUERY},
+  });
   const visibleCollections = storefrontSeriesCollectionsAlphabetical(
     collections.nodes,
   );
@@ -31,16 +37,20 @@ export async function loader({context}: Route.LoaderArgs) {
   const safeFallbackImage = visibleCollections
     .map((collection) => collection.image)
     .find(
-      (image) =>
-        image?.url && !isSuppressedMerchandisingAssetUrl(image.url),
+      (image) => image?.url && !isSuppressedMerchandisingAssetUrl(image.url),
     );
   const displayCollections = visibleCollections.map((collection) => ({
     ...collection,
     image:
       collection.image?.url &&
       !isSuppressedMerchandisingAssetUrl(collection.image.url)
-        ? collection.image
-        : safeFallbackImage ?? null,
+        ? {
+            ...collection.image,
+            altText: normalizeCreatorCredit(
+              collection.image.altText || collection.title,
+            ),
+          }
+        : (safeFallbackImage ?? null),
   }));
 
   return {collections: displayCollections};
@@ -110,9 +120,9 @@ const COLLECTIONS_QUERY = `#graphql
       }
     }
   }
-  query StoreCollections($country: CountryCode, $language: LanguageCode)
+  query StoreCollections($collectionQuery: String!, $country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
-    collections(first: 100, sortKey: UPDATED_AT, reverse: true) {
+    collections(query: $collectionQuery, first: 100, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...Collection
       }

@@ -6,48 +6,34 @@ const readAppFile = (path: string) =>
   readFileSync(resolve(process.cwd(), 'app', path), 'utf8');
 
 describe('route stylesheet ownership', () => {
-  it('keeps the shared shell and cart drawer styled before route links', () => {
+  it('bundles global and homepage styles while keeping the base below route CSS', () => {
     const root = readAppFile('root.tsx');
-    for (const stylesheet of [
-      'reset.css',
-      'tokens.css',
-      'app.css',
-      'navigation.css',
-      'cart.css',
-      'enhancements.css',
-      'gallery-evolution.css',
-      'mobile-commerce.css',
-    ]) {
-      expect(root).toContain(`~/styles/${stylesheet}?url`);
-    }
-    for (const routeOnly of [
-      'home.css',
-      'artists.css',
-      'collection.css',
-      'product.css',
-      'enhancements-home.css',
-      'gallery-home.css',
-    ]) {
-      expect(root).not.toContain(`~/styles/${routeOnly}?url`);
-    }
-    expect(root.indexOf('<Links />')).toBeGreaterThan(
-      root.indexOf('href={cartStyles}'),
-    );
+    const global = readAppFile('styles/root-bundle.css');
+    const home = readAppFile('styles/home-bundle.css');
+    expect(root).toContain('~/styles/root-bundle.css?url');
     expect(root.indexOf('<Links />')).toBeLessThan(
-      root.indexOf('href={enhancementStyles}'),
+      root.indexOf('href={rootStyles}'),
     );
-    expect(root.indexOf('href={galleryStyles}')).toBeLessThan(
-      root.indexOf('href={mobileCommerceStyles}'),
+    expect(global).toContain("'./cart.css' layer(storefront-base)");
+    expect(global.indexOf('gallery-evolution.css')).toBeLessThan(
+      global.indexOf('mobile-commerce.css'),
     );
+    expect(home).toContain("@import './home-v2.css'");
+    expect(global).not.toContain('home-v2.css');
   });
 
   it.each([
-    ['routes/_index.tsx', ['home.css', 'enhancements-home.css', 'gallery-home.css']],
+    ['routes/_index.tsx', ['home-bundle.css']],
     ['routes/artists._index.tsx', ['artists.css']],
     ['routes/artists.$handle.tsx', ['artists.css']],
-    ['routes/collections.all.tsx', ['collection.css', 'gallery-collection.css']],
-    ['routes/collections.$handle.tsx', ['collection.css', 'gallery-collection.css']],
-    ['routes/products.$handle.tsx', ['product.css', 'enhancements-product.css', 'gallery-product.css']],
+    [
+      'routes/collections.$handle.tsx',
+      ['collection.css', 'gallery-collection.css'],
+    ],
+    [
+      'routes/products.$handle.tsx',
+      ['product.css', 'enhancements-product.css', 'gallery-product.css'],
+    ],
     ['routes/materials.tsx', ['gallery-materials.css']],
     ['routes/legal.rights-notice.tsx', ['enhancements-legal.css']],
   ])('%s links its required page styles', (route, stylesheets) => {
@@ -59,9 +45,15 @@ describe('route stylesheet ownership', () => {
   });
 
   it('keeps footer, global controls, and header overrides in shared CSS', () => {
-    expect(readAppFile('styles/enhancements.css')).toContain('.site-footer__rights');
+    expect(readAppFile('styles/enhancements.css')).toContain(
+      '.site-footer__rights',
+    );
     expect(readAppFile('styles/enhancements.css')).toContain('.button--text');
-    expect(readAppFile('styles/gallery-evolution.css')).toContain('.site-header');
-    expect(readAppFile('styles/gallery-evolution.css')).not.toContain('.product-detail');
+    expect(readAppFile('styles/gallery-evolution.css')).toContain(
+      '.site-header',
+    );
+    expect(readAppFile('styles/gallery-evolution.css')).not.toContain(
+      '.product-detail',
+    );
   });
 });

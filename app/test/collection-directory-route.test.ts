@@ -1,7 +1,7 @@
 import {loader} from '~/routes/collections.$handle';
 
 describe('collection directory routes', () => {
-  it('keeps Bundles in directory mode when the Shopify parent collection is missing', async () => {
+  it('keeps Wall Art in directory mode when the Shopify parent collection is missing', async () => {
     const query = vi.fn().mockResolvedValue({
       collection: null,
       collections: {nodes: []},
@@ -9,8 +9,8 @@ describe('collection directory routes', () => {
 
     const result = await loader({
       context: {storefront: {query}},
-      params: {handle: 'bundles'},
-      request: new Request('https://render-lab.org/collections/bundles'),
+      params: {handle: 'wall-art'},
+      request: new Request('https://render-lab.org/collections/wall-art'),
     } as never);
 
     expect(result).toMatchObject({
@@ -18,10 +18,10 @@ describe('collection directory routes', () => {
       analyticsCollectionId: null,
       directoryEntries: [],
       collectionPage: {
-        handle: 'bundles',
+        handle: 'wall-art',
         hero: {
-          title: 'Bundles',
-          editorialHeading: 'Better together.',
+          title: 'Wall Art Prints',
+          editorialHeading: 'Wall Art Prints',
         },
       },
     });

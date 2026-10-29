@@ -1,3 +1,4 @@
+import {filterCollectionSitemapXml} from '~/lib/catalog-collections';
 import type {Route} from './+types/sitemap.$type.$page[.xml]';
 import {getSitemap} from '@shopify/hydrogen';
 import {filterSuppressedSitemapXml} from '~/lib/merchandising';
@@ -17,7 +18,9 @@ export async function loader({
   });
   const headers = new Headers(response.headers);
   headers.set('Cache-Control', `max-age=${60 * 60 * 24}`);
-  let xml = filterSuppressedSitemapXml(await response.text());
+  let xml = filterCollectionSitemapXml(
+    filterSuppressedSitemapXml(await response.text()),
+  );
   if (params.type === 'products' && response.ok) {
     xml = await withProductSitemapLastmod(xml, storefront);
   }

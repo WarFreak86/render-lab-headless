@@ -1,3 +1,4 @@
+import {normalizeCreatorCredit} from './navigation';
 import {isSuppressedMerchandisingAssetUrl} from './merchandising';
 import {
   MATERIAL_BY_COLLECTION_HANDLE,
@@ -223,9 +224,10 @@ function normalizeImage(
   }
   return {
     url: collection.image.url,
-    altText:
+    altText: normalizeCreatorCredit(
       cleanText(collection.image.altText) ??
-      `${collection.title} collection artwork`,
+        `${collection.title} collection artwork`,
+    ),
     width: collection.image.width,
     height: collection.image.height,
   };

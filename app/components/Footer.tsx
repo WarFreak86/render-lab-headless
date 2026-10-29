@@ -2,7 +2,7 @@ import {Suspense} from 'react';
 import {Await, NavLink} from 'react-router';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
 import {Container} from '~/components/Container';
-import {SITE_NAME} from '~/lib/config';
+import {normalizeStorefrontLink, SITE_NAME} from '~/lib/config';
 
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
@@ -10,12 +10,18 @@ interface FooterProps {
   publicStoreDomain: string;
 }
 
-export function Footer({footer: footerPromise, header, publicStoreDomain}: FooterProps) {
+export function Footer({
+  footer: footerPromise,
+  header,
+  publicStoreDomain,
+}: FooterProps) {
   return (
     <footer className="site-footer">
       <Container className="site-footer__grid" size="wide">
         <div className="site-footer__brand">
-          <NavLink className="brand-mark" to="/">RENDER-LAB</NavLink>
+          <NavLink className="brand-mark" to="/">
+            RENDER-LAB
+          </NavLink>
           <p>Art, editions, and objects selected for considered spaces.</p>
         </div>
         <FooterLinkGroup title="Explore">
@@ -33,8 +39,13 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}: Foote
         </FooterLinkGroup>
         <div>
           <h2 className="site-footer__heading">Policies</h2>
-          <nav className="site-footer__links" aria-label="Rights and intellectual property">
-            <NavLink to="/legal/rights-notice">Rights &amp; Intellectual Property</NavLink>
+          <nav
+            className="site-footer__links"
+            aria-label="Rights and intellectual property"
+          >
+            <NavLink to="/legal/rights-notice">
+              Rights &amp; Intellectual Property
+            </NavLink>
           </nav>
           <Suspense fallback={null}>
             <Await resolve={footerPromise}>
@@ -51,55 +62,70 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}: Foote
       </Container>
       <Container className="site-footer__rights" size="wide">
         <p>
-          Render-Lab develops and curates artwork through Render-Lab Studio under the
-          creative direction of J.B. Render. Physical prints are made to order.
-          Some works may reference third-party trademarks, copyrighted material,
-          public figures, or other protected subject matter. Unless expressly stated, no affiliation,
-          endorsement, sponsorship, or authorization by a third-party rights holder is
-          claimed or implied.{' '}
+          Render-Lab develops and curates artwork through Render-Lab Studio
+          under the creative direction of J.B. Render. Physical prints are made
+          to order. Some works may reference third-party trademarks, copyrighted
+          material, public figures, or other protected subject matter. Unless
+          expressly stated, no affiliation, endorsement, sponsorship, or
+          authorization by a third-party rights holder is claimed or implied.{' '}
           <NavLink to="/legal/rights-notice">Read the rights notice.</NavLink>
         </p>
       </Container>
       <Container className="site-footer__bottom" size="wide">
-        <p>© {new Date().getFullYear()} {SITE_NAME}</p>
+        <p>
+          © {new Date().getFullYear()} {SITE_NAME}
+        </p>
         <p>Shopify-powered commerce</p>
       </Container>
     </footer>
   );
 }
 
-function FooterLinkGroup({children, title}: {children: React.ReactNode; title: string}) {
+function FooterLinkGroup({
+  children,
+  title,
+}: {
+  children: React.ReactNode;
+  title: string;
+}) {
   return (
     <div>
       <h2 className="site-footer__heading">{title}</h2>
-      <nav className="site-footer__links" aria-label={title}>{children}</nav>
+      <nav className="site-footer__links" aria-label={title}>
+        {children}
+      </nav>
     </div>
   );
 }
 
-function FooterMenu({footer, header, publicStoreDomain}: {
+function FooterMenu({
+  footer,
+}: {
   footer: FooterQuery | null;
   header: HeaderQuery;
   publicStoreDomain: string;
 }) {
   if (!footer?.menu) return null;
-  const primaryDomainUrl = header.shop.primaryDomain.url;
   return (
-    <nav className="site-footer__links site-footer__links--policy-menu" aria-label="Store policies">
+    <nav
+      className="site-footer__links site-footer__links--policy-menu"
+      aria-label="Store policies"
+    >
       {footer.menu.items.map((item) => {
-        if (!item.url || new URL(item.url, 'https://render-lab.org').pathname === '/search') return null;
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
+        if (
+          !item.url ||
+          new URL(item.url, 'https://render-lab.org').pathname === '/search'
+        )
+          return null;
+        const url = normalizeStorefrontLink(item.url);
         return !url.startsWith('/') ? (
           <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
             {item.title}
           </a>
         ) : (
-          <NavLink key={item.id} to={url}>{item.title}</NavLink>
+          <NavLink key={item.id} to={url}>
+            {item.title}
+          </NavLink>
         );
       })}
     </nav>

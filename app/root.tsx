@@ -1,3 +1,5 @@
+import rootStyles from '~/styles/root-bundle.css?url';
+import type {loader as homepageLoader} from '~/routes/_index';
 import {Analytics, getShopAnalytics, useNonce} from '@shopify/hydrogen';
 import {
   Link,
@@ -14,30 +16,24 @@ import {
 import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
-import {SHOPIFY_CHECKOUT_DOMAIN, SITE_NAME} from '~/lib/config';
+import {
+  PRODUCTION_ORIGIN,
+  SHOPIFY_CHECKOUT_DOMAIN,
+  SITE_NAME,
+} from '~/lib/config';
+import {
+  isLiveCollectionHandle,
+  LIVE_COLLECTION_QUERY,
+} from '~/lib/catalog-collections';
+import {isStorefrontArtistReady, sanitizeMenuItems} from '~/lib/navigation';
 import {getRouteErrorPresentation} from '~/lib/errors';
 import {
   getEnvironmentRobotsDirective,
   getGlobalStructuredData,
   safeJsonLd,
 } from '~/lib/seo';
-import resetStyles from '~/styles/reset.css?url';
-import tokenStyles from '~/styles/tokens.css?url';
-import appStyles from '~/styles/app.css?url';
-import navigationStyles from '~/styles/navigation.css?url';
-import cartStyles from '~/styles/cart.css?url';
-import enhancementStyles from '~/styles/enhancements.css?url';
-import galleryStyles from '~/styles/gallery-evolution.css?url';
-import mobileCommerceStyles from '~/styles/mobile-commerce.css?url';
 import {PageLayout} from './components/PageLayout';
 import {PinterestAnalytics} from './components/PinterestAnalytics';
-
-import '@fontsource/cormorant-garamond/latin-500.css';
-import '@fontsource/cormorant-garamond/latin-600.css';
-import '@fontsource/manrope/latin-400.css';
-import '@fontsource/manrope/latin-500.css';
-import '@fontsource/manrope/latin-600.css';
-import '@fontsource/manrope/latin-700.css';
 
 export type RootLoader = typeof loader;
 
@@ -136,13 +132,32 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
       // Collections drive the dynamic navigation, so keep this cache deliberately short.
       cache: storefront.CacheShort(),
       variables: {
+        collectionQuery: LIVE_COLLECTION_QUERY,
         headerMenuHandle: 'main-menu', // Adjust to your header menu handle
       },
     }),
     // Add other queries here, so that they are loaded in parallel
   ]);
 
-  return {header};
+  return {
+    header: {
+      ...header,
+      shop: {...header.shop, primaryDomain: {url: PRODUCTION_ORIGIN}},
+      menu: header.menu
+        ? {...header.menu, items: sanitizeMenuItems(header.menu.items)}
+        : null,
+      collections: {
+        nodes: header.collections.nodes.filter(({handle}) =>
+          isLiveCollectionHandle(handle),
+        ),
+      },
+      artists: {
+        nodes: header.artists.nodes.filter(({handle}) =>
+          isStorefrontArtistReady(handle),
+        ),
+      },
+    },
+  };
 }
 
 /**
@@ -161,6 +176,12 @@ function loadDeferredData({context}: Route.LoaderArgs) {
         footerMenuHandle: 'footer', // Adjust to your footer menu handle
       },
     })
+    .then((data) => ({
+      ...data,
+      menu: data.menu
+        ? {...data.menu, items: sanitizeMenuItems(data.menu.items)}
+        : null,
+    }))
     .catch((error: Error) => {
       // Log query errors, but don't throw them so the page can still render
       console.error(error);
@@ -176,23 +197,18 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 export function Layout({children}: {children?: React.ReactNode}) {
   const nonce = useNonce();
   const rootData = useRouteLoaderData<RootLoader>('root');
-  const globalJsonLd = safeJsonLd(getGlobalStructuredData());
+  const homepage = useRouteLoaderData<typeof homepageLoader>('routes/_index');
+  const globalJsonLd = safeJsonLd(
+    getGlobalStructuredData(homepage?.homepage.featuredCollections),
+  );
 
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <link rel="stylesheet" href={resetStyles}></link>
-        <link rel="stylesheet" href={tokenStyles}></link>
-        <link rel="stylesheet" href={appStyles}></link>
-        <link rel="stylesheet" href={navigationStyles}></link>
-        <link rel="stylesheet" href={cartStyles}></link>
-        {/* Route styles precede the shared editorial overrides. */}
         <Links />
-        <link rel="stylesheet" href={enhancementStyles}></link>
-        <link rel="stylesheet" href={galleryStyles}></link>
-        <link rel="stylesheet" href={mobileCommerceStyles}></link>
+        <link rel="stylesheet" href={rootStyles} />
         {rootData?.robots ? (
           <meta name="robots" content={rootData.robots} />
         ) : null}

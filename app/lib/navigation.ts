@@ -1,3 +1,5 @@
+import {normalizeStorefrontLink, PRODUCTION_ORIGIN} from './config';
+import {isLiveCollectionHandle} from './catalog-collections';
 import {
   storefrontSeriesCollectionsAlphabetical,
   type StorefrontCollectionRef,
@@ -33,7 +35,10 @@ const WALL_ART_GROUP: NavigationGroup = {
 // records remain in Shopify for archival purposes, but are not public profiles.
 const PUBLIC_CREATOR_HANDLES = new Set(['jb-render', 'render-lab-studio']);
 const RETIRED_CREATOR_HANDLES = new Set([
-  'dante-mercer', 'mara-voss', 'kai-stratos', 'nico-vale',
+  'dante-mercer',
+  'mara-voss',
+  'kai-stratos',
+  'nico-vale',
 ]);
 
 export function isRetiredArtistHandle(handle: string) {
@@ -58,12 +63,12 @@ export function buildExploreNavGroups(
   collections: ReadonlyArray<StorefrontCollectionRef> = [],
   artists: ReadonlyArray<StorefrontArtistRef> = [],
 ): ReadonlyArray<NavigationGroup> {
-  const collectionItems = storefrontSeriesCollectionsAlphabetical(collections).map(
-    (collection) => ({
-      title: collection.title,
-      url: `/collections/${collection.handle}`,
-    }),
-  );
+  const collectionItems = storefrontSeriesCollectionsAlphabetical(
+    collections,
+  ).map((collection) => ({
+    title: collection.title,
+    url: `/collections/${collection.handle}`,
+  }));
   const artistItems = buildArtistItems(artists);
 
   return [
@@ -77,10 +82,7 @@ export function buildExploreNavGroups(
     },
     {
       title: 'Our Studio',
-      items: [
-        ...artistItems,
-        {title: 'Meet Our Studio', url: '/artists'},
-      ],
+      items: [...artistItems, {title: 'Meet Our Studio', url: '/artists'}],
     },
   ];
 }
@@ -90,3 +92,37 @@ export const PRIMARY_NAV_ITEMS: ReadonlyArray<NavigationItem> = [
   {title: 'Materials', url: '/materials'},
   {title: 'Our Studio', url: '/artists'},
 ];
+
+interface MenuLink {
+  url?: string | null;
+  items?: MenuLink[];
+}
+
+export function sanitizeMenuItems<T extends MenuLink>(items: T[]): T[] {
+  return items.flatMap((item) => {
+    const url = item.url ? normalizeStorefrontLink(item.url) : item.url;
+    if (url?.startsWith('/')) {
+      const path = new URL(url, PRODUCTION_ORIGIN).pathname;
+      const collection = path.match(/^\/collections\/([^/]+)/)?.[1];
+      const artist = path.match(/^\/artists\/([^/]+)/)?.[1];
+      if (collection && !isLiveCollectionHandle(decodeURIComponent(collection)))
+        return [];
+      if (artist && !isStorefrontArtistReady(decodeURIComponent(artist)))
+        return [];
+    }
+    return [
+      {
+        ...item,
+        url,
+        ...(item.items ? {items: sanitizeMenuItems(item.items)} : {}),
+      },
+    ];
+  });
+}
+
+export function normalizeCreatorCredit(value: string) {
+  return value.replace(
+    /Dante Mercer|Kai Stratos|Mara Voss|Nico Vale/gi,
+    'Render-Lab Studio',
+  );
+}

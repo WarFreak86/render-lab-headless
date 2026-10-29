@@ -1,3 +1,7 @@
+import {
+  isLiveCollectionHandle,
+  LIVE_COLLECTION_QUERY,
+} from '~/lib/catalog-collections';
 import {Analytics, getPaginationVariables} from '@shopify/hydrogen';
 import collectionStyles from '~/styles/collection.css?url';
 import collectionGalleryStyles from '~/styles/gallery-collection.css?url';
@@ -92,6 +96,8 @@ export const meta: Route.MetaFunction = ({data, location}) => {
 export async function loader({context, params, request}: Route.LoaderArgs) {
   const {handle} = params;
   if (!handle) throw redirect('/collections');
+  if (!isLiveCollectionHandle(handle))
+    throw redirect('/collections/wall-art', 301);
 
   if (isCollectionDirectoryHandle(handle)) {
     const directory = await loadCollectionDirectory(context, handle);
@@ -234,7 +240,7 @@ async function loadCollectionDirectory(
 ) {
   const {collection, collections} = await context.storefront.query(
     COLLECTION_DIRECTORY_QUERY,
-    {variables: {handle}},
+    {variables: {handle, collectionQuery: LIVE_COLLECTION_QUERY}},
   );
   const collectionPage = collection
     ? normalizeDirectoryCollection(collection)
@@ -420,7 +426,7 @@ const COLLECTION_QUERY = `#graphql
 ` as const;
 
 const COLLECTION_DIRECTORY_QUERY = `#graphql
-  query CollectionDirectory(
+  query CollectionDirectory($collectionQuery: String!,
     $handle: String!
     $country: CountryCode
     $language: LanguageCode
@@ -467,7 +473,7 @@ const COLLECTION_DIRECTORY_QUERY = `#graphql
         }
       }
     }
-    collections(first: 100, sortKey: UPDATED_AT, reverse: true) {
+    collections(query: $collectionQuery, first: 100, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         id
         handle

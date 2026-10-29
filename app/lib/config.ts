@@ -21,5 +21,23 @@ export function getStorefrontEnvironment(url: string): StorefrontEnvironment {
 }
 
 export function getProductionUrl(pathname = '/') {
-  return new URL(pathname, PRODUCTION_ORIGIN).toString();
+  const url = new URL(pathname, PRODUCTION_ORIGIN);
+  return new URL(
+    url.pathname + url.search + url.hash,
+    PRODUCTION_ORIGIN,
+  ).toString();
+}
+
+// Navigation only: never apply this to cart.checkoutUrl or customer-account auth.
+export function normalizeStorefrontLink(value: string) {
+  const url = new URL(value, PRODUCTION_ORIGIN);
+  const internalHosts = new Set([
+    'render-lab.org',
+    'www.render-lab.org',
+    SHOPIFY_CHECKOUT_DOMAIN,
+    'kn0xfa-4t.myshopify.com',
+  ]);
+  return internalHosts.has(url.hostname)
+    ? url.pathname + url.search + url.hash
+    : value;
 }

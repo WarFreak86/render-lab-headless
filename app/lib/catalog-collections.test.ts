@@ -17,18 +17,28 @@ function collection(handle: string, title: string, productCount = 1) {
 }
 
 describe('storefront series collection rules', () => {
-  it('accepts a new published non-empty series without a code-maintained allowlist', () => {
+  it('rejects an unlisted series even when published and non-empty', () => {
     expect(
       isStorefrontSeriesCollection(
         collection('machine-monument', 'Machine & Monument'),
       ),
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it('keeps structural, empty, and suppressed collections out of series navigation', () => {
-    expect(isStorefrontSeriesCollection(collection('wall-art', 'Wall Art'))).toBe(false);
-    expect(isStorefrontSeriesCollection(collection('empty-series', 'Empty Series', 0))).toBe(false);
-    expect(isStorefrontSeriesCollection(collection('nightmare-lab', 'Nightmare Lab'))).toBe(false);
+    expect(
+      isStorefrontSeriesCollection(collection('wall-art', 'Wall Art')),
+    ).toBe(false);
+    expect(
+      isStorefrontSeriesCollection(
+        collection('empty-series', 'Empty Series', 0),
+      ),
+    ).toBe(false);
+    expect(
+      isStorefrontSeriesCollection(
+        collection('nightmare-lab', 'Nightmare Lab'),
+      ),
+    ).toBe(false);
   });
 
   it('orders dynamic series alphabetically for stable navigation', () => {
