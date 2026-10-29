@@ -34,6 +34,7 @@ import {
 } from '~/lib/seo';
 import {PageLayout} from './components/PageLayout';
 import {PinterestAnalytics} from './components/PinterestAnalytics';
+import {GoogleAnalytics} from './components/GoogleAnalytics';
 
 export type RootLoader = typeof loader;
 
@@ -104,6 +105,7 @@ export async function loader(args: Route.LoaderArgs) {
     ...deferredData,
     ...criticalData,
     publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
+    previewGa4MeasurementId: (env as typeof env & {PUBLIC_GA4_PREVIEW_MEASUREMENT_ID?: string}).PUBLIC_GA4_PREVIEW_MEASUREMENT_ID,
     shop: getShopAnalytics({
       storefront,
       publicStorefrontId: env.PUBLIC_STOREFRONT_ID,
@@ -243,6 +245,7 @@ export default function App() {
       consent={data.consent}
     >
       <PinterestAnalytics />
+      <GoogleAnalytics previewMeasurementId={data.previewGa4MeasurementId} />
       <PageLayout {...data}>
         <Outlet />
       </PageLayout>
