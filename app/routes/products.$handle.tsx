@@ -220,6 +220,11 @@ export default function Product() {
       </div>
 
       <ProductDetails
+        artworkImage={
+          selectedVariant?.image ||
+          product.featuredImage ||
+          product.media?.nodes?.[0]?.image
+        }
         descriptionHtml={product.descriptionHtml}
         editorial={page.editorial}
       />

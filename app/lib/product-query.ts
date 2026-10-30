@@ -65,6 +65,13 @@ export const PRODUCT_FRAGMENT = `#graphql
     productType
     descriptionHtml
     description
+    featuredImage {
+      id
+      url
+      altText
+      width
+      height
+    }
     encodedVariantExistence
     encodedVariantAvailability
     options {

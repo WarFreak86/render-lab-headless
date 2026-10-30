@@ -13,6 +13,64 @@ const emptyEditorial = {
 };
 
 describe('ProductDetails', () => {
+  it.each([
+    [1200, 1600, '12x16', '24x32'],
+    [1600, 1200, '16x12', '32x24'],
+    [1200, 1200, '12x12', '32x32'],
+  ])(
+    'uses artwork dimensions %s × %s for sizing copy',
+    (width, height, small, large) => {
+      const {container} = render(
+        <ProductDetails
+          artworkImage={{width, height}}
+          descriptionHtml="<p>A unique <em>artistic intro</em>.</p>"
+          editorial={emptyEditorial}
+        />,
+      );
+      expect(
+        screen.getByText(
+          `Available in multiple sizes, from versatile ${small}" prints to large-scale ${large}" statement pieces.`,
+        ),
+      ).toBeInTheDocument();
+      const specs = container.querySelector('.product-technical-specs');
+      expect(specs?.previousElementSibling?.innerHTML).toBe(
+        '<p>A unique <em>artistic intro</em>.</p>',
+      );
+      expect(specs?.querySelectorAll('li')).toHaveLength(3);
+      expect(
+        screen.getByRole('heading', {
+          name: 'Premium Material Formats',
+          level: 3,
+        }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', {
+          name: 'Sizing & Display Context',
+          level: 3,
+        }),
+      ).toBeInTheDocument();
+    },
+  );
+
+  it.each([undefined, {width: null, height: null}, {width: 0, height: 1200}])(
+    'uses square sizing as the fallback when dimensions are missing',
+    (artworkImage) => {
+      render(
+        <ProductDetails
+          artworkImage={artworkImage}
+          descriptionHtml=""
+          editorial={emptyEditorial}
+        />,
+      );
+      expect(
+        screen.getByText(
+          'Available in multiple sizes, from versatile 12x12" prints to large-scale 32x32" statement pieces.',
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Aluminum Metal Wall Art:')).toBeInTheDocument();
+    },
+  );
+
   it('preserves Shopify description HTML without inventing editorial modules', () => {
     render(
       <ProductDetails

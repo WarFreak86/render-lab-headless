@@ -445,6 +445,17 @@
   height: auto;
 }
 
+.product-technical-specs h3 {
+  margin-block: var(--space-8) var(--space-4);
+  color: var(--color-text);
+  font-size: var(--text-xl);
+}
+
+.product-technical-specs strong {
+  color: var(--color-text);
+  font-weight: var(--weight-semibold);
+}
+
 .product-details__highlights,
 .product-edition,
 .product-story,

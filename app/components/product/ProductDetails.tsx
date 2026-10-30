@@ -1,41 +1,42 @@
 import {Image} from '@shopify/hydrogen';
 import {Accordion} from '~/components/Accordion';
 import type {ProductEditorialData} from '~/lib/product';
+import {ProductTechnicalSpecs} from './ProductTechnicalSpecs';
 
 export function ProductDetails({
   descriptionHtml,
   editorial,
+  artworkImage,
 }: {
   descriptionHtml: string;
   editorial: ProductEditorialData;
+  artworkImage?: {width?: number | null; height?: number | null} | null;
 }) {
   const hasEdition = Boolean(
     editorial.editionSize || editorial.collectorInformation,
   );
   const hasSpecifications = Boolean(
     editorial.materialDescription ||
-      editorial.careInstructions ||
-      editorial.fitNotes ||
-      editorial.fabricDetails,
+    editorial.careInstructions ||
+    editorial.fitNotes ||
+    editorial.fabricDetails,
   );
 
   return (
     <div className="product-details">
-      {descriptionHtml ? (
-        <section
-          className="product-details__overview"
-          aria-labelledby="product-overview-title"
-        >
-          <div className="product-details__section-heading">
-            <p className="product-details__eyebrow">About the piece</p>
-            <h2 id="product-overview-title">About the work</h2>
-          </div>
-          <div
-            className="product-details__rich"
-            dangerouslySetInnerHTML={{__html: descriptionHtml}}
-          />
-        </section>
-      ) : null}
+      <section
+        className="product-details__overview"
+        aria-labelledby="product-overview-title"
+      >
+        <div className="product-details__section-heading">
+          <p className="product-details__eyebrow">About the piece</p>
+          <h2 id="product-overview-title">About the work</h2>
+        </div>
+        <div className="product-details__rich">
+          <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+          <ProductTechnicalSpecs image={artworkImage} />
+        </div>
+      </section>
 
       {editorial.roomImages.length > 0 ? (
         <section className="product-room" aria-labelledby="product-room-title">
