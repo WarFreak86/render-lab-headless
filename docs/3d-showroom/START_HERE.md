@@ -14,8 +14,21 @@ Prove whether an interactive artwork room preview improves product confidence. T
 - Review preview deployment workflow and target before deploying. A Git branch alone does not guarantee an Oxygen deployment is safe.
 - Use a *draft* PR only and never auto-merge.
 
-## Codex + skills
-The owner asked to use their Codex skills and `vbuild`. The exact skill named `vbuild` is not discoverable from this ChatGPT session. **Codex must list local skills and read that skill's instructions before using it.** Do not substitute an unrelated package/tool with a similar name. Supported installed skills include frontend-app-builder, React best practices and hydrogen-storefront.
+## Codex + Influence → Execution skills
+The owner specifically means their custom **Influence → Execution: Codex Skill Pack v1.0**, created on October 31, 2026, supplied as `Codex_Influence_to_Execution_Skillpack_v1.zip`. **Do not use or refer to `vbuild` as the intended skill set.**
+
+The seven custom skills are:
+1. `outcome-brief` — define the measurable buyer problem, prototype boundary and success/failure criteria.
+2. `authoritative-context` — establish source-of-truth requirements from this repository, real Shopify data and approved design references.
+3. `diagnose-before-edit` — inspect existing Hydrogen routes, product media and variant handling before touching code.
+4. `minimal-scope-builder` — deliver only the isolated `/lab/3d` room prototype; avoid an entire 3D storefront rewrite.
+5. `adversarial-verification` — look for incorrect prices, mismatched artwork, nonfunctional controls, mobile regressions and production leakage.
+6. `release-readiness` — enforce verified nonproduction preview, test evidence and explicit permission before any production release.
+7. `ethical-influence-design` — improve clarity and buyer confidence using truthful visual scale/material comparison and no fabricated scarcity, testimonials, or pressure tactics.
+
+**Codex must use the actual instructions included in each locally installed skill, not merely these summaries.** If missing, install from the user's ZIP (`./install.ps1 -Scope User` on Windows from the unpacked pack) and verify with `/skills`; do not claim they are installed without checking. They were previously packaged but installation in a live Codex session has not been confirmed.
+
+Also use applicable Hydrogen and frontend/React performance skills for framework correctness. This custom pack governs outcomes, scope, diagnosis, verification and ethical product design; it does not replace platform-specific technical references.
 
 ## Starter provided separately
 An isolated, nonproduction 2.5D demonstration is available as `RenderLab_3D_Prototype_Starter.zip` in the accompanying conversation. It contains:
