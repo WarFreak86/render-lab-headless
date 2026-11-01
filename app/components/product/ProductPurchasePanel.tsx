@@ -1,6 +1,6 @@
 import {CartForm, Money, type MappedProductOptions} from '@shopify/hydrogen';
 import type {FetcherWithComponents} from 'react-router';
-import {Link, useNavigate} from 'react-router';
+import {Link, useLocation, useNavigate} from 'react-router';
 import {useEffect, useRef, useState, type ReactNode} from 'react';
 import type {ProductFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
@@ -190,6 +190,12 @@ export function ProductPurchasePanel({
   statusLabel?: string;
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const pendingOptions = useRef<{locationKey: string; query: string} | null>(null);
+
+  useEffect(() => {
+    pendingOptions.current = null;
+  }, [location.key, product.handle]);
   const visibleOptions = productOptions.filter(
     (option) =>
       !(
@@ -282,12 +288,23 @@ export function ProductPurchasePanel({
                       disabled={!value.exists}
                       key={value.name}
                       onClick={() => {
-                        if (!value.selected) {
-                          void navigate(`?${value.variantUriQuery}`, {
-                            preventScrollReset: true,
-                            replace: true,
-                          });
-                        }
+                        // Compose consecutive clicks before React/router can render
+                        // new option URLs. A rendered URL contains the old choices.
+                        const pending = pendingOptions.current;
+                        const query = new URLSearchParams(
+                          pending?.locationKey === location.key
+                            ? pending.query
+                            : value.variantUriQuery,
+                        );
+                        if (pending?.locationKey !== location.key && value.selected) return;
+                        query.delete('variant');
+                        query.set(option.name, value.name);
+                        const nextQuery = query.toString();
+                        pendingOptions.current = {locationKey: location.key, query: nextQuery};
+                        void navigate(`?${nextQuery}`, {
+                          preventScrollReset: true,
+                          replace: true,
+                        });
                       }}
                       type="button"
                     >
