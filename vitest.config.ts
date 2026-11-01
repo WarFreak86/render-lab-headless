@@ -1,5 +1,5 @@
 import {fileURLToPath} from 'node:url';
-import {defineConfig} from 'vitest/config';
+import {configDefaults, defineConfig} from 'vitest/config';
 
 export default defineConfig({
   plugins: [
@@ -19,6 +19,9 @@ export default defineConfig({
     },
   },
   test: {
+    // Each standalone package owns a Node test config; Hydrogen owns jsdom tests.
+    exclude: [...configDefaults.exclude, 'prototypes/**'],
+    maxWorkers: 2,
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./app/test/setup.ts'],

@@ -1,0 +1,129 @@
+{
+  "fetchedAt": "2026-11-01T00:59:08.793Z",
+  "apiVersion": "2026-04",
+  "product": {
+    "id": "gid://shopify/Product/8793529974945",
+    "title": "The Sky Unbound",
+    "handle": "the-sky-unbound",
+    "featuredImage": {
+      "url": "https://cdn.shopify.com/s/files/1/0748/7701/0081/files/Main_14c9b87f-eeba-4ba3-85be-532a3a944e0b.jpg?v=1791834158",
+      "width": 928,
+      "height": 1232
+    },
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/48060466888865",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Material",
+              "value": "Metal"
+            },
+            {
+              "name": "Size",
+              "value": "18x24"
+            }
+          ],
+          "price": {
+            "amount": "109.0",
+            "currencyCode": "USD"
+          }
+        },
+        {
+          "id": "gid://shopify/ProductVariant/48060466921633",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Material",
+              "value": "Metal"
+            },
+            {
+              "name": "Size",
+              "value": "12x16"
+            }
+          ],
+          "price": {
+            "amount": "79.0",
+            "currencyCode": "USD"
+          }
+        },
+        {
+          "id": "gid://shopify/ProductVariant/48060466954401",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Material",
+              "value": "Canvas"
+            },
+            {
+              "name": "Size",
+              "value": "18x24"
+            }
+          ],
+          "price": {
+            "amount": "89.0",
+            "currencyCode": "USD"
+          }
+        },
+        {
+          "id": "gid://shopify/ProductVariant/48060466987169",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Material",
+              "value": "Canvas"
+            },
+            {
+              "name": "Size",
+              "value": "12x16"
+            }
+          ],
+          "price": {
+            "amount": "59.0",
+            "currencyCode": "USD"
+          }
+        },
+        {
+          "id": "gid://shopify/ProductVariant/48060467019937",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Material",
+              "value": "Metal"
+            },
+            {
+              "name": "Size",
+              "value": "24x32"
+            }
+          ],
+          "price": {
+            "amount": "149.0",
+            "currencyCode": "USD"
+          }
+        },
+        {
+          "id": "gid://shopify/ProductVariant/48060467052705",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Material",
+              "value": "Canvas"
+            },
+            {
+              "name": "Size",
+              "value": "24x32"
+            }
+          ],
+          "price": {
+            "amount": "119.0",
+            "currencyCode": "USD"
+          }
+        }
+      ],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    }
+  }
+}

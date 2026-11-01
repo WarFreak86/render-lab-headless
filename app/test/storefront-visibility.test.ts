@@ -109,6 +109,7 @@ it('sanitizes the root and deferred footer while preserving the checkout URL', a
       customerAccount: {isLoggedIn: vi.fn().mockResolvedValue(false)},
     },
   } as never);
+  if (!data) throw new Error('Storefront root data must load outside the lab');
   expect(data.header.shop.primaryDomain.url).toBe('https://render-lab.org');
   expect(data.header.collections.nodes).toEqual([{handle: 'carnivora'}]);
   expect(data.header.artists.nodes).toEqual([{handle: 'jb-render'}]);

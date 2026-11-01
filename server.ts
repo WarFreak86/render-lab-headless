@@ -2,6 +2,8 @@ import * as serverBuild from 'virtual:react-router/server-build';
 import {createRequestHandler, storefrontRedirect} from '@shopify/hydrogen';
 import {createHydrogenRouterContext} from '~/lib/context';
 import {applySecurityHeaders} from '~/lib/security';
+import {isRoomPreviewPath} from '~/lib/room-preview-access';
+import {guardRoomPreview} from '~/lib/room-preview-access.server';
 
 /**
  * Export a fetch handler in module format.
@@ -12,6 +14,17 @@ export default {
     env: Env,
     executionContext: ExecutionContext,
   ): Promise<Response> {
+    if (isRoomPreviewPath(new URL(request.url).pathname)) {
+      try {
+        guardRoomPreview(request, import.meta.env.DEV, env);
+      } catch (response) {
+        if (response instanceof Response) {
+          applySecurityHeaders(response.headers, request.url);
+          return response;
+        }
+        throw response;
+      }
+    }
     try {
       const hydrogenContext = await createHydrogenRouterContext(
         request,

@@ -3,7 +3,7 @@ import '~/styles/product-gallery-fit.css';
 import productStyles from '~/styles/product.css?url';
 import productEnhancements from '~/styles/enhancements-product.css?url';
 import productGalleryStyles from '~/styles/gallery-product.css?url';
-import {Link, useLoaderData} from 'react-router';
+import {Link, useLoaderData, useNavigation} from 'react-router';
 import type {Route} from './+types/products.$handle';
 import {
   getSelectedProductOptions,
@@ -13,6 +13,8 @@ import {
   getAdjacentAndFirstAvailableVariants,
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
+import {RoomPreviewAction} from '~/components/product/RoomPreviewAction';
+import {isRoomPreviewEnabled} from '~/lib/room-preview-access.server';
 import {ProductDetails} from '~/components/product/ProductDetails';
 import {ProductGallery} from '~/components/product/ProductGallery';
 import {ProductPurchasePanel} from '~/components/product/ProductPurchasePanel';
@@ -133,6 +135,7 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
 
   return {
     product: selectedProduct,
+    roomPreviewEnabled: isRoomPreviewEnabled(request.url, import.meta.env.DEV, context.env),
   };
 }
 
@@ -141,7 +144,8 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
 }
 
 export default function Product() {
-  const {product} = useLoaderData<typeof loader>();
+  const {product, roomPreviewEnabled} = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
 
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
@@ -210,6 +214,15 @@ export default function Product() {
         />
         <div className="product-detail__purchase-column">
           <ProductPurchasePanel
+            auxiliaryAction={
+              roomPreviewEnabled ? (
+                <RoomPreviewAction
+                  product={product}
+                  selectedVariant={selectedVariant}
+                  pending={navigation.state !== 'idle'}
+                />
+              ) : undefined
+            }
             badge={page.editorial.badge}
             collectionTitle={page.breadcrumb?.title}
             product={product}

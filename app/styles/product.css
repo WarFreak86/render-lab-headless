@@ -634,3 +634,30 @@
     scroll-behavior: auto;
   }
 }
+
+.product-room-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 48px;
+  padding: 0.75rem 1rem;
+  margin-block: 0.5rem 1rem;
+  border: 1px solid var(--color-gold-dim, #75603d);
+  color: var(--color-gold-bright, #d0b780);
+  font-size: var(--text-sm, 0.875rem);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+.product-room-preview:hover {
+  border-color: var(--color-gold-bright, #d0b780);
+}
+.product-room-preview:focus-visible {
+  outline: 2px solid var(--color-gold-bright, #d0b780);
+  outline-offset: 4px;
+}
+
+.product-room-preview[aria-disabled='true'] {
+  opacity: 0.6;
+  cursor: progress;
+}

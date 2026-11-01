@@ -12,6 +12,7 @@ import {
   Scripts,
   ScrollRestoration,
   useRouteLoaderData,
+  useLocation,
 } from 'react-router';
 import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
@@ -35,6 +36,7 @@ import {
 import {PageLayout} from './components/PageLayout';
 import {PinterestAnalytics} from './components/PinterestAnalytics';
 import {GoogleAnalytics} from './components/GoogleAnalytics';
+import {isRoomPreviewPath} from '~/lib/room-preview-access';
 
 export type RootLoader = typeof loader;
 
@@ -61,6 +63,9 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
 }) => {
   // Revalidate when a mutation is performed e.g add to cart, login...
   if (formMethod && formMethod !== 'GET') return true;
+  if (
+    isRoomPreviewPath(currentUrl.pathname) !== isRoomPreviewPath(nextUrl.pathname)
+  ) return true;
 
   // Revalidate when manually revalidating via useRevalidator.
   if (currentUrl.toString() === nextUrl.toString()) return true;
@@ -93,6 +98,8 @@ export function links() {
 }
 
 export async function loader(args: Route.LoaderArgs) {
+  // The lab is self-contained: no storefront menus, accounts, cart or tracking reads.
+  if (isRoomPreviewPath(new URL(args.request.url).pathname)) return null;
   // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
 
@@ -197,6 +204,7 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 }
 
 export function Layout({children}: {children?: React.ReactNode}) {
+  const roomPreview = isRoomPreviewPath(useLocation().pathname);
   const nonce = useNonce();
   const rootData = useRouteLoaderData<RootLoader>('root');
   const homepage = useRouteLoaderData<typeof homepageLoader>('routes/_index');
@@ -210,17 +218,19 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Links />
-        <link rel="stylesheet" href={rootStyles} />
+        {!roomPreview && <link rel="stylesheet" href={rootStyles} />}
         {rootData?.robots ? (
           <meta name="robots" content={rootData.robots} />
         ) : null}
         <Meta />
-        <script
-          dangerouslySetInnerHTML={{__html: globalJsonLd}}
-          nonce={nonce}
-          suppressHydrationWarning
-          type="application/ld+json"
-        />
+        {!roomPreview && (
+          <script
+            dangerouslySetInnerHTML={{__html: globalJsonLd}}
+            nonce={nonce}
+            suppressHydrationWarning
+            type="application/ld+json"
+          />
+        )}
       </head>
       <body>
         {children}
@@ -232,9 +242,10 @@ export function Layout({children}: {children?: React.ReactNode}) {
 }
 
 export default function App() {
+  const roomPreview = isRoomPreviewPath(useLocation().pathname);
   const data = useRouteLoaderData<RootLoader>('root');
 
-  if (!data) {
+  if (roomPreview || !data) {
     return <Outlet />;
   }
 
