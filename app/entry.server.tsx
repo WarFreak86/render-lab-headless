@@ -21,10 +21,10 @@ export default async function handleRequest(
         context.env.PUBLIC_CHECKOUT_DOMAIN || SHOPIFY_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
-    // Pinterest's tag script and collection endpoint must be allowed by the
+    // Analytics scripts and collection endpoints must be allowed by the
     // existing CSP; add only these hosts to Hydrogen's default directives.
-    defaultSrc: ['https://s.pinimg.com', 'https://ct.pinterest.com'],
-    connectSrc: ['https://ct.pinterest.com'],
+    defaultSrc: ['https://s.pinimg.com', 'https://ct.pinterest.com', 'https://www.googletagmanager.com'],
+    connectSrc: ['https://ct.pinterest.com', 'https://www.google-analytics.com', 'https://analytics.google.com', 'https://www.googletagmanager.com'],
   });
 
   const body = await renderToReadableStream(

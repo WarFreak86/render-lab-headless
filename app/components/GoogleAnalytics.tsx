@@ -1,5 +1,6 @@
-import {useAnalytics} from '@shopify/hydrogen';
+import {useAnalytics, useNonce} from '@shopify/hydrogen';
 import {useEffect, useRef} from 'react';
+import {useLocation} from 'react-router';
 import {getStorefrontEnvironment} from '~/lib/config';
 
 const PRODUCTION_ID = 'G-ELCN4Z6M92';
@@ -54,7 +55,7 @@ function allowed(canTrack: () => boolean, previewMeasurementId?: string) {
 }
 
 /** Standard gtag.js bootstrap: queue gtag arguments, not GTM ecommerce objects. */
-function initializeGtag(id: string) {
+function initializeGtag(id: string, nonce?: string) {
   const browser = window as Browser;
   if (browser.__renderLabGA4ConfiguredId === id && browser.gtag) return;
   if (typeof browser.gtag !== 'function') {
@@ -65,6 +66,7 @@ function initializeGtag(id: string) {
 
     const script = document.createElement('script');
     script.async = true;
+    if (nonce) script.nonce = nonce;
     script.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
     document.head.appendChild(script);
 
@@ -75,12 +77,12 @@ function initializeGtag(id: string) {
   browser.__renderLabGA4ConfiguredId = id;
 }
 
-export function createGa4ViewItemData(product?: ViewProduct | null) {
+export function createGa4ViewItemData(product?: ViewProduct | null, currency = 'USD') {
   if (!product?.id) return null;
   const price = Number(product.price);
   const validPrice = product.price != null && Number.isFinite(price) && price >= 0;
   return {
-    currency: 'USD',
+    currency,
     value: validPrice ? price : undefined,
     items: [
       {
@@ -159,28 +161,33 @@ export function GoogleAnalytics({
       ? previewMeasurementId
       : PRODUCTION_ID;
   const {subscribe, register, canTrack} = useAnalytics();
+  const {pathname} = useLocation();
+  const nonce = useNonce();
   const lastPage = useRef<string | null>(null);
+  const sendPage = useRef<(() => void) | null>(null);
   const {ready} = register('GoogleAnalytics');
 
   useEffect(() => {
     const page = () => {
       if (!allowed(canTrack, previewMeasurementId) || !measurementId) return;
-      const url = window.location.href;
-      if (lastPage.current === url) return;
-      initializeGtag(measurementId);
+      const path = window.location.pathname;
+      if (lastPage.current === path) return;
+      initializeGtag(measurementId, nonce);
       (window as Browser).gtag?.('event', 'page_view', {
-        page_location: url,
+        page_path: path,
+        page_location: window.location.origin + path,
         page_title: document.title,
       });
-      lastPage.current = url;
+      lastPage.current = path;
     };
+    sendPage.current = page;
 
     subscribe('page_viewed', page);
     subscribe('product_viewed', (event) => {
       if (!allowed(canTrack, previewMeasurementId) || !measurementId) return;
-      const payload = createGa4ViewItemData(event.products?.[0]);
+      const payload = createGa4ViewItemData(event.products?.[0], event.shop?.currency);
       if (!payload) return;
-      initializeGtag(measurementId);
+      initializeGtag(measurementId, nonce);
       dispatchGa4EcommerceEvent('view_item', payload);
     });
 
@@ -191,7 +198,7 @@ export function GoogleAnalytics({
         event.prevLine as unknown as CartLine | undefined,
       );
       if (!payload) return;
-      initializeGtag(measurementId);
+      initializeGtag(measurementId, nonce);
       dispatchGa4EcommerceEvent('add_to_cart', payload);
     });
 
@@ -208,6 +215,10 @@ export function GoogleAnalytics({
     // Hydrogen subscriptions are registered once per mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    sendPage.current?.();
+  }, [pathname]);
 
   return null;
 }

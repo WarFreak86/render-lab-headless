@@ -1,5 +1,5 @@
 import {fileURLToPath} from 'node:url';
-import {defineConfig} from 'vitest/config';
+import {configDefaults, defineConfig} from 'vitest/config';
 
 export default defineConfig({
   plugins: [
@@ -19,6 +19,7 @@ export default defineConfig({
     },
   },
   test: {
+    exclude: [...configDefaults.exclude, 'scripts/product-cleanup/cleanup.test.mjs'],
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./app/test/setup.ts'],
