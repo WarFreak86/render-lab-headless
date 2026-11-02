@@ -40,9 +40,10 @@ jobs:
           import fs from 'node:fs';
           const {url} = JSON.parse(fs.readFileSync('h2_deploy_log.json', 'utf8'));
           const parsed = new URL(url);
-          if (parsed.protocol !== 'https:' || !parsed.hostname.endsWith('.oxygenpreview.com')) {
+          if (parsed.protocol !== 'https:' || ['render-lab.org', 'www.render-lab.org', 'checkout.render-lab.org'].includes(parsed.hostname)) {
             throw new Error('Deployment did not return an Oxygen Preview URL');
           }
-          console.log('Oxygen Preview URL: ' + parsed.href);
-          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, 'Oxygen Preview: ' + parsed.href + '\n');
+          const previewUrl = parsed.origin + parsed.pathname;
+          console.log('Oxygen Preview URL: ' + previewUrl);
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, 'Oxygen Preview: ' + previewUrl + '\n');
           NODE
