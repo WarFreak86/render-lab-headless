@@ -34,3 +34,15 @@ jobs:
         run: npx shopify hydrogen deploy --preview
         env:
           SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000173485 }}
+      - name: Record Preview URL
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const {url} = JSON.parse(fs.readFileSync('h2_deploy_log.json', 'utf8'));
+          const parsed = new URL(url);
+          if (parsed.protocol !== 'https:' || !parsed.hostname.endsWith('.oxygenpreview.com')) {
+            throw new Error('Deployment did not return an Oxygen Preview URL');
+          }
+          console.log('Oxygen Preview URL: ' + parsed.href);
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, 'Oxygen Preview: ' + parsed.href + '\n');
+          NODE
