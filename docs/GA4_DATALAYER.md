@@ -10,6 +10,10 @@ loads the tag once with the Hydrogen CSP nonce, and runs only after both Hydroge
 and Shopify Customer Privacy API allow analytics. Revoked consent suppresses
 subsequent events.
 
+The gtag bootstrap must push its native `arguments` object into `dataLayer`, as
+in Google's standard snippet. Queuing plain JavaScript arrays loads the tag but
+does not dispatch the gtag commands. A regression test checks this command shape.
+
 Manual page views run on initial permitted load and pathname changes. Both the
 deduplication key and `page_path` omit query strings; `page_location` is the origin
 plus pathname. Variant queries, hashes, rerenders, and repeated Hydrogen page

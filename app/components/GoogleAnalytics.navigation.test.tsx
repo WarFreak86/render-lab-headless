@@ -27,7 +27,7 @@ vi.mock('@shopify/hydrogen', () => ({
 
 type Browser = Window & {
   gtag?: (...args: unknown[]) => void;
-  dataLayer?: unknown[][];
+  dataLayer?: ArrayLike<unknown>[];
   __renderLabGA4ConfiguredId?: string;
   Shopify?: {customerPrivacy: {analyticsProcessingAllowed: () => boolean}};
 };
@@ -55,13 +55,25 @@ afterEach(() => {
     .forEach((script) => script.remove());
 });
 
+it('queues standard gtag Arguments objects so the Google tag can process commands', () => {
+  render(<GoogleAnalytics />);
+  expect(browser.dataLayer).toHaveLength(3);
+  for (const command of browser.dataLayer!) {
+    expect(Object.prototype.toString.call(command)).toBe('[object Arguments]');
+  }
+});
+
 it('initializes once and sends clean paths, ignoring variant queries and repeated notifications', () => {
   const {rerender} = render(<GoogleAnalytics />);
   const events = () =>
-    browser.dataLayer?.filter((entry) => entry[0] === 'event');
-  expect(browser.dataLayer?.filter((entry) => entry[0] === 'config')).toEqual([
-    ['config', 'G-ELCN4Z6M92', {send_page_view: false}],
-  ]);
+    browser.dataLayer
+      ?.filter((entry) => entry[0] === 'event')
+      .map((entry) => Array.from(entry));
+  expect(
+    browser.dataLayer
+      ?.filter((entry) => entry[0] === 'config')
+      .map((entry) => Array.from(entry)),
+  ).toEqual([['config', 'G-ELCN4Z6M92', {send_page_view: false}]]);
   expect(events()).toHaveLength(1);
   const script = document.querySelector<HTMLScriptElement>(
     'script[src*="googletagmanager.com"]',
@@ -141,7 +153,7 @@ it.each([undefined, 'invalid', 'G-ELCN4Z6M92'])(
 it('uses the separate preview ID only after consent', () => {
   state.environment = 'preview';
   render(<GoogleAnalytics previewMeasurementId="G-PREVIEW123" />);
-  expect(browser.dataLayer).toContainEqual([
+  expect(browser.dataLayer?.map((entry) => Array.from(entry))).toContainEqual([
     'config',
     'G-PREVIEW123',
     {send_page_view: false},

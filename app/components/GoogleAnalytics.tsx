@@ -8,7 +8,7 @@ const GA4_ID_PATTERN = /^G-[A-Z0-9]+$/;
 type Gtag = (...args: unknown[]) => void;
 
 type Browser = Window & {
-  dataLayer?: unknown[][];
+  dataLayer?: ArrayLike<unknown>[];
   gtag?: Gtag;
   __renderLabGA4ConfiguredId?: string;
   Shopify?: {
@@ -60,8 +60,9 @@ function initializeGtag(id: string, nonce?: string) {
   if (browser.__renderLabGA4ConfiguredId === id && browser.gtag) return;
   if (typeof browser.gtag !== 'function') {
     browser.dataLayer ||= [];
-    browser.gtag = (...args: unknown[]) => {
-      browser.dataLayer!.push(args);
+    browser.gtag = function () {
+      // eslint-disable-next-line prefer-rest-params -- gtag.js requires native Arguments, not arrays.
+      browser.dataLayer!.push(arguments);
     };
 
     const script = document.createElement('script');
