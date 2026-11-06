@@ -24,7 +24,7 @@ export default async function handleRequest(
     // Analytics scripts and collection endpoints must be allowed by the
     // existing CSP; add only these hosts to Hydrogen's default directives.
     defaultSrc: ['https://s.pinimg.com', 'https://ct.pinterest.com', 'https://www.googletagmanager.com'],
-    connectSrc: ['https://ct.pinterest.com', 'https://www.google-analytics.com', 'https://analytics.google.com', 'https://www.googletagmanager.com'],
+    connectSrc: ['https://ct.pinterest.com', 'https://s.pinimg.com', 'https://www.google-analytics.com', 'https://analytics.google.com', 'https://www.googletagmanager.com'],
   });
 
   const body = await renderToReadableStream(
