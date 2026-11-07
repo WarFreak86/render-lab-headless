@@ -1,6 +1,7 @@
 export const REFUND_POLICY_PATH = '/policies/refund-policy';
 export const STANDARD_RETURN_DAYS = 14;
 export const REFUND_ISSUE_BUSINESS_DAYS = 5;
+export const RETURN_POLICY_EFFECTIVE_DATE = 'November 7, 2026';
 
 // This body is also the draft for Shopify's checkout policy. Publish both copies
 // together so customers receive the same terms before and during checkout.
@@ -8,6 +9,7 @@ export const REFUND_POLICY = {
   handle: 'refund-policy',
   title: 'Refund Policy',
   body: `
+<p><strong>Effective date: ${RETURN_POLICY_EFFECTIVE_DATE}</strong></p>
 <h2>14-day returns</h2>
 <p>You can request a return for a physical product, including made-to-order items, within ${STANDARD_RETURN_DAYS} calendar days of confirmed delivery of that item. We accept both defective and non-defective items. Non-defective items must be new, unused, undamaged, and in suitable original packaging. You buy your own return postage for non-defective items. We charge no restocking fee and do not offer standard exchanges. The same conditions apply to items sold at a discount or marked as is.</p>
 <ol>
