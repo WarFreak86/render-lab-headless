@@ -8,6 +8,7 @@ import {Button} from '~/components/Button';
 import {Icon} from '~/components/Icon';
 import {ProductPrice} from '~/components/ProductPrice';
 import {getOptionState} from '~/lib/product';
+import {REFUND_POLICY_PATH, STANDARD_RETURN_DAYS} from '~/lib/return-policy';
 import {
   getProductContext,
   isGenericCatalogLabel,
@@ -352,6 +353,14 @@ export function ProductPurchasePanel({
           Secure checkout
         </p>
       )}
+      {purchaseAllowed ? (
+        <p className="product-purchase__returns">
+          <Link to={REFUND_POLICY_PATH}>
+            {STANDARD_RETURN_DAYS}-day returns
+          </Link>
+          {' · Customer pays return shipping for non-defective items.'}
+        </p>
+      ) : null}
     </section>
   );
 }

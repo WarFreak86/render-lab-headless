@@ -150,6 +150,12 @@ describe('ProductPurchasePanel', () => {
       container.querySelector('form')?.getAttribute('data-lines') || '[]',
     ) as Array<{merchandiseId: string}>;
     expect(lines[0].merchandiseId).toBe('gid://shopify/ProductVariant/1');
+    expect(screen.getByRole('link', {name: '14-day returns'})).toHaveAttribute(
+      'href',
+      '/policies/refund-policy',
+    );
+    expect(screen.getByText(/Customer pays return shipping for non-defective items/))
+      .toBeInTheDocument();
   });
 
   it('shows selected, sold-out, and impossible option values as distinct states', () => {

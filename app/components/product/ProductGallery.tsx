@@ -4,29 +4,42 @@ import {useEffect, useRef, useState} from 'react';
 import {Drawer} from '~/components/Drawer';
 import {Icon} from '~/components/Icon';
 import type {ProductImageData} from '~/lib/product';
+import {findProductImageIndex} from '~/lib/product-image';
 
 export function ProductGallery({
   images,
+  initialVariantImageId,
+  initialVariantImageUrl,
   presentation = 'artwork',
   selectedVariantImageId,
+  selectedVariantImageUrl,
   title,
 }: {
   images: ProductImageData[];
+  initialVariantImageId?: string | null;
+  initialVariantImageUrl?: string | null;
   presentation?: 'artwork' | 'apparel' | 'drop';
   selectedVariantImageId?: string | null;
+  selectedVariantImageUrl?: string | null;
   title: string;
 }) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [initialIndex] = useState(() =>
+    Math.max(0, findProductImageIndex(images, {
+      id: initialVariantImageId,
+      url: initialVariantImageUrl,
+    })),
+  );
+  const [selectedIndex, setSelectedIndex] = useState(initialIndex);
   const [zoomOpen, setZoomOpen] = useState(false);
   const stripRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
-    if (!selectedVariantImageId) return;
-    const index = images.findIndex(
-      (image) => image.id === selectedVariantImageId,
-    );
-    if (index >= 0) setSelectedIndex(index);
-  }, [images, selectedVariantImageId]);
+    const index = findProductImageIndex(images, {
+      id: selectedVariantImageId,
+      url: selectedVariantImageUrl,
+    });
+    setSelectedIndex(Math.max(0, index));
+  }, [images, selectedVariantImageId, selectedVariantImageUrl]);
 
   useEffect(() => {
     if (!zoomOpen || images.length < 2) return;
@@ -121,7 +134,7 @@ export function ProductGallery({
                 <Image
                   alt={image.altText}
                   data={image}
-                  loading={index === 0 ? 'eager' : 'lazy'}
+                  loading={index === initialIndex ? 'eager' : 'lazy'}
                   sizes="(min-width: 80rem) 52rem, (min-width: 48rem) 60vw, 100vw"
                 />
               </li>

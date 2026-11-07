@@ -51,6 +51,14 @@ describe('launch SEO helpers', () => {
         '@type': 'MerchantReturnPolicy',
         '@id': 'https://render-lab.org/#merchant-return-policy',
         merchantReturnLink: 'https://render-lab.org/policies/refund-policy',
+        applicableCountry: 'US',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+        merchantReturnDays: 14,
+        returnMethod: 'https://schema.org/ReturnByMail',
+        customerRemorseReturnFees:
+          'https://schema.org/ReturnFeesCustomerResponsibility',
+        itemDefectReturnFees: 'https://schema.org/FreeReturn',
+        restockingFee: 0,
       },
     });
   });

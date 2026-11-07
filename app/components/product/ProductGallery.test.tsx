@@ -1,5 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {renderToStaticMarkup} from 'react-dom/server';
 import {ProductGallery} from './ProductGallery';
 
 vi.mock('@shopify/hydrogen', () => ({
@@ -14,6 +15,30 @@ const images = [
 ];
 
 describe('ProductGallery', () => {
+  it('switches materials by asset URL and falls back to artwork for missing media', () => {
+    const metal = {id: 'source-metal', url: 'https://cdn.shopify.com/metal.png', altText: 'Metal', width: 800, height: 800};
+    const canvas = {id: 'source-canvas', url: 'https://cdn.shopify.com/canvas.png', altText: 'Canvas', width: 800, height: 800};
+    const gallery = [images[0], metal, canvas];
+    const {container, rerender} = render(
+      <ProductGallery images={gallery} selectedVariantImageId="variant-metal" selectedVariantImageUrl={metal.url + '?width=100'} title="Artwork" />,
+    );
+    const active = () => container.querySelector('.product-gallery__slide[data-active] img');
+    expect(active()).toHaveAttribute('src', metal.url);
+    rerender(<ProductGallery images={gallery} selectedVariantImageId="variant-canvas" selectedVariantImageUrl={canvas.url + '?height=100'} title="Artwork" />);
+    expect(active()).toHaveAttribute('src', canvas.url);
+    rerender(<ProductGallery images={gallery} selectedVariantImageId="missing" selectedVariantImageUrl="https://cdn.shopify.com/missing.png" title="Artwork" />);
+    expect(active()).toHaveAttribute('src', images[0].url);
+  });
+
+  it('renders the linked variant image as active before hydration and retains all images', () => {
+    const element = document.createElement('div');
+    element.innerHTML = renderToStaticMarkup(
+      <ProductGallery images={images} initialVariantImageId="two" title="Artwork" />,
+    );
+    expect(element.querySelector('.product-gallery__slide[data-active] img')).toHaveAttribute('src', '/two.jpg');
+    expect(element.querySelectorAll('.product-gallery__slide img')).toHaveLength(2);
+  });
+
   it('changes the active media from an accessible thumbnail control', async () => {
     const user = userEvent.setup();
     render(<ProductGallery images={images} title="Artwork" />);

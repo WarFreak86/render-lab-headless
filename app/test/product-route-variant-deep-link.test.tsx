@@ -1,6 +1,8 @@
 import {renderHook, waitFor} from '@testing-library/react';
 import {useSelectedOptionInUrlParam} from '@shopify/hydrogen';
 import {loader} from '~/routes/products.$handle';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {ProductGallery} from '~/components/product/ProductGallery';
 
 const PRODUCT_ID = 'gid://shopify/Product/8727473553569';
 
@@ -150,6 +152,34 @@ describe('Google Merchant Center product variant deep links', () => {
         {name: 'Size', value: '24x32'},
       ]),
     });
+    expect(result.initialVariantImageId).toBe(requestedVariant.image.id);
+    expect(result.initialVariantImageUrl).toBe(requestedVariant.image.url);
+    // Storefront variant ProductImage IDs differ from gallery ImageSource IDs.
+    const gallery = ['Main', 'Metal', 'Canvas'].map((name) => ({
+      id: 'gid://shopify/ImageSource/' + name,
+      url: 'https://cdn.shopify.com/' + name.toLowerCase() + '.png',
+      altText: name,
+      width: 800,
+      height: 800,
+    }));
+    const markup = renderToStaticMarkup(
+      <ProductGallery
+        images={gallery}
+        initialVariantImageId={result.initialVariantImageId}
+        initialVariantImageUrl={result.initialVariantImageUrl}
+        title="Artwork"
+      />,
+    );
+    const element = document.createElement('div');
+    element.innerHTML = markup;
+    const image = element.querySelector<HTMLImageElement>(
+      '.product-gallery__slide[data-active] img',
+    );
+    expect(image).not.toBeNull();
+    expect(new URL(image!.src).pathname).toBe(
+      new URL(requestedVariant.image.url).pathname,
+    );
+    expect(image).toHaveAttribute('loading', 'eager');
   });
 
   it('preserves normal material and size option selection without an ID lookup', async () => {
@@ -181,6 +211,8 @@ describe('Google Merchant Center product variant deep links', () => {
       }),
     );
     expect(result.product.selectedOrFirstAvailableVariant?.id).toBe(canvas.id);
+    expect(result.initialVariantImageId).toBe(canvas.image.id);
+    expect(result.initialVariantImageUrl).toBe(canvas.image.url);
   });
 
   it.each([
@@ -198,6 +230,7 @@ describe('Google Merchant Center product variant deep links', () => {
     expect(result.product.selectedOrFirstAvailableVariant?.id).toBe(
       defaultVariant.id,
     );
+    expect(result.initialVariantImageId).toBeUndefined();
   });
 
   it('falls back safely when the variant ID is unknown', async () => {

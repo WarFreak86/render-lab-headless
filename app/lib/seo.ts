@@ -3,6 +3,7 @@ import {
   getStorefrontEnvironment,
   PRODUCTION_ORIGIN,
 } from '~/lib/config';
+import {REFUND_POLICY_PATH, STANDARD_RETURN_DAYS} from '~/lib/return-policy';
 
 export const PREVIEW_ROBOTS_DIRECTIVE = 'noindex, nofollow, noarchive';
 export const SEARCH_ROBOTS_DIRECTIVE = 'noindex, follow';
@@ -109,7 +110,20 @@ export function getGlobalStructuredData(
         hasMerchantReturnPolicy: {
           '@type': 'MerchantReturnPolicy',
           '@id': MERCHANT_RETURN_POLICY_ID,
-          merchantReturnLink: getProductionUrl('/policies/refund-policy'),
+          merchantReturnLink: getProductionUrl(REFUND_POLICY_PATH),
+          applicableCountry: 'US',
+          returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+          merchantReturnDays: STANDARD_RETURN_DAYS,
+          itemCondition: [
+            'https://schema.org/NewCondition',
+            'https://schema.org/DamagedCondition',
+          ],
+          returnMethod: 'https://schema.org/ReturnByMail',
+          returnFees: 'https://schema.org/ReturnFeesCustomerResponsibility',
+          customerRemorseReturnFees:
+            'https://schema.org/ReturnFeesCustomerResponsibility',
+          itemDefectReturnFees: 'https://schema.org/FreeReturn',
+          restockingFee: 0,
         },
       },
       {
