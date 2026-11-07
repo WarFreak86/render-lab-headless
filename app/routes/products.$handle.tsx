@@ -125,14 +125,29 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
   redirectIfHandleIsLocalized(request, {handle, data: product});
 
   const requestedVariant = requestedVariantData?.variant;
-  const selectedProduct =
+  const matchingVariant =
     requestedVariant?.__typename === 'ProductVariant' &&
     requestedVariant.product.id === product.id
-      ? {...product, selectedOrFirstAvailableVariant: requestedVariant}
+      ? requestedVariant
+      : null;
+  const selectedProduct =
+    matchingVariant
+      ? {...product, selectedOrFirstAvailableVariant: matchingVariant}
       : product;
+  const hasMatchingOption = selectedOptions.some(({name, value}) =>
+    selectedProduct.selectedOrFirstAvailableVariant?.selectedOptions?.some(
+      (option) =>
+        option.name.toLowerCase() === name.toLowerCase() &&
+        option.value.toLowerCase() === value.toLowerCase(),
+    ),
+  );
 
   return {
     product: selectedProduct,
+    initialVariantImageId:
+      matchingVariant || hasMatchingOption
+        ? selectedProduct.selectedOrFirstAvailableVariant?.image?.id
+        : undefined,
   };
 }
 
@@ -141,7 +156,7 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
 }
 
 export default function Product() {
-  const {product} = useLoaderData<typeof loader>();
+  const {product, initialVariantImageId} = useLoaderData<typeof loader>();
 
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
@@ -205,6 +220,7 @@ export default function Product() {
       <div className="product-detail__hero">
         <ProductGallery
           images={page.gallery}
+          initialVariantImageId={initialVariantImageId}
           selectedVariantImageId={selectedImageId}
           title={product.title}
         />

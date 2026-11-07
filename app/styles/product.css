@@ -413,6 +413,16 @@
   color: var(--color-text-muted);
   font-size: var(--text-xs);
 }
+.product-purchase__returns {
+  margin-top: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+.product-purchase__returns a {
+  color: var(--color-gold-bright);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
 
 .product-details {
   width: min(100%, var(--container-editorial));

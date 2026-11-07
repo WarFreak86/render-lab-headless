@@ -7,16 +7,21 @@ import type {ProductImageData} from '~/lib/product';
 
 export function ProductGallery({
   images,
+  initialVariantImageId,
   presentation = 'artwork',
   selectedVariantImageId,
   title,
 }: {
   images: ProductImageData[];
+  initialVariantImageId?: string | null;
   presentation?: 'artwork' | 'apparel' | 'drop';
   selectedVariantImageId?: string | null;
   title: string;
 }) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [initialIndex] = useState(() =>
+    Math.max(0, images.findIndex((image) => image.id === initialVariantImageId)),
+  );
+  const [selectedIndex, setSelectedIndex] = useState(initialIndex);
   const [zoomOpen, setZoomOpen] = useState(false);
   const stripRef = useRef<HTMLUListElement>(null);
 
@@ -121,7 +126,7 @@ export function ProductGallery({
                 <Image
                   alt={image.altText}
                   data={image}
-                  loading={index === 0 ? 'eager' : 'lazy'}
+                  loading={index === initialIndex ? 'eager' : 'lazy'}
                   sizes="(min-width: 80rem) 52rem, (min-width: 48rem) 60vw, 100vw"
                 />
               </li>

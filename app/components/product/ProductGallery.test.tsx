@@ -1,5 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {renderToStaticMarkup} from 'react-dom/server';
 import {ProductGallery} from './ProductGallery';
 
 vi.mock('@shopify/hydrogen', () => ({
@@ -14,6 +15,15 @@ const images = [
 ];
 
 describe('ProductGallery', () => {
+  it('renders the linked variant image as active before hydration and retains all images', () => {
+    const element = document.createElement('div');
+    element.innerHTML = renderToStaticMarkup(
+      <ProductGallery images={images} initialVariantImageId="two" title="Artwork" />,
+    );
+    expect(element.querySelector('.product-gallery__slide[data-active] img')).toHaveAttribute('src', '/two.jpg');
+    expect(element.querySelectorAll('.product-gallery__slide img')).toHaveLength(2);
+  });
+
   it('changes the active media from an accessible thumbnail control', async () => {
     const user = userEvent.setup();
     render(<ProductGallery images={images} title="Artwork" />);

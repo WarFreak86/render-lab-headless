@@ -150,6 +150,7 @@ describe('Google Merchant Center product variant deep links', () => {
         {name: 'Size', value: '24x32'},
       ]),
     });
+    expect(result.initialVariantImageId).toBe(requestedVariant.image.id);
   });
 
   it('preserves normal material and size option selection without an ID lookup', async () => {
@@ -181,6 +182,7 @@ describe('Google Merchant Center product variant deep links', () => {
       }),
     );
     expect(result.product.selectedOrFirstAvailableVariant?.id).toBe(canvas.id);
+    expect(result.initialVariantImageId).toBe(canvas.image.id);
   });
 
   it.each([
@@ -198,6 +200,7 @@ describe('Google Merchant Center product variant deep links', () => {
     expect(result.product.selectedOrFirstAvailableVariant?.id).toBe(
       defaultVariant.id,
     );
+    expect(result.initialVariantImageId).toBeUndefined();
   });
 
   it('falls back safely when the variant ID is unknown', async () => {

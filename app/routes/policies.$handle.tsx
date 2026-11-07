@@ -2,6 +2,7 @@ import {Link, redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/policies.$handle';
 import {type Shop} from '@shopify/hydrogen/storefront-api-types';
 import {getProductionUrl} from '~/lib/config';
+import {alignReturnTerms, REFUND_POLICY} from '~/lib/return-policy';
 
 type SelectedPolicies = keyof Pick<
   Shop,
@@ -31,6 +32,10 @@ export async function loader({params, context}: Route.LoaderArgs) {
     throw redirect('/pages/contact', 302);
   }
 
+  if (params.handle === REFUND_POLICY.handle) {
+    return {policy: REFUND_POLICY};
+  }
+
   const policyName = params.handle.replace(
     /-([a-z])/g,
     (_: unknown, m1: string) => m1.toUpperCase(),
@@ -53,7 +58,12 @@ export async function loader({params, context}: Route.LoaderArgs) {
     throw new Response('Could not find the policy', {status: 404});
   }
 
-  return {policy};
+  return {
+    policy:
+      policyName === 'termsOfService'
+        ? {...policy, body: alignReturnTerms(policy.body)}
+        : policy,
+  };
 }
 
 export default function Policy() {
