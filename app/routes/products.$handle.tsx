@@ -148,6 +148,10 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
       matchingVariant || hasMatchingOption
         ? selectedProduct.selectedOrFirstAvailableVariant?.image?.id
         : undefined,
+    initialVariantImageUrl:
+      matchingVariant || hasMatchingOption
+        ? selectedProduct.selectedOrFirstAvailableVariant?.image?.url
+        : undefined,
   };
 }
 
@@ -156,7 +160,8 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
 }
 
 export default function Product() {
-  const {product, initialVariantImageId} = useLoaderData<typeof loader>();
+  const {product, initialVariantImageId, initialVariantImageUrl} =
+    useLoaderData<typeof loader>();
 
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
@@ -221,7 +226,9 @@ export default function Product() {
         <ProductGallery
           images={page.gallery}
           initialVariantImageId={initialVariantImageId}
+          initialVariantImageUrl={initialVariantImageUrl}
           selectedVariantImageId={selectedImageId}
+          selectedVariantImageUrl={selectedVariant?.image?.url}
           title={product.title}
         />
         <div className="product-detail__purchase-column">
