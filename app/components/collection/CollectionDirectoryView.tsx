@@ -1,6 +1,7 @@
 import {Image} from '@shopify/hydrogen';
 import {Link} from 'react-router';
 import {CollectionHero} from './CollectionHero';
+import {CollectionBuyingGuide} from './CollectionBuyingGuide';
 import type {CollectionHeroData} from '~/lib/collection';
 import type {
   CollectionDirectoryEntry,
@@ -56,6 +57,9 @@ export function CollectionDirectoryView({
           )}
         </div>
       </section>
+      {directoryHandle === 'metal-wall-art' ? (
+        <CollectionBuyingGuide handle={directoryHandle} />
+      ) : null}
     </div>
   );
 }

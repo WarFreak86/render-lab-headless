@@ -131,6 +131,39 @@ it('waits for consent and suppresses ecommerce after consent is revoked', () => 
   expect(browser.dataLayer).toHaveLength(count!);
 });
 
+it('retains inbound campaign attribution after consent without tracking arbitrary query values', () => {
+  state.consent = false;
+  state.pathname = '/products/art';
+  window.history.replaceState(
+    {},
+    '',
+    '/products/art?utm_source=pinterest&utm_medium=organic_social&utm_campaign=november&utm_content=art_pin&utm_id=6&utm_term=dark+art&Material=Metal&Size=16x12&email=private%40example.com#details',
+  );
+  const {rerender} = render(<GoogleAnalytics />);
+  expect(browser.gtag).toBeUndefined();
+  state.consent = true;
+  act(() => document.dispatchEvent(new Event('visitorConsentCollected')));
+  const views = () =>
+    browser.dataLayer?.filter((entry) => entry[1] === 'page_view');
+  expect(views()).toHaveLength(1);
+  const payload = views()![0][2] as {page_path: string; page_location: string};
+  expect(payload.page_path).toBe('/products/art');
+  const location = new URL(payload.page_location);
+  expect(Object.fromEntries(location.searchParams)).toEqual({
+    utm_id: '6',
+    utm_source: 'pinterest',
+    utm_medium: 'organic_social',
+    utm_campaign: 'november',
+    utm_term: 'dark art',
+    utm_content: 'art_pin',
+  });
+  expect(location.hash).toBe('');
+  window.history.pushState({}, '', '/products/art?Material=Canvas&Size=24x18');
+  rerender(<GoogleAnalytics />);
+  act(() => state.subscriptions.get('page_viewed')?.({}));
+  expect(views()).toHaveLength(1);
+});
+
 it('also requires Hydrogen tracking permission and a loaded privacy API', () => {
   state.canTrack = false;
   render(<GoogleAnalytics />);
