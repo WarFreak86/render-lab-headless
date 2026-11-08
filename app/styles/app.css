@@ -511,6 +511,16 @@ p {
 .site-footer__links a:hover { color: var(--color-text); }
 .site-footer__cookie-preferences { padding: 0; min-height: 2.75rem; border: 0; background: none; color: var(--color-text-muted); font: inherit; font-size: var(--text-sm); cursor: pointer; text-align: left; }
 .site-footer__cookie-preferences:hover { color: var(--color-text); }
+.cookie-preferences .drawer__content { display: flex; flex-direction: column; gap: var(--space-4); }
+.cookie-preferences fieldset { border: 0; padding: 0; min-width: 0; }
+.cookie-preferences legend { font-weight: 600; margin-bottom: var(--space-4); }
+.cookie-preferences__choice { display: grid; gap: var(--space-2); margin-bottom: var(--space-5); }
+.cookie-preferences__choice select { width: 100%; min-height: 2.75rem; padding: var(--space-2); background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-text-muted); }
+.cookie-preferences__state { font-size: var(--text-sm); color: var(--color-text-muted); }
+.cookie-preferences__actions { display: flex; flex-direction: column; gap: var(--space-3); }
+.cookie-preferences__actions .button, .cookie-preferences__sale .button { white-space: normal; min-height: 2.75rem; }
+.cookie-preferences__sale { display: grid; gap: var(--space-3); border-top: 1px solid var(--color-text-muted); padding-top: var(--space-4); }
+.cookie-preferences [role="alert"] { border: 1px solid currentColor; padding: var(--space-3); }
 .site-footer__bottom {
   display: flex;
   align-items: center;
