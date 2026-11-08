@@ -2,6 +2,7 @@ import {Suspense} from 'react';
 import {Await, NavLink} from 'react-router';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
 import {Container} from '~/components/Container';
+import {CookiePreferences} from '~/components/CookiePreferences';
 import {normalizeStorefrontLink, SITE_NAME} from '~/lib/config';
 
 interface FooterProps {
@@ -41,11 +42,12 @@ export function Footer({
           <h2 className="site-footer__heading">Policies</h2>
           <nav
             className="site-footer__links"
-            aria-label="Rights and intellectual property"
+            aria-label="Privacy and intellectual property"
           >
             <NavLink to="/legal/rights-notice">
               Rights &amp; Intellectual Property
             </NavLink>
+            <CookiePreferences />
           </nav>
           <Suspense fallback={null}>
             <Await resolve={footerPromise}>
