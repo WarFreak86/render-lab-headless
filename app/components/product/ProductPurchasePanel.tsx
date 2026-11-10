@@ -336,13 +336,24 @@ export function ProductPurchasePanel({
           </li>
           <li>
             <span>Shipping</span>
-            <small>Calculated at checkout</small>
+            <small>Rates confirmed at checkout</small>
           </li>
           <li>
             <span>Checkout</span>
             <small>Secure payment processing</small>
           </li>
         </ul>
+        {selectedMaterial === 'metal' || selectedMaterial === 'canvas' ? (
+          <p className="product-purchase__guide">
+            Gelato metal and canvas prints typically take 2–4 business days to
+            produce before shipping; transit time is additional. This is an estimate.
+          </p>
+        ) : null}
+        <p className="product-purchase__guide">
+          <Link to="/policies/shipping-policy">
+            Production and shipping details <Icon name="arrow-right" size={14} />
+          </Link>
+        </p>
         {selectedMaterial === 'metal' || selectedMaterial === 'canvas' ? <p className="product-purchase__guide">Mounting hardware included by the manufacturer.</p> : null}
         <a className="product-purchase__guide" href="mailto:support@render-lab.org">Questions? Contact Render-Lab <Icon name="arrow-right" size={14} /></a>
         {selectedVariant?.sku ? <details className="product-purchase__reference"><summary>Product reference</summary><p>SKU {selectedVariant.sku}</p></details> : null}
