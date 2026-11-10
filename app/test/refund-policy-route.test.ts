@@ -19,7 +19,7 @@ describe('refund and return policy', () => {
     expect(data.policy.body).toContain('You buy your own return postage for non-defective items');
     expect(data.policy.body).toContain('We charge no restocking fee');
     expect(data.policy.body).toContain('send the return address and mailing instructions privately');
-    expect(data.policy.body).toContain('Do not mail your return to Gelato');
+    expect(data.policy.body).toContain('Do not mail your return to the fulfillment partner or to the sender address on the package');
     expect(data.policy.body).toContain('cover the return shipping cost');
     expect(data.policy.body).toContain('within 30 calendar days of delivery');
     expect(data.policy.body).toContain('within 5 business days after receiving the return');
