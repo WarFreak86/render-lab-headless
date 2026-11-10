@@ -5,6 +5,25 @@ import {getStorefrontEnvironment} from '~/lib/config';
 
 const PRODUCTION_ID = 'G-ELCN4Z6M92';
 const GA4_ID_PATTERN = /^G-[A-Z0-9]+$/;
+// Keep campaign attribution without transmitting arbitrary URL parameters to GA4.
+const GA4_CAMPAIGN_PARAM_PATTERN =
+  /^(utm_(source|medium|campaign|id|term|content|source_platform|creative_format|marketing_tactic)|gclid|gclsrc|gbraid|wbraid|gad_source|msclkid|epik)$/i;
+
+export function getGa4PageViewParameters(href: string, title: string) {
+  const original = new URL(href);
+  const safeLocation = new URL(original.pathname, original.origin);
+  for (const [key, value] of original.searchParams) {
+    if (GA4_CAMPAIGN_PARAM_PATTERN.test(key) && value.trim()) {
+      safeLocation.searchParams.append(key, value);
+    }
+  }
+
+  return {
+    page_path: original.pathname,
+    page_location: safeLocation.toString(),
+    page_title: title,
+  };
+}
 type Gtag = (...args: unknown[]) => void;
 
 type Browser = Window & {
@@ -174,11 +193,11 @@ export function GoogleAnalytics({
       const path = window.location.pathname;
       if (lastPage.current === path) return;
       initializeGtag(measurementId, nonce);
-      (window as Browser).gtag?.('event', 'page_view', {
-        page_path: path,
-        page_location: window.location.origin + path,
-        page_title: document.title,
-      });
+      (window as Browser).gtag?.(
+        'event',
+        'page_view',
+        getGa4PageViewParameters(window.location.href, document.title),
+      );
       lastPage.current = path;
     };
     sendPage.current = page;
