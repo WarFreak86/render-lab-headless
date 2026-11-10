@@ -1,6 +1,6 @@
 # Phase 2 browser QA
 
-**BLOCKED. NO-GO to merge PR #67.** Local Chromium verification passed the corrected desktop filter and GA4 duplicate checks. Product description mismatches and hosted consent, analytics delivery, and checkout validation remain open.
+**BLOCKED. NO-GO to merge PR #67.** The latest Chromium retest passed the shared specification checks, and real Shopify checkout displayed a shipping rate. Hosted consent collection and analytics delivery remain blocked. The earlier QA results below are historical.
 
 ## Environment and evidence
 
@@ -41,5 +41,20 @@
 - The incorrect text originated in `app/components/product/ProductTechnicalSpecs.tsx`, which added a hard-coded third "Archival Matte Poster" format and derived sizing copy from image orientation (including a square fallback) under `About the piece`. This was **not** the Shopify description.
 - Follow-up branch changes now derive visible materials and sizes from `product.variants.nodes[].selectedOptions`. Unknown / absent options are not expanded into fictional formats, and no Shopify product data was mutated.
 - Regression tests cover the six-variant metal/canvas list, no fake poster, no fictitious square sizes, and a non-wall-art size.
-- **Status:** code correction committed; automated CI and real Chromium retest on the updated branch are required before declaring this P1 fully closed. The earlier browser QA record above remains a historical snapshot.
-- **Overall merge verdict remains NO-GO** until hosted consent, actual analytics delivery, Pinterest permission states, and non-purchasing checkout/shipping verification pass.
+- **Status:** closed for the two reproduced specification mismatches by the latest browser retest below.
+
+## Remote head retest
+
+Tested `09474ac28ec1599539167cd6af0a95d70e677a1e` with Chromium 157 against local Hydrogen at `http://localhost:3195`. [CI at that SHA](https://github.com/WarFreak86/render-lab-headless/actions/runs/42775867171) passed. Evidence is under `D:/Render-Lab-headless/outputs/phase2-browser-qa-2026-11-10/specs-followup`.
+
+| Release gate | Result | Evidence |
+|---|---|---|
+| Fireglass and Open Trap specifications | PASS | At 390 × 844, 768 × 1024, and 1440 × 900, both pages returned HTTP 200. The About the piece section listed only Metal and Canvas and 16 × 12, 24 × 18, and 32 × 24 inches, matching the selectors. No false poster or square-size claims, horizontal overflow, or page exceptions were detected in the checks. See `{mobile,tablet,desktop}-{fireglass,open-trap}-about.png` and `results.json`. |
+| Shared specification regression | PASS for sampled products | The Storefront catalog returned 91 products, all classified as wall art. Five desktop comparisons covered the remaining option patterns, including genuine Poster in Fields of Memory, portrait dimensions in Eyes of Doom, Aperture, and Ascension Beyond Time, and reversed material order in Cyclone Warning. All matched their selectors. Automated coverage includes no matching options and empty variants. No distinct live non-wall-art type was available to sample. See the comparison `*-about.png` files and `results.json`. |
+| Variant selection under rapid input | FAIL | On Open Trap, click Canvas, wait only for `Material=Canvas` to appear in the URL, then immediately click 24 × 18. At all three widths the expected Canvas URL timed out. The failure screenshots show Metal selected and $109. Fireglass passed the same rapid sequence. With the Canvas selection settled before the size click, both products passed at all widths at $89 with the correct Canvas merchandise IDs. This is a purchase-path defect. See `variant-retest.json`, `variant-settled-retest.json`, and `*-open-trap-interaction-failure.png`. |
+| Real checkout entry and shipping | PASS | A fresh cart with Open Trap Canvas 16 × 12 at $59 opened Shopify checkout on `checkout.render-lab.org` with HTTP 200. After entering only the street, city, state, and ZIP of a public US test address, checkout showed **US Flat Rate $9.19**, with a displayed total of **$68.19**. Contact and payment fields were left blank. The test cart line was removed afterward. See `checkout-entry.png`, `checkout-shipping.png`, and `checkout-results.json`. |
+| Hosted Oxygen Preview and actual consent capture | BLOCKED | No deployment or Preview URL for this SHA was found in GitHub deployments, checks, or PR discussion. Deployment was outside the approved scope. No separate GA4 stream tied to a reachable Preview was available to this run. |
+| GA4 denied/allowed behavior and event delivery | BLOCKED | An authenticated Preview running this SHA and access to the separate stream's DebugView or realtime events are needed. The previous intercepted local test remains evidence of queue behavior only. |
+| Pinterest denied/allowed behavior and delivery | BLOCKED | The current component gates all Pinterest events to the Production hostname. A standard Oxygen Preview cannot exercise the allowed delivery path. This requires a separately approved way to verify delivery without mixing QA traffic with Production measurement. |
+
+The retest changed only this report. **NO-GO to merge** until rapid option changes preserve the selected material and the hosted consent and delivery gates are verified.
