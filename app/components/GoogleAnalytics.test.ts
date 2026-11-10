@@ -3,6 +3,7 @@ import {
   createGa4AddToCartData,
   createGa4ViewItemData,
   dispatchGa4EcommerceEvent,
+  getGa4PageViewParameters,
 } from './GoogleAnalytics';
 
 const browser = window as Window & {
@@ -27,6 +28,31 @@ const line = (quantity: number, amount = '39.50') => ({
     title: 'Canvas / 18x24',
     product: {title: 'Cathedral of the Void', vendor: 'Render-Lab'},
   },
+});
+
+describe('GA4 campaign attribution', () => {
+  it('preserves campaign tags while removing non-campaign data and fragments', () => {
+    expect(
+      getGa4PageViewParameters(
+        'https://render-lab.org/products/art?utm_source=pinterest&utm_medium=organic_social&utm_campaign=fall&Material=Metal&email=private%40example.com#gallery',
+        'Artwork | Render-Lab',
+      ),
+    ).toEqual({
+      page_path: '/products/art',
+      page_location:
+        'https://render-lab.org/products/art?utm_source=pinterest&utm_medium=organic_social&utm_campaign=fall',
+      page_title: 'Artwork | Render-Lab',
+    });
+  });
+
+  it('retains ad attribution IDs but excludes product option parameters', () => {
+    expect(
+      getGa4PageViewParameters(
+        'https://render-lab.org/products/art?Size=18x24&gclid=abc123',
+        'Artwork',
+      ).page_location,
+    ).toBe('https://render-lab.org/products/art?gclid=abc123');
+  });
 });
 
 describe('GA4 direct ecommerce events', () => {
