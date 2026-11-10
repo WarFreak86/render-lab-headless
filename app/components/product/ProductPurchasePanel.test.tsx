@@ -156,6 +156,9 @@ describe('ProductPurchasePanel', () => {
     );
     expect(screen.getByText(/Customer pays return shipping for non-defective items/))
       .toBeInTheDocument();
+    expect(screen.getByText('Rates confirmed at checkout')).toBeInTheDocument();
+    expect(screen.getByRole('link', {name: /Production and shipping details/i}))
+      .toHaveAttribute('href', '/policies/shipping-policy');
   });
 
   it('shows selected, sold-out, and impossible option values as distinct states', () => {
@@ -362,6 +365,8 @@ describe('ProductPurchasePanel', () => {
       'aria-pressed',
       'true',
     );
+    expect(screen.getByText(/Gelato metal and canvas prints typically take 2–4 business days/))
+      .toBeInTheDocument();
     expect(screen.getByRole('button', {name: '24x32'})).toHaveAttribute(
       'aria-pressed',
       'true',
