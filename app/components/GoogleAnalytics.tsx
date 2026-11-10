@@ -184,13 +184,15 @@ export function GoogleAnalytics({
   const {pathname} = useLocation();
   const nonce = useNonce();
   const lastPage = useRef<string | null>(null);
+  const lastProductView = useRef<{path: string; itemId: string} | null>(null);
   const sendPage = useRef<(() => void) | null>(null);
   const {ready} = register('GoogleAnalytics');
 
   useEffect(() => {
     const page = () => {
-      if (!allowed(canTrack, previewMeasurementId) || !measurementId) return;
       const path = window.location.pathname;
+      if (lastProductView.current?.path !== path) lastProductView.current = null;
+      if (!allowed(canTrack, previewMeasurementId) || !measurementId) return;
       if (lastPage.current === path) return;
       initializeGtag(measurementId, nonce);
       (window as Browser).gtag?.(
@@ -207,8 +209,15 @@ export function GoogleAnalytics({
       if (!allowed(canTrack, previewMeasurementId) || !measurementId) return;
       const payload = createGa4ViewItemData(event.products?.[0], event.shop?.currency);
       if (!payload) return;
+      const path = window.location.pathname;
+      const itemId = payload.items[0].item_id;
+      if (
+        lastProductView.current?.path === path &&
+        lastProductView.current.itemId === itemId
+      ) return;
       initializeGtag(measurementId, nonce);
       dispatchGa4EcommerceEvent('view_item', payload);
+      lastProductView.current = {path, itemId};
     });
 
     subscribe('product_added_to_cart', (event) => {
