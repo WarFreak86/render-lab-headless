@@ -422,7 +422,7 @@ export function ProductPurchasePanel({
         </ul>
         {selectedMaterial === 'metal' || selectedMaterial === 'canvas' ? (
           <p className="product-purchase__guide">
-            Gelato metal and canvas prints typically take 2–4 business days to
+            Render-Lab metal and canvas prints typically take 2–4 business days to
             produce before shipping; transit time is additional. This is an estimate.
           </p>
         ) : null}

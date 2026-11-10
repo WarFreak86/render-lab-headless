@@ -438,7 +438,7 @@ describe('ProductPurchasePanel', () => {
       'aria-pressed',
       'true',
     );
-    expect(screen.getByText(/Gelato metal and canvas prints typically take 2–4 business days/))
+    expect(screen.getByText(/Render-Lab metal and canvas prints typically take 2–4 business days/))
       .toBeInTheDocument();
     expect(screen.getByRole('button', {name: '24x32'})).toHaveAttribute(
       'aria-pressed',
