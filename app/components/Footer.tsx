@@ -75,7 +75,6 @@ export function Footer({
         <p>
           © {new Date().getFullYear()} {SITE_NAME}
         </p>
-        <p>Shopify-powered commerce</p>
       </Container>
     </footer>
   );
