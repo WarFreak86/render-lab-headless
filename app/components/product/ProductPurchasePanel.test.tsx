@@ -1,7 +1,12 @@
-import {render, screen, waitFor} from '@testing-library/react';
-import {MemoryRouter} from 'react-router';
+import {fireEvent, render, screen, waitFor} from '@testing-library/react';
+import {MemoryRouter, useLocation} from 'react-router';
 import {Aside} from '~/components/Aside';
-import {ProductPurchasePanel} from './ProductPurchasePanel';
+import {getNextOptionQuery, ProductPurchasePanel} from './ProductPurchasePanel';
+
+function RouteSearchProbe() {
+  const location = useLocation();
+  return <output data-testid="product-selection-query">{location.search}</output>;
+}
 
 const mockCart = vi.hoisted(() => ({
   fetcher: {data: undefined as unknown, state: 'idle'},
@@ -84,12 +89,80 @@ function renderPanel({
         <Aside type="cart" heading="Your cart">
           Cart contents
         </Aside>
+        <RouteSearchProbe />
       </Aside.Provider>
     </MemoryRouter>,
   );
 }
 
 describe('ProductPurchasePanel', () => {
+  it('composes rapid option clicks without restoring a stale material', () => {
+    const options = [
+      {
+        name: 'Material',
+        optionValues: [
+          {name: 'Metal', available: true, exists: true, selected: true,
+            variantUriQuery: 'Material=Metal&Size=16x12'},
+          {name: 'Canvas', available: true, exists: true, selected: false,
+            variantUriQuery: 'Material=Canvas&Size=16x12'},
+        ],
+      },
+      {
+        name: 'Size',
+        optionValues: [
+          {name: '16x12', available: true, exists: true, selected: true,
+            variantUriQuery: 'Material=Metal&Size=16x12'},
+          {name: '24x18', available: true, exists: true, selected: false,
+            variantUriQuery: 'Material=Metal&Size=24x18'},
+        ],
+      },
+    ];
+    renderPanel({options});
+    fireEvent.click(screen.getByRole('button', {name: 'Canvas'}));
+    expect(screen.getByRole('button', {name: 'Updating selection…'}))
+      .toBeDisabled();
+    fireEvent.click(screen.getByRole('button', {name: '24x18'}));
+    const params = new URLSearchParams(
+      screen.getByTestId('product-selection-query').textContent || '',
+    );
+    expect(params.get('Material')).toBe('Canvas');
+    expect(params.get('Size')).toBe('24x18');
+    expect(screen.getByRole('button', {name: 'Updating selection…'}))
+      .toBeDisabled();
+  });
+
+  it('lets a rapid click reverse an unresolved material choice', () => {
+    const options = [
+      {
+        name: 'Material',
+        optionValues: [
+          {name: 'Metal', available: true, exists: true, selected: true,
+            variantUriQuery: 'Material=Metal&Size=16x12'},
+          {name: 'Canvas', available: true, exists: true, selected: false,
+            variantUriQuery: 'Material=Canvas&Size=16x12'},
+        ],
+      },
+    ];
+    renderPanel({options});
+    fireEvent.click(screen.getByRole('button', {name: 'Canvas'}));
+    fireEvent.click(screen.getByRole('button', {name: 'Metal'}));
+    const params = new URLSearchParams(
+      screen.getByTestId('product-selection-query').textContent || '',
+    );
+    expect(params.get('Material')).toBe('Metal');
+  });
+
+  it('replaces only the clicked option while preserving a pending selection', () => {
+    expect(
+      getNextOptionQuery(
+        'Material=Metal&Size=24x18',
+        'Size',
+        '24x18',
+        {Material: 'Canvas', Size: '16x12'},
+      ),
+    ).toBe('Material=Canvas&Size=24x18');
+  });
+
   it('uses the official support inbox for product questions', () => {
     renderPanel({options: []});
     expect(screen.getByRole('link', {name: /Questions\? Contact Render-Lab/i})).toHaveAttribute(
