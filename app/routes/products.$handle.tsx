@@ -39,13 +39,18 @@ export const links = () => [
 export const meta: Route.MetaFunction = ({data}) => {
   const product = data?.product;
   const description = getMetaDescription(
+    product?.seoDescriptionOverride?.value,
     product?.seo?.description,
     product?.description,
   );
   const image = product?.media?.nodes?.[0]?.image;
   const canonical = getProductionUrl(`/products/${product?.handle ?? ''}`);
   const variant = product?.selectedOrFirstAvailableVariant;
-  const title = getBrandedTitle(product?.seo?.title || product?.title);
+  const title = getBrandedTitle(
+    product?.seoTitleOverride?.value.trim() ||
+      product?.seo?.title?.trim() ||
+      product?.title,
+  );
   return [
     {title},
     ...(description ? [{name: 'description', content: description}] : []),

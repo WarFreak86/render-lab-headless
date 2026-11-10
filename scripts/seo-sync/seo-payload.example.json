@@ -1,0 +1,14 @@
+[
+  {
+    "productGid": "gid://shopify/Product/1000000000001",
+    "title_override": "Nocturne | Art Print in Multiple Formats",
+    "description_override": "Nocturne pairs deep blue shadows with a warm horizon.\nChoose the format and size that suit your space.",
+    "product_highlight": ["Available in multiple sizes", "Choose between paper and metal formats"]
+  },
+  {
+    "productGid": "gid://shopify/Product/1000000000002",
+    "title_override": "Still Light | 12 × 16 in Art Print",
+    "description_override": "Still Light is a minimalist art print in a 12 × 16 in format.",
+    "product_highlight": ["12 × 16 in print", "Printed on matte paper"]
+  }
+]
