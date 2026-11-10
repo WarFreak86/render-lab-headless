@@ -468,3 +468,84 @@ describe('SEO audit metadata regressions', () => {
     });
   });
 });
+
+describe('Phase 3 product SEO overrides', () => {
+  const shopifySeo = {title: 'Shopify SEO title', description: 'Shopify SEO copy.'};
+
+  it.each([
+    {
+      scenario: 'populated overrides',
+      overrides: {
+        seoTitleOverride: {value: ' Crown of Dew | Render-Lab '},
+        seoDescriptionOverride: {value: ' Botanical wall art.\nCarnivora series. '},
+      },
+      seo: shopifySeo,
+      title: 'Crown of Dew | Render-Lab',
+      description: 'Botanical wall art. Carnivora series.',
+    },
+    {
+      scenario: 'missing overrides',
+      overrides: {seoTitleOverride: null, seoDescriptionOverride: null},
+      seo: shopifySeo,
+      title: 'Shopify SEO title | Render-Lab',
+      description: 'Shopify SEO copy.',
+    },
+    {
+      scenario: 'blank overrides',
+      overrides: {
+        seoTitleOverride: {value: '   '},
+        seoDescriptionOverride: {value: '\n \t'},
+      },
+      seo: shopifySeo,
+      title: 'Shopify SEO title | Render-Lab',
+      description: 'Shopify SEO copy.',
+    },
+    {
+      scenario: 'an override on just one field',
+      overrides: {
+        seoTitleOverride: {value: 'Crown of Dew'},
+        seoDescriptionOverride: null,
+      },
+      seo: shopifySeo,
+      title: 'Crown of Dew | Render-Lab',
+      description: 'Shopify SEO copy.',
+    },
+    {
+      scenario: 'blank Shopify SEO',
+      overrides: {seoTitleOverride: null, seoDescriptionOverride: null},
+      seo: {title: ' ', description: null},
+      title: 'Catalog title | Render-Lab',
+      description: 'Catalog description.',
+    },
+  ])('renders metadata for $scenario', ({overrides, seo, title, description}) => {
+    const canonical = 'https://render-lab.org/products/carnivora-no-02-crown-of-dew';
+    const entries = productMeta({
+      data: {
+        product: {
+          handle: 'carnivora-no-02-crown-of-dew',
+          title: 'Catalog title',
+          description: 'Catalog description.',
+          seo,
+          selectedOrFirstAvailableVariant: {
+            price: {amount: '49.00', currencyCode: 'USD'},
+            availableForSale: true,
+          },
+          ...overrides,
+        },
+      },
+      location: {search: '?variant=12345'},
+    } as never);
+
+    expect(entries).toEqual(expect.arrayContaining([
+      {title},
+      {name: 'description', content: description},
+      {property: 'og:title', content: title},
+      {property: 'og:description', content: description},
+      {tagName: 'link', rel: 'canonical', href: canonical},
+      {property: 'og:url', content: canonical},
+      {property: 'product:price:amount', content: '49.00'},
+      {property: 'product:price:currency', content: 'USD'},
+      {property: 'product:availability', content: 'in stock'},
+    ]));
+  });
+});

@@ -160,6 +160,8 @@ export const PRODUCT_QUERY = `#graphql
   ) @inContext(country: $country, language: $language) {
     product(handle: $handle) {
       ...Product
+      seoTitleOverride: metafield(namespace: "seo", key: "title_override") { value }
+      seoDescriptionOverride: metafield(namespace: "seo", key: "description_override") { value }
       variants(first: 250) {
         nodes {
           ...ProductSchemaVariant

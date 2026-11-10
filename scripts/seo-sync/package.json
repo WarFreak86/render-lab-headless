@@ -1,0 +1,6 @@
+{
+  "name": "render-lab-seo-sync",
+  "private": true,
+  "engines": {"node": "^22 || ^24"},
+  "dependencies": {"dotenv": "^17.2.3"}
+}
