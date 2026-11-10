@@ -33,3 +33,13 @@
 - Complete hosted verification using an isolated Preview with a separate GA4 stream and a test geography where permission collection is required. Check denied and allowed behavior for Shopify, GA4, and Pinterest. Use a safe checkout entry session to verify the displayed shipping rate and policy before payment. This run verified the checkout link host and storefront policy only.
 
 **Merge recommendation: NO-GO.** Keep the PR in Draft until the catalog copy and hosted consent, measurement, and checkout gates are resolved.
+
+
+## Follow-up: shared product-specification root cause (November 10, 2026)
+
+- Shopify Admin records for Fireglass (`gid://shopify/Product/8734789435553`) and Open Trap (`gid://shopify/Product/8754441978017`) contain concise artwork descriptions **without poster claims or fictitious dimensions**. Both currently have six variants: Metal and Canvas in 16x12, 24x18 and 32x24.
+- The incorrect text originated in `app/components/product/ProductTechnicalSpecs.tsx`, which added a hard-coded third "Archival Matte Poster" format and derived sizing copy from image orientation (including a square fallback) under `About the piece`. This was **not** the Shopify description.
+- Follow-up branch changes now derive visible materials and sizes from `product.variants.nodes[].selectedOptions`. Unknown / absent options are not expanded into fictional formats, and no Shopify product data was mutated.
+- Regression tests cover the six-variant metal/canvas list, no fake poster, no fictitious square sizes, and a non-wall-art size.
+- **Status:** code correction committed; automated CI and real Chromium retest on the updated branch are required before declaring this P1 fully closed. The earlier browser QA record above remains a historical snapshot.
+- **Overall merge verdict remains NO-GO** until hosted consent, actual analytics delivery, Pinterest permission states, and non-purchasing checkout/shipping verification pass.
