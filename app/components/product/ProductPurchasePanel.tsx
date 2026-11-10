@@ -16,6 +16,43 @@ import {
 } from '~/lib/product-presentation';
 
 type SelectedVariant = ProductFragment['selectedOrFirstAvailableVariant'];
+type OptionSelection = Record<string, string>;
+
+/**
+ * The mapped option URL can be stale while a previous navigation is in flight.
+ * Carry forward the latest requested values before applying the next click.
+ */
+export function getNextOptionQuery(
+  variantUriQuery: string,
+  optionName: string,
+  value: string,
+  pendingSelection: OptionSelection | null,
+) {
+  const params = new URLSearchParams(variantUriQuery);
+  if (pendingSelection) {
+    for (const [name, selected] of Object.entries(pendingSelection)) {
+      params.set(name, selected);
+    }
+  }
+  params.delete('variant');
+  params.set(optionName, value);
+  return params.toString();
+}
+
+function variantHasOptions(
+  variant: SelectedVariant,
+  options: OptionSelection,
+) {
+  return Boolean(
+    variant && Object.entries(options).every(([name, value]) =>
+      variant.selectedOptions.some(
+        (selected) =>
+          selected.name.toLowerCase() === name.toLowerCase() &&
+          selected.value === value,
+      ),
+    ),
+  );
+}
 
 function getCartErrorMessage(data: unknown) {
   if (!data || typeof data !== 'object') return undefined;
@@ -191,6 +228,25 @@ export function ProductPurchasePanel({
   statusLabel?: string;
 }) {
   const navigate = useNavigate();
+  const lastRequestedOptions = useRef<OptionSelection | null>(null);
+  const [requestedOptions, setRequestedOptions] = useState<OptionSelection | null>(null);
+  const selectionPending = Boolean(
+    requestedOptions && !variantHasOptions(selectedVariant, requestedOptions),
+  );
+
+  useEffect(() => {
+    if (requestedOptions && !selectionPending) {
+      lastRequestedOptions.current = null;
+      setRequestedOptions(null);
+    }
+  }, [requestedOptions, selectionPending]);
+
+  useEffect(() => {
+    // A combined listing can reuse this component for a new product.
+    lastRequestedOptions.current = null;
+    setRequestedOptions(null);
+  }, [product.handle]);
+
   const visibleOptions = productOptions.filter(
     (option) =>
       !(
@@ -241,6 +297,11 @@ export function ProductPurchasePanel({
               <div className="product-option__values">
                 {option.optionValues.map((value) => {
                   const state = getOptionState(value);
+                  const selectedByIntent = requestedOptions?.[option.name];
+                  const isSelected =
+                    selectedByIntent === undefined
+                      ? value.selected
+                      : selectedByIntent === value.name;
                   const stateLabel =
                     state === 'impossible'
                       ? 'Unavailable combination'
@@ -277,14 +338,28 @@ export function ProductPurchasePanel({
 
                   return (
                     <button
-                      aria-pressed={value.selected}
+                      aria-pressed={isSelected}
                       className="product-option__value"
                       data-state={state}
                       disabled={!value.exists}
                       key={value.name}
                       onClick={() => {
-                        if (!value.selected) {
-                          void navigate(`?${value.variantUriQuery}`, {
+                        if (!isSelected) {
+                          const query = getNextOptionQuery(
+                            value.variantUriQuery,
+                            option.name,
+                            value.name,
+                            lastRequestedOptions.current,
+                          );
+                          const selectedNames = new Set(productOptions.map((item) => item.name));
+                          const nextOptions = Object.fromEntries(
+                            Array.from(new URLSearchParams(query)).filter(([name]) =>
+                              selectedNames.has(name),
+                            ),
+                          );
+                          lastRequestedOptions.current = nextOptions;
+                          setRequestedOptions(nextOptions);
+                          void navigate(`?${query}`, {
                             preventScrollReset: true,
                             replace: true,
                           });
@@ -314,16 +389,18 @@ export function ProductPurchasePanel({
           className="product-purchase__status-dot"
           data-available={selectedVariant?.availableForSale || undefined}
         />
-        {statusLabel ||
-          (selectedVariant?.availableForSale
-            ? 'Available'
-            : 'Currently unavailable')}
+        {selectionPending
+          ? 'Updating selection…'
+          : statusLabel ||
+            (selectedVariant?.availableForSale
+              ? 'Available'
+              : 'Currently unavailable')}
       </div>
 
       <ProductAddToCart
-        disabledLabel={disabledLabel}
+        disabledLabel={selectionPending ? 'Updating selection…' : disabledLabel}
         product={product}
-        purchaseAllowed={purchaseAllowed}
+        purchaseAllowed={purchaseAllowed && !selectionPending}
         selectedVariant={selectedVariant}
       />
 
@@ -336,13 +413,24 @@ export function ProductPurchasePanel({
           </li>
           <li>
             <span>Shipping</span>
-            <small>Calculated at checkout</small>
+            <small>Rates confirmed at checkout</small>
           </li>
           <li>
             <span>Checkout</span>
             <small>Secure payment processing</small>
           </li>
         </ul>
+        {selectedMaterial === 'metal' || selectedMaterial === 'canvas' ? (
+          <p className="product-purchase__guide">
+            Gelato metal and canvas prints typically take 2–4 business days to
+            produce before shipping; transit time is additional. This is an estimate.
+          </p>
+        ) : null}
+        <p className="product-purchase__guide">
+          <Link to="/policies/shipping-policy">
+            Production and shipping details <Icon name="arrow-right" size={14} />
+          </Link>
+        </p>
         {selectedMaterial === 'metal' || selectedMaterial === 'canvas' ? <p className="product-purchase__guide">Mounting hardware included by the manufacturer.</p> : null}
         <a className="product-purchase__guide" href="mailto:support@render-lab.org">Questions? Contact Render-Lab <Icon name="arrow-right" size={14} /></a>
         {selectedVariant?.sku ? <details className="product-purchase__reference"><summary>Product reference</summary><p>SKU {selectedVariant.sku}</p></details> : null}

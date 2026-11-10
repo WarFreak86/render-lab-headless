@@ -6,11 +6,13 @@ import {ProductTechnicalSpecs} from './ProductTechnicalSpecs';
 export function ProductDetails({
   descriptionHtml,
   editorial,
-  artworkImage,
+  variants = [],
 }: {
   descriptionHtml: string;
   editorial: ProductEditorialData;
-  artworkImage?: {width?: number | null; height?: number | null} | null;
+  variants?: ReadonlyArray<{
+    selectedOptions: ReadonlyArray<{name: string; value: string}>;
+  }>;
 }) {
   const hasEdition = Boolean(
     editorial.editionSize || editorial.collectorInformation,
@@ -34,7 +36,7 @@ export function ProductDetails({
         </div>
         <div className="product-details__rich">
           <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-          <ProductTechnicalSpecs image={artworkImage} />
+          <ProductTechnicalSpecs variants={variants} />
         </div>
       </section>
 

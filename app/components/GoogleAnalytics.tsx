@@ -5,6 +5,25 @@ import {getStorefrontEnvironment} from '~/lib/config';
 
 const PRODUCTION_ID = 'G-ELCN4Z6M92';
 const GA4_ID_PATTERN = /^G-[A-Z0-9]+$/;
+// Keep campaign attribution without transmitting arbitrary URL parameters to GA4.
+const GA4_CAMPAIGN_PARAM_PATTERN =
+  /^(utm_(source|medium|campaign|id|term|content|source_platform|creative_format|marketing_tactic)|gclid|gclsrc|gbraid|wbraid|gad_source|msclkid|epik)$/i;
+
+export function getGa4PageViewParameters(href: string, title: string) {
+  const original = new URL(href);
+  const safeLocation = new URL(original.pathname, original.origin);
+  for (const [key, value] of original.searchParams) {
+    if (GA4_CAMPAIGN_PARAM_PATTERN.test(key) && value.trim()) {
+      safeLocation.searchParams.append(key, value);
+    }
+  }
+
+  return {
+    page_path: original.pathname,
+    page_location: safeLocation.toString(),
+    page_title: title,
+  };
+}
 type Gtag = (...args: unknown[]) => void;
 
 type Browser = Window & {
@@ -165,20 +184,22 @@ export function GoogleAnalytics({
   const {pathname} = useLocation();
   const nonce = useNonce();
   const lastPage = useRef<string | null>(null);
+  const lastProductView = useRef<{path: string; itemId: string} | null>(null);
   const sendPage = useRef<(() => void) | null>(null);
   const {ready} = register('GoogleAnalytics');
 
   useEffect(() => {
     const page = () => {
-      if (!allowed(canTrack, previewMeasurementId) || !measurementId) return;
       const path = window.location.pathname;
+      if (lastProductView.current?.path !== path) lastProductView.current = null;
+      if (!allowed(canTrack, previewMeasurementId) || !measurementId) return;
       if (lastPage.current === path) return;
       initializeGtag(measurementId, nonce);
-      (window as Browser).gtag?.('event', 'page_view', {
-        page_path: path,
-        page_location: window.location.origin + path,
-        page_title: document.title,
-      });
+      (window as Browser).gtag?.(
+        'event',
+        'page_view',
+        getGa4PageViewParameters(window.location.href, document.title),
+      );
       lastPage.current = path;
     };
     sendPage.current = page;
@@ -188,8 +209,15 @@ export function GoogleAnalytics({
       if (!allowed(canTrack, previewMeasurementId) || !measurementId) return;
       const payload = createGa4ViewItemData(event.products?.[0], event.shop?.currency);
       if (!payload) return;
+      const path = window.location.pathname;
+      const itemId = payload.items[0].item_id;
+      if (
+        lastProductView.current?.path === path &&
+        lastProductView.current.itemId === itemId
+      ) return;
       initializeGtag(measurementId, nonce);
       dispatchGa4EcommerceEvent('view_item', payload);
+      lastProductView.current = {path, itemId};
     });
 
     subscribe('product_added_to_cart', (event) => {

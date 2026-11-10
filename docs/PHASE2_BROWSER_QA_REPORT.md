@@ -1,0 +1,78 @@
+# Phase 2 browser QA
+
+**BLOCKED. NO-GO to merge PR #67.** The latest Chromium retest passed the shared specification checks, and real Shopify checkout displayed a shipping rate. Hosted consent collection and analytics delivery remain blocked. The earlier QA results below are historical.
+
+## Environment and evidence
+
+- PR candidate `5975c55c53f9deb205807937c96f2bcae0a8f9ec`, followed by the two fixes in this PR. The [original CI run](https://github.com/WarFreak86/render-lab-headless/actions/runs/42769299620) passed lint, typecheck, unit tests, and build.
+- Real headless Chromium 157 via Playwright Core. Viewports were 390 × 844, 768 × 1024, and 1440 × 900. The PR ran on `http://localhost:3195` using Shopify's browser-facing Storefront configuration, a temporary local session secret, and fresh isolated browser contexts.
+- The analytics experiment mapped `http://phase2-preview.test` to that same local server. It used a synthetic measurement ID and simulated privacy permission changes. Tag and telemetry endpoints were intercepted. No hosted Preview or checkout URL was opened.
+- Local artifacts are under `D:/Render-Lab-headless/outputs/phase2-browser-qa-2026-11-10`. The filename prefixes are `mobile`, `tablet`, and `desktop`. Screenshots and trace data are outside Git. `privacy-trace-sanitized.zip` contains action traces with network archives and page snapshots omitted.
+
+| Area | Result | Local evidence |
+|---|---|---|
+| Homepage `/` | HTTP 200 at all widths. Hero and CTA rendered without horizontal overflow. The primary CTA opened Wall Art at all widths. Mobile and tablet navigation opened with 14 links and closed with Escape. Desktop Collections exposed 14 links. | `{viewport}-home.png`, `{mobile,tablet}-navigation-menu.png`, `navigation-final.json` |
+| Chrome & Thunder and Carnivora | HTTP 200 at all widths. Artwork, prices and product links rendered. Mobile and tablet price sorting and availability filtering updated the URL. Chrome & Thunder paginated via Load more pieces. Carnivora fit on one page. Desktop sort worked, and the corrected desktop drawers opened and applied availability on both collections. | `{viewport}-{chrome,carnivora}.png`, `{mobile,tablet}-{chrome-thunder,carnivora}-filters.png`, `desktop-*-filter-{hidden,verified}.png`, `desktop-filter-{before,after}.json`, `targeted.json` |
+| Fireglass and Open Trap | HTTP 200 with no horizontal overflow. Main artwork and Metal/Canvas mockups appeared in the gallery. Thumbnail selection passed where shown, and zoom opened and closed with Escape at all widths. Settled Canvas 16 × 12 → 24 × 18 changed the URL, selected buttons, merchandise ID and form price from $59 to $89 for both products. The sampled options were all purchasable, so a sold-out variant was unavailable for this run. | `{viewport}-{fireglass,trap}.png`, `{viewport}-*-gallery-zoom.png`, `{viewport}-*-variant-final.png`, `targeted.json` |
+| Purchase and policy copy | Both product panels showed checkout-confirmed rates, estimated 2–4 business-day production, and 14-day returns. The local Shopify Shipping and Refund Policy pages returned HTTP 200 and supported these statements. Product description discrepancies are listed below. | `desktop-fireglass.png`, `mobile-policy-{shipping,returns}.png`, `policies-and-catalog.json`, `mobile-sticky-add-to-cart.png` |
+| Cart | At all three widths, Open Trap Canvas 24 × 18 used merchandise ID `gid://shopify/ProductVariant/47947546099873`. Browser submission returned 200. The cart retained Canvas, 24 × 18, quantity 1 and $89 after navigation, exposed a checkout URL on `checkout.render-lab.org`, and cleared after removal. | `{viewport}-cart-persisted.png`, `targeted.json` |
+| Privacy and analytics | Real local privacy script loaded with HTTP 200. The isolated GA4 test emitted zero queued events before simulated permission. After permission it queued sanitized page views and one item view and cart addition for the selected $79 variant. Pinterest remained disabled in the synthetic Preview origin. Real consent collection, Pinterest after production consent, and GA4 receipt remain open. | `privacy-runtime.json`, `mobile-privacy-controls.png`, `privacy-trace-sanitized.zip`, `analytics-isolated.json`, `analytics-final.json` |
+
+## Defects and corrections
+
+1. **P1, open. Catalog promises unavailable formats and inconsistent sizes.** Open either tested product and read About the piece. Both descriptions advertise archival matte posters, while the selector offers Canvas and Metal only. Fireglass claims 12 × 12 through 32 × 32. Open Trap lists 12 × 16 through 24 × 32. Both selectors actually show 16 × 12, 24 × 18, and 32 × 24. Confirm physical dimensions with the catalog owner and correct Shopify copy before release sign-off. This QA did not edit catalog data. See `policies-and-catalog.json`.
+2. **P2, fixed. Desktop filter trigger opened a hidden drawer.** At 1440 × 900, click Filters on either collection. The drawer existed in the DOM with computed `display: none`. Removed the conflicting desktop rule from `app/styles/collection.css`. The same Playwright regression failed before and passed after on both collections, including filter submission. See `desktop-filter-regression.mjs` in the local artifacts.
+3. **P2, fixed. One product visit emitted duplicate GA4 item views.** Under simulated consent, navigate from Carnivora to Open Trap and inspect the queue. The original code emitted two identical `view_item` events for one selected merchandise ID. `app/components/GoogleAnalytics.tsx` now tracks the last path and item ID in a ref. The subscriber regression in `GoogleAnalytics.test.ts` covers repeated delivery, option-only URL changes, legitimate variant changes, and leaving and revisiting a product. The browser retest emitted one item view and one cart addition for the tested variant.
+
+## Release checks and limits
+
+- After both code changes, `npm run lint`, `npm run typecheck`, `npm test -- --pool=threads --maxWorkers=2`, and `npm run build` passed. The suite ran 348 tests across 45 files.
+- Initial MiniOxygen startup failed inside the sandbox. A linked dependency directory then produced a worker module denial. The successful run used worktree-local dependencies copied from the identical lockfile, Windows loopback, and Shopify CLI environment injection. The initial failure captures are retained. An early harness also intercepted a local Pinterest module and waited on unsuitable locators. Those attempts were superseded by the hostname-only intercept and targeted reruns.
+- The final matrix found no completed broken above-the-fold images or horizontal overflow. Initial screenshots taken before image settlement showed placeholders. Network logs include requests aborted by navigation and deliberately intercepted analytics. The browser evidence does not certify all lazy assets or all screen-reader and keyboard flows. The mobile quick-purchase control appeared after scrolling the main Add to Cart button out of view, and stayed hidden while the main button was visible. It was hidden at the tablet and desktop widths.
+- The unmocked local privacy API reported analytics and marketing allowed and `shouldShowBanner=false` in this environment. The footer linked to the privacy policy and privacy choices page. Neither page offered a tested permission-changing control. Hydrogen config sets `withPrivacyBanner: false`. The simulated deny-to-allow test verifies the app's GA4 gate and attribution payload. It cannot establish real permission capture, GA4 ingestion, or allowed/denied Pinterest behavior on a hosted store. Shopify telemetry attempts were intercepted and their consent classification was not established. [Hydrogen Customer Privacy API](https://shopify.dev/docs/api/hydrogen/2026-04/hooks/usecustomerprivacy)
+- Complete hosted verification using an isolated Preview with a separate GA4 stream and a test geography where permission collection is required. Check denied and allowed behavior for Shopify, GA4, and Pinterest. Use a safe checkout entry session to verify the displayed shipping rate and policy before payment. This run verified the checkout link host and storefront policy only.
+
+**Merge recommendation: NO-GO.** Keep the PR in Draft until the catalog copy and hosted consent, measurement, and checkout gates are resolved.
+
+
+## Follow-up: shared product-specification root cause (November 10, 2026)
+
+- Shopify Admin records for Fireglass (`gid://shopify/Product/8734789435553`) and Open Trap (`gid://shopify/Product/8754441978017`) contain concise artwork descriptions **without poster claims or fictitious dimensions**. Both currently have six variants: Metal and Canvas in 16x12, 24x18 and 32x24.
+- The incorrect text originated in `app/components/product/ProductTechnicalSpecs.tsx`, which added a hard-coded third "Archival Matte Poster" format and derived sizing copy from image orientation (including a square fallback) under `About the piece`. This was **not** the Shopify description.
+- Follow-up branch changes now derive visible materials and sizes from `product.variants.nodes[].selectedOptions`. Unknown / absent options are not expanded into fictional formats, and no Shopify product data was mutated.
+- Regression tests cover the six-variant metal/canvas list, no fake poster, no fictitious square sizes, and a non-wall-art size.
+- **Status:** closed for the two reproduced specification mismatches by the latest browser retest below.
+
+## Remote head retest
+
+Tested `09474ac28ec1599539167cd6af0a95d70e677a1e` with Chromium 157 against local Hydrogen at `http://localhost:3195`. [CI at that SHA](https://github.com/WarFreak86/render-lab-headless/actions/runs/42775867171) passed. Evidence is under `D:/Render-Lab-headless/outputs/phase2-browser-qa-2026-11-10/specs-followup`.
+
+| Release gate | Result | Evidence |
+|---|---|---|
+| Fireglass and Open Trap specifications | PASS | At 390 × 844, 768 × 1024, and 1440 × 900, both pages returned HTTP 200. The About the piece section listed only Metal and Canvas and 16 × 12, 24 × 18, and 32 × 24 inches, matching the selectors. No false poster or square-size claims, horizontal overflow, or page exceptions were detected in the checks. See `{mobile,tablet,desktop}-{fireglass,open-trap}-about.png` and `results.json`. |
+| Shared specification regression | PASS for sampled products | The Storefront catalog returned 91 products, all classified as wall art. Five desktop comparisons covered the remaining option patterns, including genuine Poster in Fields of Memory, portrait dimensions in Eyes of Doom, Aperture, and Ascension Beyond Time, and reversed material order in Cyclone Warning. All matched their selectors. Automated coverage includes no matching options and empty variants. No distinct live non-wall-art type was available to sample. See the comparison `*-about.png` files and `results.json`. |
+| Variant selection under rapid input | FAIL | On Open Trap, click Canvas, wait only for `Material=Canvas` to appear in the URL, then immediately click 24 × 18. At all three widths the expected Canvas URL timed out. The failure screenshots show Metal selected and $109. Fireglass passed the same rapid sequence. With the Canvas selection settled before the size click, both products passed at all widths at $89 with the correct Canvas merchandise IDs. This is a purchase-path defect. See `variant-retest.json`, `variant-settled-retest.json`, and `*-open-trap-interaction-failure.png`. |
+| Real checkout entry and shipping | PASS | A fresh cart with Open Trap Canvas 16 × 12 at $59 opened Shopify checkout on `checkout.render-lab.org` with HTTP 200. After entering only the street, city, state, and ZIP of a public US test address, checkout showed **US Flat Rate $9.19**, with a displayed total of **$68.19**. Contact and payment fields were left blank. The test cart line was removed afterward. See `checkout-entry.png`, `checkout-shipping.png`, and `checkout-results.json`. |
+| Hosted Oxygen Preview and actual consent capture | BLOCKED | No deployment or Preview URL for this SHA was found in GitHub deployments, checks, or PR discussion. Deployment was outside the approved scope. No separate GA4 stream tied to a reachable Preview was available to this run. |
+| GA4 denied/allowed behavior and event delivery | BLOCKED | An authenticated Preview running this SHA and access to the separate stream's DebugView or realtime events are needed. The previous intercepted local test remains evidence of queue behavior only. |
+| Pinterest denied/allowed behavior and delivery | BLOCKED | The current component gates all Pinterest events to the Production hostname. A standard Oxygen Preview cannot exercise the allowed delivery path. This requires a separately approved way to verify delivery without mixing QA traffic with Production measurement. |
+
+The retest changed only this report. The rapid selection failure above was resolved on a later head and is retained as the original reproduction. The hosted consent and delivery gates remain open.
+
+## Rapid variant retest
+
+**PASS.** Tested `46b53a12c87eb2704f9272d09dd022ebc9e37d8f` in real Chromium on local Hydrogen at `http://localhost:3195/products/carnivora-no-01-open-trap`. [CI on the tested SHA](https://github.com/WarFreak86/render-lab-headless/actions/runs/42799090516) passed.
+
+| Viewport | Sequences | Cart |
+|---|---:|---|
+| 390 × 844 | 5/5 passed | All five submissions returned 200 and the cart matched |
+| 768 × 1024 | 5/5 passed | All five submissions returned 200 and the cart matched |
+| 1440 × 900 | 5/5 passed | All five submissions returned 200 and the cart matched |
+
+The five sequences per width were Canvas → 24 × 18 with normal navigation, Canvas → 24 × 18 with the responses held, 24 × 18 → Canvas, 32 × 24 → Canvas, and Metal → 24 × 18 from Canvas 32 × 24. Chromium pointer clicks ran back to back without waiting for navigation. The two-click calls took 14–74 ms. Both 24 × 18 Canvas click orders resolved to `Material=Canvas&Size=24x18`, `gid://shopify/ProductVariant/47947546099873`, and **$89**. The alternate Canvas 32 × 24 and Metal 24 × 18 combinations resolved to $119 and $109 respectively.
+
+In all 12 held-response cases the intermediate form still held the previous merchandise ID and every rendered Add to Cart control was disabled. The final request carried both intended options. The test clicked Add to Cart only once the URL, selected options, merchandise ID, and displayed price matched. It captured exactly one correct quantity-one submission per case and zero stale submissions. All test cart lines were removed.
+
+Evidence is under `D:/Render-Lab-headless/outputs/phase2-browser-qa-2026-11-10/rapid-variant-46b53a1`. See `results.json`, the `{mobile,tablet,desktop}-canvas-then-24-{resolved,cart}.png` screenshots, and `*-held-pending.png` for the disabled state. The 15 `*-trace.zip` files retain Playwright action records. Network archives and DOM snapshots were omitted from the retained traces to avoid recording session data.
+
+The rapid variant gate is closed. The PR remains Draft while hosted consent and analytics delivery remain unverified.

@@ -733,9 +733,6 @@
   .collection-controls__filter-trigger .button {
     display: none;
   }
-  .collection-filter-drawer {
-    display: none;
-  }
 }
 
 @media (max-width: 63.9375rem) {
