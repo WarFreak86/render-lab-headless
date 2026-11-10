@@ -15,8 +15,11 @@ in Google's standard snippet. Queuing plain JavaScript arrays loads the tag but
 does not dispatch the gtag commands. A regression test checks this command shape.
 
 Manual page views run on initial permitted load and pathname changes. Both the
-deduplication key and `page_path` omit query strings; `page_location` is the origin
-plus pathname. Variant queries, hashes, rerenders, and repeated Hydrogen page
+deduplication key and `page_path` omit query strings; `page_location` preserves
+only nonempty `utm_id`, `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, and
+`utm_content` parameters from the current URL. Arbitrary queries and fragments
+are excluded. Campaign values must never contain personal information. Variant
+queries, hashes, rerenders, and repeated Hydrogen page
 notifications do not inflate page counts. Consent-grant events can send the
 current page if it has not been sent yet.
 

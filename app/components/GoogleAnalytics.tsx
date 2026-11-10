@@ -2,6 +2,7 @@ import {useAnalytics, useNonce} from '@shopify/hydrogen';
 import {useEffect, useRef} from 'react';
 import {useLocation} from 'react-router';
 import {getStorefrontEnvironment} from '~/lib/config';
+import {getAnalyticsPageLocation} from '~/lib/analytics-location';
 
 const PRODUCTION_ID = 'G-ELCN4Z6M92';
 const GA4_ID_PATTERN = /^G-[A-Z0-9]+$/;
@@ -176,7 +177,7 @@ export function GoogleAnalytics({
       initializeGtag(measurementId, nonce);
       (window as Browser).gtag?.('event', 'page_view', {
         page_path: path,
-        page_location: window.location.origin + path,
+        page_location: getAnalyticsPageLocation(window.location.href),
         page_title: document.title,
       });
       lastPage.current = path;
