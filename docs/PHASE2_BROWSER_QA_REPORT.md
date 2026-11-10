@@ -57,4 +57,22 @@ Tested `09474ac28ec1599539167cd6af0a95d70e677a1e` with Chromium 157 against loca
 | GA4 denied/allowed behavior and event delivery | BLOCKED | An authenticated Preview running this SHA and access to the separate stream's DebugView or realtime events are needed. The previous intercepted local test remains evidence of queue behavior only. |
 | Pinterest denied/allowed behavior and delivery | BLOCKED | The current component gates all Pinterest events to the Production hostname. A standard Oxygen Preview cannot exercise the allowed delivery path. This requires a separately approved way to verify delivery without mixing QA traffic with Production measurement. |
 
-The retest changed only this report. **NO-GO to merge** until rapid option changes preserve the selected material and the hosted consent and delivery gates are verified.
+The retest changed only this report. The rapid selection failure above was resolved on a later head and is retained as the original reproduction. The hosted consent and delivery gates remain open.
+
+## Rapid variant retest
+
+**PASS.** Tested `46b53a12c87eb2704f9272d09dd022ebc9e37d8f` in real Chromium on local Hydrogen at `http://localhost:3195/products/carnivora-no-01-open-trap`. [CI on the tested SHA](https://github.com/WarFreak86/render-lab-headless/actions/runs/42799090516) passed.
+
+| Viewport | Sequences | Cart |
+|---|---:|---|
+| 390 × 844 | 5/5 passed | All five submissions returned 200 and the cart matched |
+| 768 × 1024 | 5/5 passed | All five submissions returned 200 and the cart matched |
+| 1440 × 900 | 5/5 passed | All five submissions returned 200 and the cart matched |
+
+The five sequences per width were Canvas → 24 × 18 with normal navigation, Canvas → 24 × 18 with the responses held, 24 × 18 → Canvas, 32 × 24 → Canvas, and Metal → 24 × 18 from Canvas 32 × 24. Chromium pointer clicks ran back to back without waiting for navigation. The two-click calls took 14–74 ms. Both 24 × 18 Canvas click orders resolved to `Material=Canvas&Size=24x18`, `gid://shopify/ProductVariant/47947546099873`, and **$89**. The alternate Canvas 32 × 24 and Metal 24 × 18 combinations resolved to $119 and $109 respectively.
+
+In all 12 held-response cases the intermediate form still held the previous merchandise ID and every rendered Add to Cart control was disabled. The final request carried both intended options. The test clicked Add to Cart only once the URL, selected options, merchandise ID, and displayed price matched. It captured exactly one correct quantity-one submission per case and zero stale submissions. All test cart lines were removed.
+
+Evidence is under `D:/Render-Lab-headless/outputs/phase2-browser-qa-2026-11-10/rapid-variant-46b53a1`. See `results.json`, the `{mobile,tablet,desktop}-canvas-then-24-{resolved,cart}.png` screenshots, and `*-held-pending.png` for the disabled state. The 15 `*-trace.zip` files retain Playwright action records. Network archives and DOM snapshots were omitted from the retained traces to avoid recording session data.
+
+The rapid variant gate is closed. The PR remains Draft while hosted consent and analytics delivery remain unverified.
