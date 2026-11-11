@@ -6,6 +6,7 @@ import {CollectionProductCard} from './CollectionProductCard';
 import {CollectionProductGrid} from './CollectionProductGrid';
 import {CollectionDirectoryView} from './CollectionDirectoryView';
 import {CollectionArtist} from './CollectionArtist';
+import {CollectionView} from './CollectionView';
 import type {
   CollectionFilterGroup,
   CollectionProductCardData,
@@ -58,6 +59,57 @@ function renderDataRouter(
 }
 
 describe('collection presentation', () => {
+  it('keeps Carnivora introduction above the grid and distinct buying guidance below it', () => {
+    const introduction =
+      'Carnivora explores carnivorous plants in macro detail.';
+    renderDataRouter(
+      <CollectionView
+        connection={{
+          nodes: [],
+          pageInfo: {hasNextPage: false, hasPreviousPage: false},
+        }}
+        data={{
+          id: 'carnivora',
+          handle: 'carnivora',
+          hero: {title: 'Carnivora', description: introduction, image: null},
+          products: [],
+          filterGroups: [],
+        }}
+        searchParams={new URLSearchParams()}
+      />,
+      '/collections/carnivora',
+    );
+
+    const intro = screen.getByText(introduction);
+    const grid = screen.getByRole('region', {
+      name: 'No pieces are available in this collection yet.',
+    });
+    const guide = screen.getByRole('region', {
+      name: 'Choosing Carnivora wall art',
+    });
+    expect(screen.getAllByText(introduction)).toHaveLength(1);
+    expect(
+      intro.compareDocumentPosition(grid) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      grid.compareDocumentPosition(guide) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      screen.getByRole('heading', {name: 'Compare metal and canvas', level: 3}),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', {name: /Open Trap —/})).toHaveAttribute(
+      'href',
+      '/products/carnivora-no-01-open-trap',
+    );
+    expect(screen.getByRole('link', {name: /Crown of Dew —/})).toHaveAttribute(
+      'href',
+      '/products/carnivora-no-02-crown-of-dew',
+    );
+    expect(
+      screen.getByRole('link', {name: 'Compare metal and canvas finishes'}),
+    ).toHaveAttribute('href', '/materials');
+  });
+
   it('links a Shopify-backed product card to its real PDP', () => {
     render(
       <MemoryRouter>

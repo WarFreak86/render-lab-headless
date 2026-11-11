@@ -210,6 +210,10 @@ const APPROVED_EDITORIAL_COLLECTION_SEO: Record<
   string,
   ApprovedEditorialCollectionSeo
 > = {
+  carnivora: {
+    h1: 'Carnivora',
+    title: 'Carnivorous Plant Wall Art | Carnivora | Render-Lab',
+  },
   'chrome-thunder': {
     h1: 'Chrome & Thunder: Muscle Car & Hot Rod Wall Art',
   },
@@ -231,6 +235,36 @@ const APPROVED_EDITORIAL_COLLECTION_SEO: Record<
 export function getApprovedEditorialCollectionSeo(handle: string) {
   return APPROVED_EDITORIAL_COLLECTION_SEO[handle];
 }
+
+export const CARNIVORA_BUYING_GUIDE = {
+  title: 'Choosing Carnivora wall art',
+  introduction:
+    'Choose a botanical composition for your space, then compare the materials and sizes on its product page.',
+  tips: [
+    {
+      heading: 'Choose colour and detail for the room',
+      text: 'Compare greens, crimsons and deep shadows with your room’s palette. Look closely at the traps and droplets, then consider the detail you want to see from a reading chair, desk or across the room.',
+    },
+    {
+      heading: 'Compare metal and canvas',
+      text: 'Metal is offered as frameless aluminum wall art. Canvas is gallery-wrapped with a textured surface. Choose the presentation you prefer and check the selected artwork’s product details.',
+    },
+    {
+      heading: 'Measure before choosing a size',
+      text: 'Measure the clear wall area, allowing space around nearby furniture. Check the selected artwork’s available sizes and use tape to mark its dimensions before choosing a variant.',
+    },
+  ],
+  recommendations: [
+    {
+      label: 'Open Trap — green surfaces and crimson spines',
+      to: '/products/carnivora-no-01-open-trap',
+    },
+    {
+      label: 'Crown of Dew — droplets and serrated rims',
+      to: '/products/carnivora-no-02-crown-of-dew',
+    },
+  ],
+};
 
 const FILTER_PREFIX = 'filter.';
 const PAGINATION_PARAMS = ['cursor', 'direction'];
