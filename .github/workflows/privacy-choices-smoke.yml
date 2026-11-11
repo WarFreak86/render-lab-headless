@@ -37,6 +37,5 @@ jobs:
           name: privacy-choices-hosted-smoke
           path: |
             privacy-smoke-results.json
-            privacy-direct-load.png
-            privacy-footer-navigation.png
+            privacy-*.png
           if-no-files-found: ignore
