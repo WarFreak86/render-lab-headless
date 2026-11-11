@@ -1,0 +1,48 @@
+name: Privacy choices hosted browser smoke test
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/components/Footer.tsx'
+      - 'app/components/PinterestAnalytics.tsx'
+      - 'scripts/privacy-opt-out-smoke.py'
+      - '.github/workflows/privacy-choices-smoke.yml'
+  workflow_run:
+    workflows: ['Storefront 1000173485']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  hosted-privacy-smoke:
+    name: Hosted privacy opt-out baseline (read only)
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    env:
+      EXPECT_DEPLOYED_FIX: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' }}
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install Chromium and Playwright
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Inspect live hosted Shopify opt-out page
+        run: python scripts/privacy-opt-out-smoke.py
+      - name: Upload browser evidence (no customer data)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: privacy-choices-hosted-smoke
+          path: |
+            privacy-smoke-results.json
+            privacy-*.png
+          if-no-files-found: ignore

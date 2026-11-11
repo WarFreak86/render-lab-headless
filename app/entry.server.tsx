@@ -23,8 +23,24 @@ export default async function handleRequest(
     },
     // Analytics scripts and collection endpoints must be allowed by the
     // existing CSP; add only these hosts to Hydrogen's default directives.
-    defaultSrc: ['https://s.pinimg.com', 'https://ct.pinterest.com', 'https://www.googletagmanager.com'],
-    connectSrc: ['https://ct.pinterest.com', 'https://www.google-analytics.com', 'https://analytics.google.com', 'https://www.googletagmanager.com'],
+    // Shopify's native U.S. Privacy Choices page embeds hCaptcha. Allow only
+    // hCaptcha-owned origins needed by its challenge scripts and frames.
+    defaultSrc: [
+      'https://s.pinimg.com',
+      'https://ct.pinterest.com',
+      'https://www.googletagmanager.com',
+      'https://hcaptcha.com',
+      'https://*.hcaptcha.com',
+    ],
+    connectSrc: [
+      'https://ct.pinterest.com',
+      'https://www.google-analytics.com',
+      'https://analytics.google.com',
+      'https://www.googletagmanager.com',
+      'https://hcaptcha.com',
+      'https://*.hcaptcha.com',
+    ],
+    styleSrc: ['https://*.hcaptcha.com'],
   });
 
   const body = await renderToReadableStream(

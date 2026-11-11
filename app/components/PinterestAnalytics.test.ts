@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {createPinterestAddToCartData} from './PinterestAnalytics';
+import {createPinterestAddToCartData, hasPinterestPrivacyPermission} from './PinterestAnalytics';
 
 const line = (quantity: number, amount = '49.99') => ({
   quantity,
@@ -54,5 +54,41 @@ describe('Pinterest AddToCart mapping', () => {
         cost: {amountPerQuantity: {amount: '10', currencyCode: 'USD'}},
       }),
     ).toBeNull();
+  });
+});
+
+describe('Pinterest privacy permissions', () => {
+  it('requires both marketing consent and permission to share data', () => {
+    expect(
+      hasPinterestPrivacyPermission({
+        marketingAllowed: () => true,
+        saleOfDataAllowed: () => true,
+      }),
+    ).toBe(true);
+  });
+
+  it('blocks tracking when a visitor opts out of data sharing', () => {
+    expect(
+      hasPinterestPrivacyPermission({
+        marketingAllowed: () => true,
+        saleOfDataAllowed: () => false,
+      }),
+    ).toBe(false);
+  });
+
+  it('blocks tracking when marketing permission is denied', () => {
+    expect(
+      hasPinterestPrivacyPermission({
+        marketingAllowed: () => false,
+        saleOfDataAllowed: () => true,
+      }),
+    ).toBe(false);
+  });
+
+  it('fails closed if Shopify privacy permission state is unavailable', () => {
+    expect(hasPinterestPrivacyPermission(undefined)).toBe(false);
+    expect(
+      hasPinterestPrivacyPermission({marketingAllowed: () => true}),
+    ).toBe(false);
   });
 });
