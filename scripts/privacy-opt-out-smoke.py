@@ -54,13 +54,29 @@ def check_page(page, label, navigate):
     report["checks"][label] = data
     page.screenshot(path=f"privacy-{label}.png", full_page=True)
 
+def simulate_scoped_hcaptcha_allowlist(route):
+    """Browser-only CSP simulation; does not change the live HTTP server."""
+    response = route.fetch()
+    headers = dict(response.headers)
+    csp = headers.get("content-security-policy", "")
+    origins = "https://hcaptcha.com https://*.hcaptcha.com"
+    for directive in ("default-src", "style-src", "connect-src"):
+        csp = csp.replace(directive + " ", directive + " " + origins + " ", 1)
+    headers["content-security-policy"] = csp
+    route.fulfill(response=response, headers=headers)
+
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
-    for label in ("direct-load", "footer-navigation"):
+    for label in ("direct-load", "footer-navigation", "direct-load-csp-simulation"):
         context = browser.new_context(viewport={"width": 1280, "height": 900}, locale="en-US")
         page = context.new_page()
         try:
-            if label == "direct-load":
+            if label == "direct-load-csp-simulation":
+                # Simulate the proposed narrow allowlist on this one document.
+                # This is not a real PR Preview deployment.
+                page.route(URL, simulate_scoped_hcaptcha_allowlist)
+                check_page(page, label, lambda: page.goto(URL, wait_until="domcontentloaded", timeout=40000))
+            elif label == "direct-load":
                 check_page(page, label, lambda: page.goto(URL, wait_until="domcontentloaded", timeout=40000))
             else:
                 home_response = page.goto(HOME, wait_until="domcontentloaded", timeout=40000)
@@ -82,3 +98,12 @@ if "error" in report["checks"].get("direct-load", {}):
     raise SystemExit("Direct-load browser check failed")
 if not report["checks"]["direct-load"].get("containerPresent"):
     raise SystemExit("Direct-load privacy opt-out container missing")
+
+simulation = report["checks"].get("direct-load-csp-simulation", {})
+if simulation.get("error"):
+    raise SystemExit("The CSP allowlist simulation could not be tested")
+if not simulation.get("containerPresent") or simulation.get("formElementCount", 0) < 1:
+    raise SystemExit("Simulated CSP browser visit did not initialize the form")
+if any("hcaptcha" in m.lower() and "content security policy" in m.lower()
+       for m in simulation.get("consoleErrors", [])):
+    raise SystemExit("hCaptcha CSP violations persist with simulated allowlist")
