@@ -5,6 +5,7 @@ existing behavior, never clicks an opt-out/consent submit button, and does
 not assert the unreleased branch's browser behavior.
 """
 import json
+import os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -107,3 +108,17 @@ if not simulation.get("containerPresent") or simulation.get("formElementCount", 
 if any("hcaptcha" in m.lower() and "content security policy" in m.lower()
        for m in simulation.get("consoleErrors", [])):
     raise SystemExit("hCaptcha CSP violations persist with simulated allowlist")
+
+# On a successful Oxygen Production deployment, assert that the actual live
+# response has the changes. PR runs intentionally observe the old baseline.
+if os.environ.get("EXPECT_DEPLOYED_FIX") == "true":
+    direct = report["checks"].get("direct-load", {})
+    footer = report["checks"].get("footer-navigation", {})
+    if footer.get("formElementCount", 0) < 1:
+        raise SystemExit("Production footer navigation still leaves opt-out form empty")
+    if any("hcaptcha" in m.lower() and "content security policy" in m.lower()
+           for m in direct.get("consoleErrors", [])):
+        raise SystemExit("Production still blocks hCaptcha via CSP")
+    if not any("js.hcaptcha.com" in r.get("url", "") and r.get("status") == 200
+               for r in direct.get("targetScriptResponses", [])):
+        raise SystemExit("Production hCaptcha script did not return HTTP 200")
