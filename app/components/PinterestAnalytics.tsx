@@ -10,11 +10,14 @@ type PinterestTracker = ((...args: unknown[]) => void) & {
   version?: string;
 };
 
+type PinterestPrivacy = {
+  marketingAllowed?: () => boolean;
+  saleOfDataAllowed?: () => boolean;
+};
+
 type PrivacyWindow = Window & {
   Shopify?: {
-    customerPrivacy?: {
-      marketingAllowed?: () => boolean;
-    };
+    customerPrivacy?: PinterestPrivacy;
   };
   pintrk?: PinterestTracker;
   __renderLabPinterestInitialized?: boolean;
@@ -97,6 +100,17 @@ export function createPinterestAddToCartData(
   };
 }
 
+/**
+ * Consent for merchant marketing and permission to share data with advertising
+ * providers are distinct Shopify Customer Privacy API decisions.
+ */
+export function hasPinterestPrivacyPermission(privacy?: PinterestPrivacy) {
+  return (
+    privacy?.marketingAllowed?.() === true &&
+    privacy?.saleOfDataAllowed?.() === true
+  );
+}
+
 function canSendPinterestEvents(canTrack: () => boolean): boolean {
   if (typeof window === 'undefined') return false;
   if (getStorefrontEnvironment(window.location.href) !== 'production') {
@@ -106,7 +120,7 @@ function canSendPinterestEvents(canTrack: () => boolean): boolean {
   const privacy = (window as PrivacyWindow).Shopify?.customerPrivacy;
   // Pinterest is an advertising destination. Require marketing permission
   // in addition to Hydrogen's analytics permission before loading the tag.
-  return canTrack() && privacy?.marketingAllowed?.() === true;
+  return canTrack() && hasPinterestPrivacyPermission(privacy);
 }
 
 function pinterestTracker(): PinterestTracker {
