@@ -4,6 +4,15 @@ import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
 import {Container} from '~/components/Container';
 import {normalizeStorefrontLink, SITE_NAME} from '~/lib/config';
 
+/** Shopify's opt-out form scripts run on full document loads, not SPA innerHTML inserts. */
+export function requiresFullPagePrivacyNavigation(url: string) {
+  const target = new URL(url, 'https://render-lab.org');
+  return (
+    target.origin === 'https://render-lab.org' &&
+    target.pathname === '/pages/data-sharing-opt-out'
+  );
+}
+
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
   header: HeaderQuery;
@@ -119,6 +128,10 @@ function FooterMenu({
         const url = normalizeStorefrontLink(item.url);
         return !url.startsWith('/') ? (
           <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
+            {item.title}
+          </a>
+        ) : requiresFullPagePrivacyNavigation(url) ? (
+          <a href={url} key={item.id}>
             {item.title}
           </a>
         ) : (
