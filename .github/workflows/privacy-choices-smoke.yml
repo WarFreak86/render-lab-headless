@@ -8,6 +8,10 @@ on:
       - 'app/components/PinterestAnalytics.tsx'
       - 'scripts/privacy-opt-out-smoke.py'
       - '.github/workflows/privacy-choices-smoke.yml'
+  workflow_run:
+    workflows: ['Storefront 1000173485']
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: read
@@ -15,7 +19,10 @@ permissions:
 jobs:
   hosted-privacy-smoke:
     name: Hosted privacy opt-out baseline (read only)
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
+    env:
+      EXPECT_DEPLOYED_FIX: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' }}
     timeout-minutes: 15
     steps:
       - name: Checkout
