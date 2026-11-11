@@ -57,6 +57,42 @@ type AddToCartData = {
   }>;
 };
 
+/** Catalog item IDs are variant decimal strings, never JS numbers. */
+export function getPinterestCatalogId(variantId?: string | null) {
+  return typeof variantId === 'string'
+    ? /^gid:\/\/shopify\/ProductVariant\/([1-9]\d*)$/.exec(variantId)?.[1] ?? null
+    : null;
+}
+
+type ViewedProduct = {
+  variantId?: string | null;
+  title: string;
+  variantTitle?: string | null;
+  vendor?: string | null;
+  price?: string | null;
+};
+
+export function createPinterestPageVisitData(
+  product?: ViewedProduct | null,
+  currency?: string | null,
+) {
+  const id = getPinterestCatalogId(product?.variantId);
+  if (!product || !id) return null;
+  const price = Number(product.price);
+  const validPrice = product.price != null && Number.isFinite(price) && price >= 0;
+  return {
+    ...(currency ? {currency} : {}),
+    line_items: [{
+      product_id: id,
+      product_variant_id: product.variantId,
+      product_name: product.title,
+      ...(product.variantTitle ? {product_variant: product.variantTitle} : {}),
+      ...(product.vendor ? {product_brand: product.vendor} : {}),
+      ...(validPrice ? {product_price: price} : {}),
+    }],
+  };
+}
+
 /** Calculate only the increase, rather than the full existing cart line. */
 export function createPinterestAddToCartData(
   currentLine?: CartLineSnapshot | null,
@@ -69,6 +105,7 @@ export function createPinterestAddToCartData(
   const currency = currentLine.cost?.amountPerQuantity?.currencyCode;
   const variant = currentLine.merchandise;
   const product = variant?.product;
+  const catalogId = getPinterestCatalogId(variant?.id);
 
   if (
     !Number.isInteger(quantity) ||
@@ -77,6 +114,7 @@ export function createPinterestAddToCartData(
     price < 0 ||
     !currency ||
     !variant?.id ||
+    !catalogId ||
     !product?.id
   ) {
     return null;
@@ -88,7 +126,7 @@ export function createPinterestAddToCartData(
     currency,
     line_items: [
       {
-        product_id: product.id,
+        product_id: catalogId,
         product_variant_id: variant.id,
         product_name: product.title,
         ...(variant.title ? {product_variant: variant.title} : {}),
@@ -159,17 +197,45 @@ export function PinterestAnalytics() {
   const {ready} = register('PinterestAnalytics');
 
   useEffect(() => {
+    let active = true;
+    let productView: {
+      url: string;
+      data: ReturnType<typeof createPinterestPageVisitData>;
+    } | null = null;
+    const currentUrl = () => window.location.pathname + window.location.search;
     const sendPageVisit = () => {
-      if (!canSendPinterestEvents(canTrack)) return;
+      if (!active || !canSendPinterestEvents(canTrack)) return;
       const path = window.location.pathname;
-      if (lastPageRef.current === path) return;
-      pinterestTracker()('track', 'pagevisit');
-      lastPageRef.current = path;
+      // ProductView supplies the resolved selected variant. Do not race it with
+      // a generic PageVisit from page_viewed or the initial consent callback.
+      const isProduct = /^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?products\/[^/]+\/?$/i.test(path);
+      const view = productView?.url === currentUrl() ? productView : null;
+      if (isProduct && !view) return;
+      const data = isProduct ? view?.data : null;
+      const key = `${path}|${data?.line_items[0].product_id ?? ''}`;
+      if (lastPageRef.current === key) return;
+      if (data) pinterestTracker()('track', 'pagevisit', data);
+      else pinterestTracker()('track', 'pagevisit');
+      lastPageRef.current = key;
     };
 
-    subscribe('page_viewed', sendPageVisit);
+    subscribe('page_viewed', () => {
+      if (!active) return;
+      if (productView?.url !== currentUrl()) productView = null;
+      sendPageVisit();
+    });
+    subscribe('product_viewed', (event) => {
+      if (!active) return;
+      const url = new URL(event.url, window.location.origin);
+      if (url.pathname + url.search !== currentUrl()) return;
+      productView = {
+        url: currentUrl(),
+        data: createPinterestPageVisitData(event.products?.[0], event.shop?.currency),
+      };
+      sendPageVisit();
+    });
     subscribe('product_added_to_cart', (event) => {
-      if (!canSendPinterestEvents(canTrack)) return;
+      if (!active || !canSendPinterestEvents(canTrack)) return;
 
       const payload = createPinterestAddToCartData(
         event.currentLine as unknown as CartLineSnapshot,
@@ -187,6 +253,7 @@ export function PinterestAnalytics() {
     sendPageVisit();
 
     return () => {
+      active = false;
       document.removeEventListener('shopifyCustomerPrivacyApiLoaded', onConsentChange);
       document.removeEventListener('visitorConsentCollected', onConsentChange);
     };
