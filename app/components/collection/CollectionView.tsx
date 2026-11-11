@@ -6,6 +6,7 @@ import {CollectionControls} from './CollectionControls';
 import {CollectionProductGrid} from './CollectionProductGrid';
 import {CollectionArtist} from './CollectionArtist';
 import {
+  CARNIVORA_BUYING_GUIDE,
   getActiveCollectionFilters,
   type CollectionPageData,
 } from '~/lib/collection';
@@ -69,6 +70,7 @@ interface CollectionBuyingGuideData {
 }
 
 const COLLECTION_BUYING_GUIDES: Record<string, CollectionBuyingGuideData> = {
+  carnivora: CARNIVORA_BUYING_GUIDE,
   'chrome-thunder': {
     title: 'Choosing classic car wall art',
     introduction:

@@ -21,6 +21,24 @@ function getMetaContent(
 }
 
 describe('Phase B1 route metadata', () => {
+  it('uses the approved Carnivora title ahead of Shopify and display titles', () => {
+    const title = 'Carnivorous Plant Wall Art | Carnivora | Render-Lab';
+    const entries = collectionMeta({
+      data: {
+        mode: 'products',
+        collectionSeoTitle: 'Older Shopify title',
+        collectionPage: {
+          handle: 'carnivora',
+          hero: {title: 'Carnivora'},
+        },
+      },
+      location: {search: ''},
+    } as never);
+
+    expect(entries).toContainEqual({title});
+    expect(entries).toContainEqual({property: 'og:title', content: title});
+  });
+
   it('uses explicit collection SEO copy and self-canonicalizes clean pagination', () => {
     const entries = collectionMeta({
       data: {
