@@ -25,7 +25,7 @@ describe('Pinterest AddToCart mapping', () => {
       currency: 'USD',
       line_items: [
         {
-          product_id: 'gid://shopify/Product/123',
+          product_id: '456',
           product_variant_id: 'gid://shopify/ProductVariant/456',
           product_name: 'Sunset Service Court',
           product_variant: '18 × 24 / Canvas',
