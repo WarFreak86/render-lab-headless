@@ -113,7 +113,8 @@ export async function loader(args: Route.LoaderArgs) {
     consent: {
       checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN || SHOPIFY_CHECKOUT_DOMAIN,
       storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
-      withPrivacyBanner: false,
+      // Shopify's hosted consent UI requires the cookie banner enabled in Shopify Admin.
+      withPrivacyBanner: true,
       // localize the privacy banner
       country: args.context.storefront.i18n.country,
       language: args.context.storefront.i18n.language,
