@@ -3,7 +3,9 @@ import '~/styles/product-gallery-fit.css';
 import productStyles from '~/styles/product.css?url';
 import productEnhancements from '~/styles/enhancements-product.css?url';
 import productGalleryStyles from '~/styles/gallery-product.css?url';
-import {Link, useLoaderData} from 'react-router';
+import confidenceStyles from '~/styles/product-confidence.css?url';
+import {Link, useLoaderData, useLocation, useNavigate} from 'react-router';
+import {useEffect, useState} from 'react';
 import type {Route} from './+types/products.$handle';
 import {
   getSelectedProductOptions,
@@ -16,12 +18,16 @@ import {
 import {ProductDetails} from '~/components/product/ProductDetails';
 import {ProductGallery} from '~/components/product/ProductGallery';
 import {ProductPurchasePanel} from '~/components/product/ProductPurchasePanel';
+import {ProductConfidenceSections} from '~/components/product/ProductConfidenceSections';
+import {
+  artworkImage,
+  choiceQuery,
+  hasPrintChoices,
+  type ChoiceVariant,
+} from '~/lib/product-confidence';
 import {getProductionUrl} from '~/lib/config';
 import {getVariantGidFromRequest, normalizeProductPage} from '~/lib/product';
-import {
-  PRODUCT_QUERY,
-  PRODUCT_VARIANT_BY_ID_QUERY,
-} from '~/lib/product-query';
+import {PRODUCT_QUERY, PRODUCT_VARIANT_BY_ID_QUERY} from '~/lib/product-query';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {
   getBrandedTitle,
@@ -34,6 +40,7 @@ export const links = () => [
   {rel: 'stylesheet', href: productStyles},
   {rel: 'stylesheet', href: productEnhancements},
   {rel: 'stylesheet', href: productGalleryStyles},
+  {rel: 'stylesheet', href: confidenceStyles},
 ];
 
 export const meta: Route.MetaFunction = ({data}) => {
@@ -135,10 +142,9 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     requestedVariant.product.id === product.id
       ? requestedVariant
       : null;
-  const selectedProduct =
-    matchingVariant
-      ? {...product, selectedOrFirstAvailableVariant: matchingVariant}
-      : product;
+  const selectedProduct = matchingVariant
+    ? {...product, selectedOrFirstAvailableVariant: matchingVariant}
+    : product;
   const hasMatchingOption = selectedOptions.some(({name, value}) =>
     selectedProduct.selectedOrFirstAvailableVariant?.selectedOptions?.some(
       (option) =>
@@ -165,8 +171,14 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
 }
 
 export default function Product() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const {product, initialVariantImageId, initialVariantImageUrl} =
     useLoaderData<typeof loader>();
+  const [requestedChoice, setRequestedChoice] = useState<{
+    id: string;
+    handle: string;
+  } | null>(null);
 
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
@@ -174,6 +186,9 @@ export default function Product() {
   );
 
   useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
+  useEffect(() => {
+    if (requestedChoice?.id === selectedVariant.id) setRequestedChoice(null);
+  }, [requestedChoice, selectedVariant.id]);
 
   const productOptions = getProductOptions({
     ...product,
@@ -181,6 +196,18 @@ export default function Product() {
   });
 
   const page = normalizeProductPage(product);
+  const confidence = hasPrintChoices(product.variants.nodes);
+  const artwork = confidence ? artworkImage(page.gallery) : undefined;
+  function selectVariant(variant: ChoiceVariant) {
+    setRequestedChoice({id: variant.id, handle: product.handle});
+    void navigate(
+      {
+        search: `?${choiceQuery(location.search, variant.selectedOptions)}`,
+        hash: location.hash,
+      },
+      {replace: true, preventScrollReset: true},
+    );
+  }
   const selectedImageId = selectedVariant?.image?.id;
   const canonical = getProductionUrl(`/products/${product.handle}`);
   const jsonLdString = safeJsonLd(
@@ -208,7 +235,9 @@ export default function Product() {
   );
 
   return (
-    <article className="product-detail product-detail--editorial">
+    <article
+      className={`product-detail product-detail--editorial${confidence ? ' product-detail--confidence' : ''}`}
+    >
       <script
         dangerouslySetInnerHTML={{__html: jsonLdString}}
         type="application/ld+json"
@@ -229,15 +258,29 @@ export default function Product() {
 
       <div className="product-detail__hero">
         <ProductGallery
+          artwork={artwork}
+          buyerConfidence={confidence}
           images={page.gallery}
-          initialVariantImageId={initialVariantImageId}
-          initialVariantImageUrl={initialVariantImageUrl}
+          initialVariantImageId={
+            initialVariantImageId ?? (confidence ? selectedImageId : undefined)
+          }
+          initialVariantImageUrl={
+            initialVariantImageUrl ??
+            (confidence ? selectedVariant?.image?.url : undefined)
+          }
           selectedVariantImageId={selectedImageId}
           selectedVariantImageUrl={selectedVariant?.image?.url}
           title={product.title}
         />
         <div className="product-detail__purchase-column">
           <ProductPurchasePanel
+            buyerConfidence={confidence}
+            scaleAvailable={Boolean(artwork)}
+            selectionUpdating={
+              requestedChoice?.handle === product.handle &&
+              requestedChoice.id !== selectedVariant.id
+            }
+            variants={product.variants.nodes}
             badge={page.editorial.badge}
             collectionTitle={page.breadcrumb?.title}
             product={product}
@@ -246,6 +289,16 @@ export default function Product() {
           />
         </div>
       </div>
+
+      {confidence ? (
+        <ProductConfidenceSections
+          artwork={artwork}
+          images={[...page.gallery, ...page.editorial.roomImages]}
+          onSelect={selectVariant}
+          selectedVariant={selectedVariant}
+          variants={product.variants.nodes}
+        />
+      ) : null}
 
       <ProductDetails
         descriptionHtml={product.descriptionHtml}

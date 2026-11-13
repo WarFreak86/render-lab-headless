@@ -1,0 +1,49 @@
+name: Product confidence Oxygen preview
+
+on:
+  push:
+    branches: [codex/product-buyer-confidence-20261112]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  preview:
+    if: github.ref == 'refs/heads/codex/product-buyer-confidence-20261112'
+    name: Validate and deploy product-page preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Restore generated type artifacts
+        run: git checkout -- storefrontapi.generated.d.ts customer-accountapi.generated.d.ts
+      - name: Verify clean working tree
+        run: git diff --exit-code
+      - name: Deploy only to Oxygen Preview
+        run: npx shopify hydrogen deploy --preview
+        env:
+          SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000173485 }}
+      - name: Record private preview URL
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const {url} = JSON.parse(fs.readFileSync('h2_deploy_log.json', 'utf8'));
+          const parsed = new URL(url);
+          if (parsed.protocol !== 'https:' || !parsed.hostname.endsWith('.oxygen.run')) {
+            throw new Error('Expected an Oxygen preview URL; refusing a production URL');
+          }
+          const previewUrl = parsed.origin + parsed.pathname;
+          console.log('Oxygen preview: ' + previewUrl);
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, 'Private product-page preview: ' + previewUrl + '\n');
+          NODE

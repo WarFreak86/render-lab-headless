@@ -5,8 +5,12 @@ import {Drawer} from '~/components/Drawer';
 import {Icon} from '~/components/Icon';
 import type {ProductImageData} from '~/lib/product';
 import {findProductImageIndex} from '~/lib/product-image';
+import {isRoomImage} from '~/lib/product-confidence';
+import {ProductArtworkZoom} from './ProductArtworkZoom';
 
 export function ProductGallery({
+  artwork,
+  buyerConfidence = false,
   images,
   initialVariantImageId,
   initialVariantImageUrl,
@@ -15,6 +19,8 @@ export function ProductGallery({
   selectedVariantImageUrl,
   title,
 }: {
+  artwork?: ProductImageData;
+  buyerConfidence?: boolean;
   images: ProductImageData[];
   initialVariantImageId?: string | null;
   initialVariantImageUrl?: string | null;
@@ -24,10 +30,13 @@ export function ProductGallery({
   title: string;
 }) {
   const [initialIndex] = useState(() =>
-    Math.max(0, findProductImageIndex(images, {
-      id: initialVariantImageId,
-      url: initialVariantImageUrl,
-    })),
+    Math.max(
+      0,
+      findProductImageIndex(images, {
+        id: initialVariantImageId,
+        url: initialVariantImageUrl,
+      }),
+    ),
   );
   const [selectedIndex, setSelectedIndex] = useState(initialIndex);
   const [zoomOpen, setZoomOpen] = useState(false);
@@ -42,7 +51,7 @@ export function ProductGallery({
   }, [images, selectedVariantImageId, selectedVariantImageUrl]);
 
   useEffect(() => {
-    if (!zoomOpen || images.length < 2) return;
+    if (!zoomOpen || buyerConfidence || images.length < 2) return;
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'ArrowLeft') {
         setSelectedIndex(
@@ -54,7 +63,7 @@ export function ProductGallery({
     }
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [images.length, zoomOpen]);
+  }, [images.length, zoomOpen, buyerConfidence]);
 
   if (images.length === 0) {
     return (
@@ -141,13 +150,17 @@ export function ProductGallery({
             ))}
           </ul>
           <button
-            aria-label={`Zoom image ${selectedIndex + 1}`}
+            aria-label={
+              buyerConfidence && artwork
+                ? 'Inspect artwork detail'
+                : `Zoom image ${selectedIndex + 1}`
+            }
             className="product-gallery__zoom-trigger"
             onClick={() => setZoomOpen(true)}
             type="button"
           >
             <Icon name="search" size={18} />
-            <span>Zoom</span>
+            <span>{buyerConfidence && artwork ? 'Look closer' : 'Zoom'}</span>
           </button>
           {images.length > 1 ? (
             <p className="product-gallery__counter" aria-live="polite">
@@ -157,10 +170,31 @@ export function ProductGallery({
         </div>
       </div>
 
+      {buyerConfidence ? (
+        <div className="confidence-gallery-caption">
+          <p>
+            {isRoomImage(selectedImage)
+              ? 'Styled room mockup. Scale and material appearance are illustrative.'
+              : artwork
+                ? 'Artwork view. Open Look closer to explore the original image source.'
+                : 'Product image. Select a thumbnail to compare views.'}
+          </p>
+          {artwork ? <a href="#product-room-scale">See the scale ↗</a> : null}
+        </div>
+      ) : null}
+
+      {zoomOpen && buyerConfidence && artwork ? (
+        <ProductArtworkZoom
+          image={artwork}
+          title={title}
+          onClose={() => setZoomOpen(false)}
+        />
+      ) : null}
+
       <Drawer
         className="product-gallery__zoom-drawer"
         onClose={() => setZoomOpen(false)}
-        open={zoomOpen}
+        open={zoomOpen && !(buyerConfidence && artwork)}
         title={`${title} — image ${selectedIndex + 1} of ${images.length}`}
       >
         <div className="product-gallery__zoom-content">
