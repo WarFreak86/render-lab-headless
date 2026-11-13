@@ -1,11 +1,21 @@
-import {fireEvent, render, screen, waitFor} from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import {MemoryRouter, useLocation} from 'react-router';
 import {Aside} from '~/components/Aside';
+import type {ChoiceVariant} from '~/lib/product-confidence';
+import type {MappedProductOptions} from '@shopify/hydrogen';
 import {getNextOptionQuery, ProductPurchasePanel} from './ProductPurchasePanel';
 
 function RouteSearchProbe() {
   const location = useLocation();
-  return <output data-testid="product-selection-query">{location.search}</output>;
+  return (
+    <output data-testid="product-selection-query">{location.search}</output>
+  );
 }
 
 const mockCart = vi.hoisted(() => ({
@@ -65,11 +75,15 @@ function variant({
 
 function renderPanel({
   handle = 'artwork',
+  buyerConfidence = false,
+  variants = [],
   options,
   selectedVariant = variant(),
   title = 'Artwork',
 }: {
   handle?: string;
+  buyerConfidence?: boolean;
+  variants?: ChoiceVariant[];
   options: any[];
   selectedVariant?: any;
   title?: string;
@@ -78,6 +92,8 @@ function renderPanel({
     <MemoryRouter>
       <Aside.Provider>
         <ProductPurchasePanel
+          buyerConfidence={buyerConfidence}
+          variants={variants}
           product={{
             handle,
             productType: 'Metal print',
@@ -101,34 +117,56 @@ describe('ProductPurchasePanel', () => {
       {
         name: 'Material',
         optionValues: [
-          {name: 'Metal', available: true, exists: true, selected: true,
-            variantUriQuery: 'Material=Metal&Size=16x12'},
-          {name: 'Canvas', available: true, exists: true, selected: false,
-            variantUriQuery: 'Material=Canvas&Size=16x12'},
+          {
+            name: 'Metal',
+            available: true,
+            exists: true,
+            selected: true,
+            variantUriQuery: 'Material=Metal&Size=16x12',
+          },
+          {
+            name: 'Canvas',
+            available: true,
+            exists: true,
+            selected: false,
+            variantUriQuery: 'Material=Canvas&Size=16x12',
+          },
         ],
       },
       {
         name: 'Size',
         optionValues: [
-          {name: '16x12', available: true, exists: true, selected: true,
-            variantUriQuery: 'Material=Metal&Size=16x12'},
-          {name: '24x18', available: true, exists: true, selected: false,
-            variantUriQuery: 'Material=Metal&Size=24x18'},
+          {
+            name: '16x12',
+            available: true,
+            exists: true,
+            selected: true,
+            variantUriQuery: 'Material=Metal&Size=16x12',
+          },
+          {
+            name: '24x18',
+            available: true,
+            exists: true,
+            selected: false,
+            variantUriQuery: 'Material=Metal&Size=24x18',
+          },
         ],
       },
     ];
     renderPanel({options});
     fireEvent.click(screen.getByRole('button', {name: 'Canvas'}));
-    expect(screen.getByRole('button', {name: 'Updating selection…'}))
-      .toBeDisabled();
+    expect(
+      screen.getByRole('button', {name: 'Updating selection…'}),
+    ).toBeDisabled();
     fireEvent.click(screen.getByRole('button', {name: '24x18'}));
     const params = new URLSearchParams(
       screen.getByTestId('product-selection-query').textContent || '',
     );
     expect(params.get('Material')).toBe('Canvas');
     expect(params.get('Size')).toBe('24x18');
-    expect(screen.getByRole('button', {name: 'Updating selection…'}))
-      .toBeDisabled();
+    expect(
+      screen.getByRole('button', {name: 'Updating selection…'}),
+    ).toBeDisabled();
   });
 
   it('lets a rapid click reverse an unresolved material choice', () => {
@@ -136,10 +174,20 @@ describe('ProductPurchasePanel', () => {
       {
         name: 'Material',
         optionValues: [
-          {name: 'Metal', available: true, exists: true, selected: true,
-            variantUriQuery: 'Material=Metal&Size=16x12'},
-          {name: 'Canvas', available: true, exists: true, selected: false,
-            variantUriQuery: 'Material=Canvas&Size=16x12'},
+          {
+            name: 'Metal',
+            available: true,
+            exists: true,
+            selected: true,
+            variantUriQuery: 'Material=Metal&Size=16x12',
+          },
+          {
+            name: 'Canvas',
+            available: true,
+            exists: true,
+            selected: false,
+            variantUriQuery: 'Material=Canvas&Size=16x12',
+          },
         ],
       },
     ];
@@ -154,21 +202,18 @@ describe('ProductPurchasePanel', () => {
 
   it('replaces only the clicked option while preserving a pending selection', () => {
     expect(
-      getNextOptionQuery(
-        'Material=Metal&Size=24x18',
-        'Size',
-        '24x18',
-        {Material: 'Canvas', Size: '16x12'},
-      ),
+      getNextOptionQuery('Material=Metal&Size=24x18', 'Size', '24x18', {
+        Material: 'Canvas',
+        Size: '16x12',
+      }),
     ).toBe('Material=Canvas&Size=24x18');
   });
 
   it('uses the official support inbox for product questions', () => {
     renderPanel({options: []});
-    expect(screen.getByRole('link', {name: /Questions\? Contact Render-Lab/i})).toHaveAttribute(
-      'href',
-      'mailto:support@render-lab.org',
-    );
+    expect(
+      screen.getByRole('link', {name: /Questions\? Contact Render-Lab/i}),
+    ).toHaveAttribute('href', 'mailto:support@render-lab.org');
   });
 
   beforeEach(() => {
@@ -227,11 +272,13 @@ describe('ProductPurchasePanel', () => {
       'href',
       '/policies/refund-policy',
     );
-    expect(screen.getByText(/Customer pays return shipping for non-defective items/))
-      .toBeInTheDocument();
+    expect(
+      screen.getByText(/Customer pays return shipping for non-defective items/),
+    ).toBeInTheDocument();
     expect(screen.getByText('Rates confirmed at checkout')).toBeInTheDocument();
-    expect(screen.getByRole('link', {name: /Production and shipping details/i}))
-      .toHaveAttribute('href', '/policies/shipping-policy');
+    expect(
+      screen.getByRole('link', {name: /Production and shipping details/i}),
+    ).toHaveAttribute('href', '/policies/shipping-policy');
   });
 
   it('shows selected, sold-out, and impossible option values as distinct states', () => {
@@ -438,8 +485,11 @@ describe('ProductPurchasePanel', () => {
       'aria-pressed',
       'true',
     );
-    expect(screen.getByText(/Render-Lab metal and canvas prints typically take 2–4 business days/))
-      .toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Render-Lab metal and canvas prints typically take 2–4 business days/,
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '24x32'})).toHaveAttribute(
       'aria-pressed',
       'true',
@@ -453,5 +503,101 @@ describe('ProductPurchasePanel', () => {
     expect(lines[0].merchandiseId).toBe(
       'gid://shopify/ProductVariant/47375048933537',
     );
+  });
+});
+
+describe('buyer confidence commerce integration', () => {
+  it('selects a complete comparison variant, blocks the stale cart, and reviews the updated merchandise', () => {
+    mockCart.fetcher.state = 'idle';
+    mockCart.fetcher.data = undefined;
+    const metal = {
+      ...variant({amount: '109.00', id: 'metal-24'}),
+      selectedOptions: [
+        {name: 'Material', value: 'Metal'},
+        {name: 'Size', value: '24x18'},
+      ],
+    };
+    const canvas = {
+      ...variant({amount: '89.00', id: 'canvas-24'}),
+      selectedOptions: [
+        {name: 'Material', value: 'Canvas'},
+        {name: 'Size', value: '24x18'},
+      ],
+    };
+    const variants = [metal, canvas];
+    const options = [
+      {
+        name: 'Material',
+        optionValues: ['Metal', 'Canvas'].map((name) => ({
+          name,
+          exists: true,
+          available: true,
+          selected: name === 'Metal',
+          variantUriQuery: `Material=${name}&Size=24x18`,
+        })),
+      },
+    ];
+    const view = renderPanel({
+      buyerConfidence: true,
+      variants,
+      options,
+      selectedVariant: metal,
+    });
+    fireEvent.click(screen.getByRole('button', {name: /Compare all 2 prices/}));
+    const comparison = screen.getByRole('dialog');
+    expect(within(comparison).getByText('$109.00')).toBeInTheDocument();
+    expect(within(comparison).getByText('$89.00')).toBeInTheDocument();
+    fireEvent.click(
+      within(comparison).getByRole('button', {name: 'Choose Canvas, 24x18'}),
+    );
+    const params = new URLSearchParams(
+      screen.getByTestId('product-selection-query').textContent || '',
+    );
+    expect(params.get('Material')).toBe('Canvas');
+    expect(params.get('Size')).toBe('24x18');
+    expect(
+      screen.getByRole('button', {name: 'Updating selection…'}),
+    ).toBeDisabled();
+    fireEvent.click(
+      within(comparison).getByRole('button', {
+        name: 'Continue with this selection',
+      }),
+    );
+    view.rerender(
+      <MemoryRouter>
+        <Aside.Provider>
+          <ProductPurchasePanel
+            buyerConfidence
+            product={{handle: 'artwork', title: 'Artwork'}}
+            productOptions={
+              options.map((option) => ({
+                ...option,
+                optionValues: option.optionValues.map((value) => ({
+                  ...value,
+                  selected: value.name === 'Canvas',
+                })),
+              })) as MappedProductOptions[]
+            }
+            selectedVariant={canvas}
+            variants={variants}
+          />
+        </Aside.Provider>
+      </MemoryRouter>,
+    );
+    fireEvent.click(
+      screen.getByRole('button', {name: /Review your selection before adding/}),
+    );
+    const review = screen.getByRole('dialog');
+    expect(
+      within(review).getByText('Pending shipping & tax'),
+    ).toBeInTheDocument();
+    expect(
+      within(review).getByRole('button', {name: /Add to cart.*\$89.00/}),
+    ).toBeEnabled();
+    const form = review.querySelector('form');
+    const lines = JSON.parse(
+      form?.getAttribute('data-lines') || '[]',
+    ) as Array<{merchandiseId: string}>;
+    expect(lines[0].merchandiseId).toBe('canvas-24');
   });
 });
