@@ -290,6 +290,12 @@ export default function Product() {
         </div>
       </div>
 
+      <ProductDetails
+        descriptionHtml={product.descriptionHtml}
+        editorial={page.editorial}
+        variants={product.variants.nodes}
+      />
+
       {confidence ? (
         <ProductConfidenceSections
           artwork={artwork}
@@ -300,11 +306,6 @@ export default function Product() {
         />
       ) : null}
 
-      <ProductDetails
-        descriptionHtml={product.descriptionHtml}
-        editorial={page.editorial}
-        variants={product.variants.nodes}
-      />
       <Analytics.ProductView
         data={{
           products: [
