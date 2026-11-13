@@ -18,6 +18,7 @@ import {
   optionValue,
   printDimensions,
   printMaterial,
+  printIdentity,
   type ChoiceVariant,
 } from '~/lib/product-confidence';
 import {getOptionState} from '~/lib/product';
@@ -325,6 +326,7 @@ export function ProductPurchasePanel({
   const context = getProductContext(product.title, collectionTitle);
   const isStandard = presentation === 'standard';
   const confidence = buyerConfidence && isStandard;
+  const printName = printIdentity(product.title, collectionTitle);
   const baseOptions = {
     ...Object.fromEntries(
       selectedVariant?.selectedOptions.map((option) => [
@@ -366,14 +368,14 @@ export function ProductPurchasePanel({
         <>
           {identityLabel || (confidence && collectionTitle) ? (
             <p className="product-purchase__type">
-              {confidence && collectionTitle
-                ? `Series / ${collectionTitle}`
+              {confidence && printName.series
+                ? `Series / ${printName.series}`
                 : identityLabel}
             </p>
           ) : null}
           <h1 id="product-title">
             {confidence
-              ? product.title
+              ? printName.title
               : isStandard
                 ? identity.artworkTitle
                 : product.title}

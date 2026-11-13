@@ -61,6 +61,19 @@ export function formatPrintSize(value: string) {
   return size ? `${size.width} × ${size.height} in` : value;
 }
 
+export function printIdentity(title: string, collectionTitle?: string) {
+  const parts = title.split(/\s+[—–]\s+/);
+  const prefix = parts[0].replace(/\s+No\.?\s*\d+$/i, '').trim();
+  if (
+    parts.length > 1 &&
+    collectionTitle &&
+    prefix.toLowerCase() === collectionTitle.trim().toLowerCase()
+  ) {
+    return {title: parts.slice(1).join(' — '), series: parts[0]};
+  }
+  return {title, series: collectionTitle};
+}
+
 /** Only opt recognized print products into the new presentation. Apparel stays unchanged. */
 export function hasPrintChoices(variants: ReadonlyArray<ChoiceVariant>) {
   return (

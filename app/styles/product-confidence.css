@@ -1,30 +1,70 @@
 /* Scoped to recognized wall-art products. Shared cart, apparel and drop styles remain intact. */
+.product-detail.product-detail--confidence .product-gallery__stage {
+  position: relative;
+  min-height: 0;
+}
+.product-detail.product-detail--confidence
+  .product-gallery__stage
+  > .product-gallery__strip {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+.product-detail.product-detail--confidence
+  .product-gallery.product-gallery--artwork
+  .product-gallery__slide[data-active] {
+  position: absolute;
+  inset: 0;
+  height: 100% !important;
+  min-height: 0 !important;
+  width: 100%;
+  grid-template-rows: minmax(0, 1fr);
+}
+.product-detail.product-detail--confidence
+  .product-gallery.product-gallery--artwork
+  .product-gallery__slide
+  img {
+  height: 100% !important;
+  width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  min-height: 0;
+  min-width: 0;
+}
+/* The legacy commerce stylesheet fixes every option group to three columns. */
+.product-detail.product-detail--confidence
+  .product-purchase--confidence
+  .product-option__values {
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr)) !important;
+}
 .product-detail.product-detail--confidence {
   --color-gold: #c5a36a;
   --color-gold-bright: #e3c38b;
   max-width: 100rem;
   padding-top: 1.7rem;
 }
-.product-detail--confidence .product-detail__hero {
+.product-detail.product-detail--confidence .product-detail__hero {
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   gap: clamp(2rem, 4.8vw, 5rem);
   align-items: start;
 }
-.product-detail--confidence .product-detail__purchase-column {
+.product-detail.product-detail--confidence .product-detail__purchase-column {
   position: static;
 }
-.product-detail--confidence .product-gallery__layout {
+.product-detail.product-detail--confidence .product-gallery__layout {
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
 }
-.product-detail--confidence .product-gallery__stage {
+.product-detail.product-detail--confidence .product-gallery__stage {
   order: 0;
   width: 100%;
   aspect-ratio: 1.02;
   background: #10120e;
 }
-.product-detail--confidence .product-gallery__strip {
+.product-detail.product-detail--confidence .product-gallery__strip {
   height: 100%;
   width: 100%;
 }
@@ -39,7 +79,7 @@
   max-height: 100% !important;
   object-fit: contain !important;
 }
-.product-detail--confidence .product-gallery__thumbs {
+.product-detail.product-detail--confidence .product-gallery__thumbs {
   display: flex;
   order: 1;
   flex-direction: row;
@@ -48,12 +88,12 @@
   max-width: 100%;
   padding-bottom: 0.3rem;
 }
-.product-detail--confidence .product-gallery__thumb {
+.product-detail.product-detail--confidence .product-gallery__thumb {
   width: 4rem;
   height: 3.5rem;
   flex: none;
 }
-.product-detail--confidence .product-gallery__zoom-trigger {
+.product-detail.product-detail--confidence .product-gallery__zoom-trigger {
   border: 1px solid #827456;
   background: #10120ef2;
   color: var(--color-text);
@@ -75,13 +115,15 @@
   white-space: nowrap;
   min-height: 2rem;
 }
-.product-detail--confidence .product-purchase--standard h1 {
+.product-detail.product-detail--confidence .product-purchase--standard h1 {
   font-size: clamp(2.8rem, 4vw, 4.6rem);
   line-height: 1.02;
   max-width: 17ch;
   text-wrap: balance;
 }
-.product-detail--confidence .product-purchase--standard .product-price {
+.product-detail.product-detail--confidence
+  .product-purchase--standard
+  .product-price {
   margin: 1.6rem 0 0.4rem;
   font-family: var(--font-interface);
   font-size: 1.65rem;
@@ -93,14 +135,14 @@
   margin-bottom: 1.65rem;
   line-height: 1.8;
 }
-.product-detail--confidence .product-purchase__options {
+.product-detail.product-detail--confidence .product-purchase__options {
   gap: 1.65rem;
 }
-.product-detail--confidence .product-option {
+.product-detail.product-detail--confidence .product-option {
   position: relative;
   min-width: 0;
 }
-.product-detail--confidence .product-option legend {
+.product-detail.product-detail--confidence .product-option legend {
   font-size: 0.75rem !important;
   letter-spacing: 0 !important;
   text-transform: none;
@@ -120,12 +162,12 @@
   line-height: 1.6;
   min-height: 1.5rem;
 }
-.product-detail--confidence .product-option__values {
+.product-detail.product-detail--confidence .product-option__values {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
   gap: 0.6rem !important;
 }
-.product-detail--confidence .product-option__value {
+.product-detail.product-detail--confidence .product-option__value {
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -136,7 +178,8 @@
   padding: 0.9rem !important;
   text-transform: none;
 }
-.product-detail--confidence .product-option__value[data-state^='selected'] {
+.product-detail.product-detail--confidence
+  .product-option__value[data-state^='selected'] {
   background: #1b1e14 !important;
 }
 .confidence-option-description {
@@ -184,13 +227,13 @@
 .confidence-selection-summary > span:first-child {
   color: var(--color-text-muted);
 }
-.product-detail--confidence .product-purchase__status {
+.product-detail.product-detail--confidence .product-purchase__status {
   border: 0;
   padding-bottom: 0;
   margin-top: 0.8rem;
   font-size: 0.65rem;
 }
-.product-detail--confidence .product-purchase__add {
+.product-detail.product-detail--confidence .product-purchase__add {
   min-height: 3.35rem;
   font-size: 0.72rem;
   letter-spacing: 0.05em;
@@ -209,32 +252,35 @@
 .confidence-review-link:disabled {
   opacity: 0.5;
 }
-.product-detail--confidence .product-purchase__assurances {
+.product-detail.product-detail--confidence .product-purchase__assurances {
   grid-template-columns: 1fr;
   gap: 0.8rem;
   border-bottom: 0;
 }
-.product-detail--confidence .product-purchase__assurances li {
+.product-detail.product-detail--confidence .product-purchase__assurances li {
   padding: 0;
   border: 0;
   gap: 0.25rem;
 }
-.product-detail--confidence .product-purchase__assurances li + li {
+.product-detail.product-detail--confidence
+  .product-purchase__assurances
+  li
+  + li {
   border: 0;
   padding-top: 0;
 }
-.product-detail--confidence .product-purchase__assurances span {
+.product-detail.product-detail--confidence .product-purchase__assurances span {
   font-size: 0.7rem;
   letter-spacing: 0;
   text-transform: none;
 }
-.product-detail--confidence .product-purchase__assurances small,
-.product-detail--confidence .product-purchase__guide,
-.product-detail--confidence .product-purchase__returns {
+.product-detail.product-detail--confidence .product-purchase__assurances small,
+.product-detail.product-detail--confidence .product-purchase__guide,
+.product-detail.product-detail--confidence .product-purchase__returns {
   font-size: 0.7rem;
   line-height: 1.85;
 }
-.product-detail--confidence .product-purchase__guide {
+.product-detail.product-detail--confidence .product-purchase__guide {
   margin-top: 0.8rem;
 }
 .confidence-sections {
@@ -605,7 +651,7 @@
   padding: 0 0 1.3rem;
   font-size: 0.75rem;
 }
-.product-detail--confidence .product-details {
+.product-detail.product-detail--confidence .product-details {
   width: 100%;
   margin-top: 5rem;
 }
@@ -831,11 +877,11 @@
   cursor: not-allowed;
 }
 @media (max-width: 70rem) {
-  .product-detail--confidence .product-detail__hero {
+  .product-detail.product-detail--confidence .product-detail__hero {
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
   }
-  .product-detail--confidence .product-gallery__stage {
+  .product-detail.product-detail--confidence .product-gallery__stage {
     aspect-ratio: 0.8;
   }
   .confidence-section-heading {
@@ -855,20 +901,20 @@
   }
 }
 @media (max-width: 56rem) {
-  .product-detail--confidence .product-detail__hero {
+  .product-detail.product-detail--confidence .product-detail__hero {
     grid-template-columns: 1fr;
   }
-  .product-detail--confidence .product-gallery__stage {
+  .product-detail.product-detail--confidence .product-gallery__stage {
     aspect-ratio: 1.15;
   }
-  .product-detail--confidence .product-gallery__thumbs {
+  .product-detail.product-detail--confidence .product-gallery__thumbs {
     display: flex;
   }
-  .product-detail--confidence .product-purchase--standard h1 {
+  .product-detail.product-detail--confidence .product-purchase--standard h1 {
     font-size: clamp(2.8rem, 8vw, 4rem);
     max-width: 18ch;
   }
-  .product-detail--confidence .product-option__values {
+  .product-detail.product-detail--confidence .product-option__values {
     grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
   }
   .confidence-section-heading {
@@ -914,13 +960,13 @@
   .product-detail.product-detail--confidence {
     padding-top: 1.2rem;
   }
-  .product-detail--confidence .product-detail__hero {
+  .product-detail.product-detail--confidence .product-detail__hero {
     gap: 2rem;
   }
-  .product-detail--confidence .product-gallery__stage {
+  .product-detail.product-detail--confidence .product-gallery__stage {
     aspect-ratio: 1.02;
   }
-  .product-detail--confidence .product-gallery__thumb {
+  .product-detail.product-detail--confidence .product-gallery__thumb {
     width: 3.6rem;
     height: 3rem;
   }
@@ -933,23 +979,25 @@
     min-width: 3.5rem;
     text-align: right;
   }
-  .product-detail--confidence .product-purchase--standard h1 {
+  .product-detail.product-detail--confidence .product-purchase--standard h1 {
     font-size: 3.3rem;
     max-width: 100%;
   }
-  .product-detail--confidence .product-purchase--standard .product-price {
+  .product-detail.product-detail--confidence
+    .product-purchase--standard
+    .product-price {
     margin-top: 1.3rem;
   }
   .confidence-price-note {
     font-size: 0.68rem;
   }
-  .product-detail--confidence .product-option legend {
+  .product-detail.product-detail--confidence .product-option legend {
     font-size: 0.75rem !important;
   }
   .confidence-option-guide {
     font-size: 0.62rem;
   }
-  .product-detail--confidence .product-option__value {
+  .product-detail.product-detail--confidence .product-option__value {
     font-size: 0.75rem;
     padding: 0.8rem !important;
   }
@@ -1040,7 +1088,7 @@
   .confidence-delivery p {
     font-size: 0.75rem;
   }
-  .product-detail--confidence .product-details {
+  .product-detail.product-detail--confidence .product-details {
     margin-top: 3.7rem;
   }
   .confidence-dialog {
@@ -1102,7 +1150,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .product-detail--confidence *,
+  .product-detail.product-detail--confidence *,
   .confidence-dialog,
   .confidence-zoom {
     scroll-behavior: auto !important;

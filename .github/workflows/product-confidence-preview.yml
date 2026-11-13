@@ -40,8 +40,8 @@ jobs:
           import fs from 'node:fs';
           const {url} = JSON.parse(fs.readFileSync('h2_deploy_log.json', 'utf8'));
           const parsed = new URL(url);
-          if (parsed.protocol !== 'https:' || !parsed.hostname.endsWith('.oxygen.run')) {
-            throw new Error('Expected an Oxygen preview URL; refusing a production URL');
+          if (parsed.protocol !== 'https:' || ['render-lab.org', 'www.render-lab.org', 'checkout.render-lab.org'].includes(parsed.hostname)) {
+            throw new Error('Preview command returned an unexpected production URL');
           }
           const previewUrl = parsed.origin + parsed.pathname;
           console.log('Oxygen preview: ' + previewUrl);
