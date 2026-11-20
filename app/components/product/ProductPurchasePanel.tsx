@@ -325,7 +325,10 @@ export function ProductPurchasePanel({
   const identity = splitProductIdentity(product.title);
   const context = getProductContext(product.title, collectionTitle);
   const isStandard = presentation === 'standard';
-  const confidence = buyerConfidence && isStandard;
+  const isApparel = /hoodie|sweatshirt|shirt|apparel|garment|tee|fleece/i.test(
+    product.productType ?? '',
+  );
+  const confidence = buyerConfidence && isStandard && !isApparel;
   const printName = printIdentity(product.title, collectionTitle);
   const baseOptions = {
     ...Object.fromEntries(
@@ -406,7 +409,7 @@ export function ProductPurchasePanel({
                 {/^(material|finish)$/i.test(option.name)
                   ? 'Material'
                   : /^size$/i.test(option.name)
-                    ? 'Size (inches)'
+                    ? isApparel ? 'Size' : 'Size (inches)'
                     : option.name}
               </legend>
               {confidence && /^(material|finish)$/i.test(option.name) ? (
