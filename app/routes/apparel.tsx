@@ -1,127 +1,105 @@
-import {Analytics, Image, Money, Pagination, getPaginationVariables} from '@shopify/hydrogen';
+import {Image} from '@shopify/hydrogen';
 import {Link, useLoaderData} from 'react-router';
-import type {ApparelCollectionQuery} from 'storefrontapi.generated';
+import type {ApparelCategoryDirectoryQuery} from 'storefrontapi.generated';
 import type {Route} from './+types/apparel';
+import {APPAREL_CATEGORIES} from '~/lib/apparel-categories';
 import {getProductionUrl, getStorefrontEnvironment} from '~/lib/config';
-import {apparelCardPrice, apparelListingState} from '~/lib/apparel';
-import {PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
 import apparelStyles from '~/styles/apparel.css?url';
 
-const COLLECTION_HANDLE = 'hoodies';
-const APPAREL_TITLE = 'Graphic Hoodies & Artist-Designed Apparel | Render-Lab';
-const APPAREL_DESCRIPTION =
-  'Explore Render-Lab artwork on clothing. Browse available graphic hoodies, compare prices, and find sizing details for each design.';
-
-type ApparelProduct = NonNullable<ApparelCollectionQuery['collection']>['products']['nodes'][number];
+const TITLE = 'Shop Apparel by Category | Render-Lab';
+const DESCRIPTION =
+  'Shop artist-designed clothing at Render-Lab. Explore graphic hoodies and other garment categories as they become available.';
 
 export const links = () => [{rel: 'stylesheet', href: apparelStyles}];
 
-export const meta: Route.MetaFunction = ({data, location}) => {
-  const search = new URLSearchParams(location.search);
-  const cursor = search.get('cursor');
-  const direction = search.get('direction');
-  const pagination = cursor
-    ? '?' + new URLSearchParams({
-        cursor,
-        ...(direction ? {direction} : {}),
-      }).toString()
-    : '';
-  const canonical = getProductionUrl('/apparel' + pagination);
-  const heroImage = data?.heroImage;
-
+export const meta: Route.MetaFunction = ({data}) => {
+  const canonical = getProductionUrl('/apparel');
+  const image = data?.heroImage;
   return [
-    {title: APPAREL_TITLE},
-    {name: 'description', content: APPAREL_DESCRIPTION},
+    {title: TITLE},
+    {name: 'description', content: DESCRIPTION},
     {tagName: 'link', rel: 'canonical', href: canonical},
-    ...(!data?.hasPurchasableProducts ? [{name: 'robots', content: 'noindex,follow'}] : []),
-    {property: 'og:title', content: APPAREL_TITLE},
-    {property: 'og:description', content: APPAREL_DESCRIPTION},
+    ...(!data?.categories?.length ? [{name: 'robots', content: 'noindex,follow'}] : []),
+    {property: 'og:title', content: TITLE},
+    {property: 'og:description', content: DESCRIPTION},
     {property: 'og:type', content: 'website'},
     {property: 'og:url', content: canonical},
-    ...(heroImage?.url
-      ? [
-          {property: 'og:image', content: heroImage.url},
-          {property: 'og:image:alt', content: heroImage.altText || 'Render-Lab graphic hoodie front view'},
-        ]
-      : []),
+    ...(image?.url ? [
+      {property: 'og:image', content: image.url},
+      {property: 'og:image:alt', content: image.altText || 'Render-Lab artist-designed clothing'},
+    ] : []),
   ];
 };
 
-export async function loader({context, request}: Route.LoaderArgs) {
-  const pagination = getPaginationVariables(request, {pageBy: 12});
-  const {collection} = await context.storefront.query(APPAREL_COLLECTION_QUERY, {
-    cache: context.storefront.CacheShort(),
-    variables: {handle: COLLECTION_HANDLE, ...pagination},
-  });
-  const products = collection?.products.nodes ?? [];
-  const {hasPublishedProducts, hasPurchasableProducts} = apparelListingState(products);
+type ShopifyCategoryCollection = NonNullable<ApparelCategoryDirectoryQuery['hoodies']>;
 
-  // No public "coming soon" shop when Shopify provides no published garments.
-  // Preview may still render a safe empty state for development and review.
-  if (!hasPublishedProducts && getStorefrontEnvironment(request.url) === 'production') {
+export async function loader({context, request}: Route.LoaderArgs) {
+  const result = await context.storefront.query(APPAREL_CATEGORY_DIRECTORY_QUERY, {
+    cache: context.storefront.CacheShort(),
+  });
+
+  const found: ReadonlyArray<{
+    category: (typeof APPAREL_CATEGORIES)[number];
+    collection: ShopifyCategoryCollection | null;
+  }> = [
+    {category: APPAREL_CATEGORIES[0], collection: result.hoodies},
+    {category: APPAREL_CATEGORIES[1], collection: result.tShirts},
+    {category: APPAREL_CATEGORIES[2], collection: result.sweatshirts},
+    {category: APPAREL_CATEGORIES[3], collection: result.jackets},
+  ];
+  // Never advertise empty, draft or unlisted Shopify collections to customers.
+  const categories = found.flatMap(({category, collection}) => {
+    if (!collection?.products.nodes.length) return [];
+    const products = collection.products.nodes;
+    const featured = products.find((p) => p.availableForSale && p.featuredImage)
+      ?? products.find((p) => p.featuredImage) ?? null;
+    return [{
+      ...category,
+      collectionId: collection.id,
+      image: featured?.featuredImage ?? null,
+      hasPurchasableProducts: products.some((p) => p.availableForSale),
+    }];
+  });
+
+  if (!categories.length && getStorefrontEnvironment(request.url) === 'production') {
     throw new Response('Apparel is not yet available', {status: 404});
   }
 
-  // Choose a real garment photograph. A collection banner is not a valid
-  // substitute for the front of a purchasable product.
-  const leadProduct =
-    products.find((product) => product.availableForSale && product.featuredImage) ??
-    products.find((product) => product.featuredImage) ??
-    null;
-
-  return {
-    collectionId: collection?.id ?? null,
-    heroImage: leadProduct?.featuredImage ?? null,
-    leadProductHandle: leadProduct?.availableForSale ? leadProduct.handle : null,
-    hasPurchasableProducts,
-    products: {nodes: products, pageInfo: collection?.products.pageInfo ?? {
-      hasNextPage: false,
-      hasPreviousPage: false,
-      startCursor: null,
-      endCursor: null,
-    }},
-  };
+  const heroImage = categories.find((c) => c.hasPurchasableProducts && c.image)?.image
+    ?? categories.find((c) => c.image)?.image ?? null;
+  return {categories, heroImage};
 }
 
-export default function ApparelPage() {
-  const {collectionId, heroImage, leadProductHandle, hasPurchasableProducts, products} =
-    useLoaderData<typeof loader>();
-  const singleStyle = products.nodes.length === 1 && hasPurchasableProducts;
-  const leadProduct = singleStyle ? products.nodes[0] : null;
+export default function ApparelDepartment() {
+  const {categories, heroImage} = useLoaderData<typeof loader>();
 
   return (
-    <div className="apparel-page">
+    <div className="apparel-page apparel-department">
       <section className="apparel-hero" aria-labelledby="apparel-heading">
         <div className="apparel-hero__copy">
-          <p className="apparel-kicker">Render-Lab / Apparel</p>
+          <p className="apparel-kicker">Render-Lab / Clothing</p>
           <h1 id="apparel-heading">Art you <em>wear.</em></h1>
           <p className="apparel-hero__description">
-            Original graphic artwork on clothing. See each design on the garment,
-            then choose your size on its product page.
+            A home for wearable artwork, organized by garment. Explore each
+            category for its own designs, sizes and material details.
           </p>
-          {hasPurchasableProducts ? (
-            singleStyle && leadProduct ? (
-              <Link className="apparel-hero__cta" prefetch="intent" to={'/products/' + leadProduct.handle}>
-                View {leadProduct.title} <span aria-hidden="true">↗</span>
-              </Link>
-            ) : (
-              <a className="apparel-hero__cta" href="#garments">
-                Shop the collection <span aria-hidden="true">↓</span>
-              </a>
-            )
+          {categories.length ? (
+            <a className="apparel-hero__cta" href="#apparel-categories">
+              Shop by category <span aria-hidden="true">↓</span>
+            </a>
           ) : (
             <p className="apparel-hero__status" role="status">
-              This release is not yet available to purchase.
+              Apparel is being prepared for release.
             </p>
           )}
         </div>
         {heroImage ? (
           <div className="apparel-hero__visual">
             <Image
-              alt={heroImage.altText || 'Front view of a Render-Lab graphic hoodie'}
+              alt={heroImage.altText || 'Render-Lab graphic apparel'}
               data={heroImage}
               loading="eager"
-              sizes="(min-width: 70rem) 50vw, (min-width: 47rem) 50vw, 100vw"
+              sizes="(min-width: 47rem) 50vw, 100vw"
             />
           </div>
         ) : (
@@ -131,66 +109,72 @@ export default function ApparelPage() {
         )}
       </section>
 
-      <section className="apparel-shop container container--standard" id="garments">
+      <section
+        className="apparel-shop apparel-category-section container container--standard"
+        id="apparel-categories"
+        aria-labelledby="apparel-categories-title"
+      >
         <div className="apparel-section-heading">
           <div>
-            <p className="apparel-kicker">01 / The collection</p>
-            <h2>Shop apparel</h2>
+            <p className="apparel-kicker">01 / Clothing categories</p>
+            <h2 id="apparel-categories-title">Shop by category</h2>
           </div>
         </div>
-
-        {products.nodes.length ? (
-          <Pagination connection={products}>
-            {({nodes, PreviousLink, NextLink, hasPreviousPage, hasNextPage, isLoading}) => (
-              <div className="apparel-pagination">
-                {hasPreviousPage ? (
-                  <PreviousLink className="apparel-pagination__button">
-                    {isLoading ? 'Loading…' : 'Previous designs'}
-                  </PreviousLink>
-                ) : null}
-                <div className={'apparel-grid' + (singleStyle ? ' apparel-grid--single' : '')}>
-                  {nodes.map((product, index) => (
-                    <ApparelCard key={product.id} product={product} loading={index === 0 && !heroImage ? 'eager' : 'lazy'} />
-                  ))}
-                </div>
-                {hasNextPage ? (
-                  <NextLink className="apparel-pagination__button">
-                    {isLoading ? 'Loading…' : 'Load more designs'}
-                  </NextLink>
-                ) : null}
-              </div>
-            )}
-          </Pagination>
+        <p className="apparel-category-intro">
+          Find the garment you want first, then explore the artwork. Only
+          categories with published products are shown.
+        </p>
+        {categories.length ? (
+          <div className={'apparel-category-grid' + (categories.length === 1 ? ' apparel-category-grid--single' : '')}>
+            {categories.map((category, index) => (
+              <article className="apparel-category-card" key={category.slug}>
+                <Link to={'/apparel/' + category.slug} prefetch="intent">
+                  <div className="apparel-category-card__media">
+                    {category.image ? (
+                      <Image
+                        alt={category.image.altText || 'Explore ' + category.title}
+                        data={category.image}
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        sizes="(min-width: 70rem) 42vw, (min-width: 47rem) 50vw, 100vw"
+                      />
+                    ) : (
+                      <span>Render-Lab / {category.title}</span>
+                    )}
+                  </div>
+                  <div className="apparel-category-card__info">
+                    <p className="apparel-kicker">Clothing / {category.title}</p>
+                    <h3>{category.title}</h3>
+                    <p>{category.description}</p>
+                    <span className="apparel-category-card__action">
+                      Explore {category.title.toLowerCase()} <span aria-hidden="true">↗</span>
+                    </span>
+                  </div>
+                </Link>
+              </article>
+            ))}
+          </div>
         ) : (
           <div className="apparel-empty">
-            <h3>Apparel is being prepared.</h3>
-            <p>Products will appear when they are published and ready for shoppers.</p>
+            <h3>Apparel categories are being prepared.</h3>
+            <p>New categories will appear once their products are ready.</p>
           </div>
         )}
+        <p className="apparel-category-footnote">
+          More garment categories will be added as new designs become available.
+        </p>
       </section>
 
       <section className="apparel-standards" aria-labelledby="apparel-standards-heading">
         <div className="container container--editorial apparel-standards__inner">
           <div className="apparel-standards__heading">
-            <p className="apparel-kicker">02 / Before you buy</p>
-            <h2 id="apparel-standards-heading">Fit and garment details</h2>
+            <p className="apparel-kicker">02 / Good to know</p>
+            <h2 id="apparel-standards-heading">Find your fit.</h2>
           </div>
           <div className="apparel-standards__items">
             <p>
-              Sizes vary by garment. Open a design to review its available options,
-              measurements where supplied, fabric and care details.
+              Sizing, fabric and production times vary by garment. Visit a
+              category and open a product to see its specific size guide and details.
             </p>
-            <p>
-              Made to order. Estimated production takes 2–7 business days,
-              followed by standard shipping of 6–9 business days in the
-              contiguous U.S. or 13–16 business days to U.S. remote areas.
-              These are estimates, not guaranteed delivery dates.
-            </p>
-            {leadProductHandle ? (
-              <Link to={'/products/' + leadProductHandle + '#garment-size-guide'}>
-                View garment sizes and fit ↗
-              </Link>
-            ) : null}
             <div className="apparel-standards__links">
               <Link to="/policies/shipping-policy">Shipping information ↗</Link>
               <Link to="/policies/refund-policy">Returns policy ↗</Link>
@@ -198,92 +182,26 @@ export default function ApparelPage() {
           </div>
         </div>
       </section>
-      {collectionId && products.nodes.length > 0 ? (
-        <Analytics.CollectionView data={{collection: {id: collectionId, handle: COLLECTION_HANDLE}}} />
-      ) : null}
     </div>
   );
 }
 
-function ApparelCard({
-  product,
-  loading,
-}: {
-  product: ApparelProduct;
-  loading: 'eager' | 'lazy';
-}) {
-  const price = apparelCardPrice({
-    min: product.priceRange.minVariantPrice,
-    max: product.priceRange.maxVariantPrice,
-    firstAvailable: product.selectedOrFirstAvailableVariant?.availableForSale
-      ? product.selectedOrFirstAvailableVariant.price
-      : null,
-    availableForSale: product.availableForSale,
-  });
-  return (
-    <article className="apparel-card">
-      <Link prefetch="intent" to={'/products/' + product.handle}>
-        <div className="apparel-card__media">
-          {product.featuredImage ? (
-            <Image
-              alt={product.featuredImage.altText || product.title + ' graphic hoodie front view'}
-              data={product.featuredImage}
-              loading={loading}
-              sizes="(min-width: 70rem) 30vw, (min-width: 47rem) 45vw, (min-width: 27rem) 46vw, 100vw"
-            />
-          ) : (
-            <span className="apparel-card__no-image">Photo not available</span>
-          )}
-          {!product.availableForSale ? (
-            <span className="apparel-card__soldout">Currently unavailable</span>
-          ) : null}
-        </div>
-        <div className="apparel-card__details">
-          <div>
-            <p className="apparel-card__eyebrow">Graphic hoodie</p>
-            <h3>{product.title}</h3>
-          </div>
-          <p className="apparel-card__price">
-            {price.amount ? (
-              <>{price.label ? price.label + ' ' : ''}<Money data={price.amount} /></>
-            ) : (
-              'See pricing and size options'
-            )}
-          </p>
-          <span className="apparel-card__fit">View sizes and fit details ↗</span>
-        </div>
-      </Link>
-    </article>
-  );
-}
-
-const APPAREL_COLLECTION_QUERY = `#graphql
-  query ApparelCollection(
-    $handle: String!
-    $country: CountryCode
-    $language: LanguageCode
-    $first: Int
-    $last: Int
-    $startCursor: String
-    $endCursor: String
-  ) @inContext(country: $country, language: $language) {
-    collection(handle: $handle) {
-      id
-      handle
-      title
-      products(first: $first, last: $last, before: $startCursor, after: $endCursor) {
-        nodes {
-          ...ProductCard
-          productType
-          availableForSale
-          selectedOrFirstAvailableVariant {
-            availableForSale
-            price {amount currencyCode}
-          }
-        }
-        pageInfo {hasPreviousPage hasNextPage startCursor endCursor}
+const APPAREL_CATEGORY_DIRECTORY_QUERY = `#graphql
+  query ApparelCategoryDirectory($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    hoodies: collection(handle: "hoodies") { ...CategoryPreview }
+    tShirts: collection(handle: "t-shirts") { ...CategoryPreview }
+    sweatshirts: collection(handle: "sweatshirts") { ...CategoryPreview }
+    jackets: collection(handle: "jackets") { ...CategoryPreview }
+  }
+  fragment CategoryPreview on Collection {
+    id
+    products(first: 8) {
+      nodes {
+        id
+        availableForSale
+        featuredImage { url altText width height }
       }
     }
   }
-  ${PRODUCT_CARD_FRAGMENT}
 ` as const;
