@@ -40,6 +40,21 @@ async function waitSelected(expected) {
 }
 
 try {
+  await load('/apparel');
+  assert.equal(await page.locator('nav[aria-label="Primary"] a[href="/apparel"]').count(),1,
+    'Apparel must be discoverable in desktop navigation');
+  assert.equal(await page.locator('nav[aria-label="Mobile navigation"] a[href="/apparel"]').count(),1,
+    'Apparel must be discoverable in mobile navigation');
+  assert.equal(await page.locator('footer.site-footer a[href="/apparel"]').count(),1,
+    'Apparel must be discoverable in footer');
+  const aliasResponse=await page.goto(new URL('/collections/hoodies',deploymentUrl).toString(), {
+    waitUntil:'domcontentloaded',timeout:45000,
+  });
+  assert.equal(aliasResponse?.status(),200);
+  assert.equal(new URL(page.url()).pathname,'/apparel',
+    'Published Shopify collection must redirect to canonical apparel route');
+  console.log('PASS Apparel discovery in navigation/footer and /collections/hoodies canonical redirect');
+
   for (const item of items) {
     await load('/products/' + item.handle);
     assert.equal(await page.locator('.product-purchase__add').first().isDisabled(), true,
