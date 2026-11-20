@@ -1,19 +1,20 @@
 import {describe, expect, it} from 'vitest';
-import {apparelCardPrice, isGarmentProductType, purchasableApparel} from './apparel';
+import {apparelCardPrice, apparelListingState, isGarmentProductType} from './apparel';
 
 describe('apparel launch safety', () => {
-  it('excludes unavailable items without changing order', () => {
-    const result = purchasableApparel([
-      {id: 'draft', availableForSale: false},
-      {id: 'a', availableForSale: true},
-      {id: 'b', availableForSale: true},
-    ]);
-    expect(result.map((product) => product.id)).toEqual(['a', 'b']);
-  });
-
-  it('shows an empty assortment when nothing can be purchased', () => {
-    expect(purchasableApparel([])).toEqual([]);
-    expect(purchasableApparel([{availableForSale: false}])).toEqual([]);
+  it('keeps published sold-out garments in the assortment', () => {
+    expect(apparelListingState([{availableForSale: false}])).toEqual({
+      hasPublishedProducts: true,
+      hasPurchasableProducts: false,
+    });
+    expect(apparelListingState([])).toEqual({
+      hasPublishedProducts: false,
+      hasPurchasableProducts: false,
+    });
+    expect(apparelListingState([{availableForSale: false}, {availableForSale: true}])).toEqual({
+      hasPublishedProducts: true,
+      hasPurchasableProducts: true,
+    });
   });
 
   it('uses exact prices when size prices are fixed', () => {
