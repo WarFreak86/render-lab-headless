@@ -43,8 +43,11 @@ try {
   await load('/apparel');
   assert.equal(await page.locator('nav[aria-label="Primary"] a[href="/apparel"]').count(),1,
     'Apparel must be discoverable in desktop navigation');
+  await page.getByRole('button',{name:'Open menu'}).click();
+  await page.locator('nav[aria-label="Mobile navigation"]').waitFor({state:'visible'});
   assert.equal(await page.locator('nav[aria-label="Mobile navigation"] a[href="/apparel"]').count(),1,
-    'Apparel must be discoverable in mobile navigation');
+    'Apparel must be discoverable in mobile navigation after opening the menu');
+  await page.keyboard.press('Escape');
   assert.equal(await page.locator('footer.site-footer a[href="/apparel"]').count(),1,
     'Apparel must be discoverable in footer');
   const aliasResponse=await page.goto(new URL('/collections/hoodies',deploymentUrl).toString(), {
