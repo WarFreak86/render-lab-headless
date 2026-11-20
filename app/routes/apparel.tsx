@@ -2,6 +2,7 @@ import {Analytics, Image, Money} from '@shopify/hydrogen';
 import {Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/apparel';
 import {getProductionUrl} from '~/lib/config';
+import {purchasableApparel} from '~/lib/apparel';
 import apparelStyles from '~/styles/apparel.css?url';
 
 const HOODIE_COLLECTION_HANDLE = 'hoodies';
@@ -42,9 +43,7 @@ export async function loader({context}: Route.LoaderArgs) {
 
   // Storefront API excludes draft or unpublished merchandise. Never construct
   // public product links from Admin-only draft IDs or placeholder mockups.
-  const products = (collection?.products.nodes ?? []).filter(
-    (product) => product.availableForSale,
-  );
+  const products = purchasableApparel(collection?.products.nodes ?? []);
   const heroImage = products[0]?.featuredImage ?? collection?.image ?? null;
 
   return {
