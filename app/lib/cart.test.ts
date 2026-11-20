@@ -63,7 +63,7 @@ describe('cart commerce helpers', () => {
       applications: [
         {
           targetType: 'LINE_ITEM',
-          totalAllocatedAmount: {amount: '79.00', currencyCode: 'USD'},
+          discountedAmount: {amount: '79.00', currencyCode: 'USD'},
         },
       ],
     })).toEqual({amount: '79.00', currencyCode: 'USD'});
@@ -76,7 +76,7 @@ describe('cart commerce helpers', () => {
       applications: [
         {
           targetType: 'LINE_ITEM',
-          totalAllocatedAmount: {amount: '7.90', currencyCode: 'USD'},
+          discountedAmount: {amount: '7.90', currencyCode: 'USD'},
         },
       ],
     })).toEqual({amount: '7.90', currencyCode: 'USD'});
@@ -91,7 +91,7 @@ describe('cart commerce helpers', () => {
       total,
       applications: [{
         targetType: 'SHIPPING_LINE',
-        totalAllocatedAmount: {amount: '79.00', currencyCode: 'USD'},
+        discountedAmount: {amount: '79.00', currencyCode: 'USD'},
       }],
     })).toBeNull();
   });
@@ -102,7 +102,7 @@ describe('cart commerce helpers', () => {
       total: {amount: '74.00', currencyCode: 'USD'},
       applications: [{
         targetType: 'LINE_ITEM',
-        totalAllocatedAmount: {amount: '9.00', currencyCode: 'USD'},
+        discountedAmount: {amount: '9.00', currencyCode: 'USD'},
       }],
     })).toEqual({amount: '5.00', currencyCode: 'USD'});
   });
@@ -113,7 +113,7 @@ describe('cart commerce helpers', () => {
       total: {amount: '85.00', currencyCode: 'USD'},
       applications: [{
         targetType: 'LINE_ITEM',
-        totalAllocatedAmount: {amount: '5.00', currencyCode: 'USD'},
+        discountedAmount: {amount: '5.00', currencyCode: 'USD'},
       }],
     })).toBeNull();
     expect(getCartDiscountSavings({
@@ -121,7 +121,7 @@ describe('cart commerce helpers', () => {
       total: {amount: '0.00', currencyCode: 'EUR'},
       applications: [{
         targetType: 'LINE_ITEM',
-        totalAllocatedAmount: {amount: '79.00', currencyCode: 'USD'},
+        discountedAmount: {amount: '79.00', currencyCode: 'USD'},
       }],
     })).toBeNull();
   });
