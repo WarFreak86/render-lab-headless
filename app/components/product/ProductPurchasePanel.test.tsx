@@ -134,6 +134,10 @@ describe('ProductPurchasePanel', () => {
     });
     expect(screen.getByRole('link', {name: /View size chart and measurements/}))
       .toHaveAttribute('href', '#garment-size-guide');
+    expect(screen.getByText(/Estimated production: 2–7 business days/))
+      .toBeInTheDocument();
+    expect(screen.getByText(/13–16 to U.S. remote areas/))
+      .toBeInTheDocument();
   });
 
 
