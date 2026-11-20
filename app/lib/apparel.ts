@@ -1,11 +1,14 @@
 /**
- * Keep unavailable but published garments visible with a truthful sold-out
- * state. Drafts and unpublished products never arrive via Storefront API.
+ * The Storefront API excludes draft and unpublished products, but a published
+ * sold-out garment must still be shown honestly rather than disappearing.
  */
-export function purchasableApparel<T extends {availableForSale: boolean}>(
+export function apparelListingState<T extends {availableForSale: boolean}>(
   products: ReadonlyArray<T>,
-): T[] {
-  return products.filter((product) => product.availableForSale);
+) {
+  return {
+    hasPublishedProducts: products.length > 0,
+    hasPurchasableProducts: products.some((product) => product.availableForSale),
+  };
 }
 
 export function isGarmentProductType(productType: string | null | undefined) {
