@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  deployments: write
 
 jobs:
   validate:
@@ -30,3 +31,26 @@ jobs:
         run: npm test
       - name: Build (no deploy)
         run: npm run build
+
+      # Temporary isolated PR #79 preview; do not publish production.
+      - name: Deploy cart discount QA to Oxygen Preview
+        if: ${{ github.event.pull_request.number == 79 && github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000173485 }}
+        run: |
+          test -n "$SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN"
+          git checkout -- storefrontapi.generated.d.ts customer-accountapi.generated.d.ts
+          npx shopify hydrogen deploy --preview --auth-bypass-token --metadata-description "PR 79 discount total in cart drawer"
+
+      - name: Verify private cart preview route
+        if: ${{ github.event.pull_request.number == 79 && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          export DEPLOYMENT_URL="$(jq -r '.url // empty' h2_deploy_log.json)"
+          export AUTH_BYPASS_TOKEN="$(jq -r '.authBypassToken // empty' h2_deploy_log.json)"
+          test -n "$DEPLOYMENT_URL"
+          test -n "$AUTH_BYPASS_TOKEN"
+          curl --fail --silent --show-error --location \
+            --header "oxygen-auth-bypass-token: $AUTH_BYPASS_TOKEN" \
+            "$DEPLOYMENT_URL/cart" --output /tmp/cart-preview.html
+          grep -qi 'Your cart' /tmp/cart-preview.html
+          echo "PASS private cart route HTTP 200 with expected content"
