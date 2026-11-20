@@ -256,6 +256,7 @@ function ProductAddToCart({
 
 export function ProductPurchasePanel({
   buyerConfidence = false,
+  initialSizeSelected = false,
   scaleAvailable = false,
   selectionUpdating = false,
   variants = [],
@@ -272,6 +273,7 @@ export function ProductPurchasePanel({
   statusLabel,
 }: {
   buyerConfidence?: boolean;
+  initialSizeSelected?: boolean;
   scaleAvailable?: boolean;
   selectionUpdating?: boolean;
   variants?: ReadonlyArray<ChoiceVariant>;
@@ -290,6 +292,8 @@ export function ProductPurchasePanel({
   const navigate = useNavigate();
   const location = useLocation();
   const [dialog, setDialog] = useState<ChoiceDialogKind>(null);
+  const [sizeConfirmed, setSizeConfirmed] = useState(initialSizeSelected);
+  const previousProductHandle = useRef(product.handle);
   const lastRequestedOptions = useRef<OptionSelection | null>(null);
   const [requestedOptions, setRequestedOptions] =
     useState<OptionSelection | null>(null);
@@ -328,6 +332,16 @@ export function ProductPurchasePanel({
   const isStandard = presentation === 'standard';
   const isApparel = isGarmentProductType(product.productType);
   const confidence = buyerConfidence && isStandard && !isApparel;
+  const requiresSizeChoice = isApparel &&
+    visibleOptions.some((option) => /^size$/i.test(option.name)) &&
+    !sizeConfirmed;
+
+  useEffect(() => {
+    if (previousProductHandle.current !== product.handle) {
+      previousProductHandle.current = product.handle;
+      setSizeConfirmed(initialSizeSelected);
+    }
+  }, [product.handle, initialSizeSelected]);
   const printName = printIdentity(product.title, collectionTitle);
   const baseOptions = {
     ...Object.fromEntries(
@@ -378,7 +392,7 @@ export function ProductPurchasePanel({
           <h1 id="product-title">
             {confidence
               ? printName.title
-              : isStandard
+              : isStandard && !isApparel
                 ? identity.artworkTitle
                 : product.title}
           </h1>
@@ -398,7 +412,11 @@ export function ProductPurchasePanel({
       {visibleOptions.length > 0 ? (
         <div className="product-purchase__options">
           {visibleOptions.map((option, optionIndex) => (
-            <fieldset className="product-option" key={option.name}>
+            <fieldset
+              className="product-option"
+              id={isApparel && /^size$/i.test(option.name) ? 'garment-size' : undefined}
+              key={option.name}
+            >
               <legend>
                 {confidence ? (
                   <span className="confidence-step">
@@ -513,6 +531,9 @@ export function ProductPurchasePanel({
                       disabled={!value.exists}
                       key={value.name}
                       onClick={() => {
+                        if (isApparel && /^size$/i.test(option.name)) {
+                          setSizeConfirmed(true);
+                        }
                         if (!isSelected) {
                           const query = getNextOptionQuery(
                             value.variantUriQuery,
@@ -557,6 +578,12 @@ export function ProductPurchasePanel({
             </fieldset>
           ))}
         </div>
+      ) : null}
+
+      {requiresSizeChoice ? (
+        <p className="product-purchase__guide" aria-live="polite">
+          Select a garment size before adding to cart.
+        </p>
       ) : null}
 
       {auxiliaryAction}
@@ -607,9 +634,9 @@ export function ProductPurchasePanel({
       </div>
 
       <ProductAddToCart
-        disabledLabel={selectionPending ? 'Updating selection…' : disabledLabel}
+        disabledLabel={selectionPending ? 'Updating selection…' : requiresSizeChoice ? 'Select a size' : disabledLabel}
         product={product}
-        purchaseAllowed={purchaseAllowed && !selectionPending}
+        purchaseAllowed={purchaseAllowed && !selectionPending && !requiresSizeChoice}
         selectedVariant={selectedVariant}
       />
       {confidence ? (
@@ -653,8 +680,8 @@ export function ProductPurchasePanel({
             aria-label="Purchase information"
           >
             <li>
-              <span>Made to order</span>
-              <small>Produced after purchase</small>
+              <span>{isApparel ? 'Choose your fit' : 'Made to order'}</span>
+              <small>{isApparel ? 'Select a garment size above' : 'Produced after purchase'}</small>
             </li>
             <li>
               <span>
