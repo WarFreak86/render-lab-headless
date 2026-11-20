@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  deployments: write
 
 jobs:
   validate:
@@ -30,3 +31,12 @@ jobs:
         run: npm test
       - name: Build (no deploy)
         run: npm run build
+
+      - name: Refresh isolated PR 78 Oxygen Preview for merchant review
+        if: ${{ github.event.pull_request.number == 78 && github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000173485 }}
+        run: |
+          test -n "$SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN"
+          git checkout -- storefrontapi.generated.d.ts customer-accountapi.generated.d.ts
+          npx shopify hydrogen deploy --preview --auth-bypass-token --metadata-description "PR 78 Apparel updated delivery guidance review"
