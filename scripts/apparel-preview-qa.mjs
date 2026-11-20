@@ -63,12 +63,14 @@ try {
     const images = page.locator('.apparel-card__media img');
     const hero = page.locator('.apparel-hero__visual img');
     await hero.scrollIntoViewIfNeeded();
-    await hero.evaluate(async (img) => {
-      if (!img.complete) await new Promise((resolve) => {
-        img.addEventListener('load', resolve, {once: true});
-        img.addEventListener('error', resolve, {once: true});
-      });
-    });
+    await page.waitForFunction(
+      () => {
+        const img = document.querySelector('.apparel-hero__visual img');
+        return img && img.complete && img.naturalWidth > 0;
+      },
+      undefined,
+      {timeout: 20000},
+    );
     assert.ok(
       await hero.evaluate((img) => img.complete && img.naturalWidth > 0),
       width + 'px hero product photo must actually load',
