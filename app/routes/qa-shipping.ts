@@ -36,6 +36,16 @@ export async function action({context,request}:Route.ActionArgs) {
       const created = await context.storefront.mutate<CreatedCart>(CREATE,{
         variables:{variantId:TEST_VARIANT_ID},
       });
+      if(!created?.cartCreate){
+        const diagnosed=created as unknown as {errors?:Array<{message?:string}>;data?:unknown};
+        results.push({
+          region:test.region,phase:'create-response',
+          keys:Object.keys(created??{}),
+          messages:diagnosed.errors?.map(e=>e.message).filter(Boolean)??[],
+          hasData:Boolean(diagnosed.data),
+        });
+        continue;
+      }
       const cart = created.cartCreate.cart;
       if(!cart || created.cartCreate.userErrors.length){
         results.push({region:test.region,phase:'create',errors:created.cartCreate.userErrors});
