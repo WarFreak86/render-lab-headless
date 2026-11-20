@@ -29,33 +29,36 @@ export function getShippingProgress(
   };
 }
 
-type CartMoney = {amount: string; currencyCode: string};
+type CartMoney<TCurrency extends string> = {
+  amount?: string;
+  currencyCode?: TCurrency;
+};
 
-type CartDiscountApplication = {
-  targetType: string;
-  discountedAmount: CartMoney;
+type CartDiscountAllocation<TCurrency extends string> = {
+  targetType?: string;
+  discountedAmount?: CartMoney<TCurrency> | null;
 };
 
 /**
- * Show savings that Shopify has already priced into the cart. The subtotal
- * excludes cart-level discounts, while totalAmount reflects Shopify's latest
- * estimate. Don't infer a discount from shipping, tax, gift-card payment or
- * mismatched currencies, and don't invent a coupon percentage client-side.
- *
- * Product/automatic discount allocations can already be reflected in the
- * subtotal. Cap the displayed savings at the actual subtotal-to-total change
- * so the displayed subtotal, savings and estimated total stay consistent.
+ * Read savings already allocated and priced by Shopify, not an assumed
+ * percentage. Optimistic carts can temporarily contain partial money values,
+ * so guard them before rendering a confirmed discounted cart amount.
  */
-export function getCartDiscountSavings({
+export function getCartDiscountSavings<TCurrency extends string>({
   subtotal,
   total,
   applications,
 }: {
-  subtotal?: CartMoney | null;
-  total?: CartMoney | null;
-  applications?: ReadonlyArray<CartDiscountApplication> | null;
-}): CartMoney | null {
-  if (!subtotal || !total || subtotal.currencyCode !== total.currencyCode) {
+  subtotal?: CartMoney<TCurrency> | null;
+  total?: CartMoney<TCurrency> | null;
+  applications?: ReadonlyArray<CartDiscountAllocation<TCurrency>> | null;
+}): {amount: string; currencyCode: TCurrency} | null {
+  if (
+    !subtotal?.amount ||
+    !total?.amount ||
+    !subtotal.currencyCode ||
+    subtotal.currencyCode !== total.currencyCode
+  ) {
     return null;
   }
 
@@ -65,20 +68,24 @@ export function getCartDiscountSavings({
     return null;
   }
 
+  // CartCost.subtotalAmount excludes cart-level discounts; totalAmount is
+  // Shopify's latest estimate after applicable offers.
   const cartReductionCents = Math.max(0, subtotalCents - totalCents);
   if (!cartReductionCents) return null;
 
-  const allocatedCents = (applications ?? []).reduce((sum, application) => {
+  const allocatedCents = (applications ?? []).reduce((sum, allocation) => {
     if (
-      application.targetType !== 'LINE_ITEM' ||
-      application.discountedAmount.currencyCode !== subtotal.currencyCode
+      allocation.targetType !== 'LINE_ITEM' ||
+      allocation.discountedAmount?.currencyCode !== subtotal.currencyCode
     ) {
       return sum;
     }
-    const cents = Math.round(Number(application.discountedAmount.amount) * 100);
+    const cents = Math.round(Number(allocation.discountedAmount.amount) * 100);
     return Number.isFinite(cents) && cents > 0 ? sum + cents : sum;
   }, 0);
 
+  // Product-level discounts may already be included in the subtotal.
+  // Cap the displayed savings at the change in Shopify's own totals.
   const savingsCents = Math.min(cartReductionCents, allocatedCents);
   return savingsCents > 0
     ? {amount: (savingsCents / 100).toFixed(2), currencyCode: subtotal.currencyCode}
