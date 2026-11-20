@@ -36,7 +36,11 @@ async function waitSelected(expected) {
   assert.equal(value.products[0].variantGid, expected.id);
   assert.equal(value.products[0].variantName, expected.size);
   assert.equal(Number(value.totalValue), Number(expected.price));
-  assert.ok(await page.locator('.product-purchase__add').first().isEnabled(), 'Selected variant must be buyable');
+  await page.locator('.product-purchase__add').first().waitFor({state:'visible'});
+  await page.waitForFunction(() => {
+    const button=document.querySelector('.product-purchase__add');
+    return button && !button.disabled;
+  }, undefined, {timeout:15000});
 }
 
 try {
