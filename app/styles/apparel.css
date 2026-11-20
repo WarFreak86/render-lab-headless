@@ -563,3 +563,140 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Apparel is a department; individual clothing collections get separate routes. */
+.apparel-department .apparel-hero {
+  min-height: min(40rem, 76vh);
+}
+
+.apparel-department .apparel-hero__copy h1 {
+  max-width: 13ch;
+}
+
+.apparel-category-section {
+  scroll-margin-top: 4rem;
+}
+
+.apparel-category-intro {
+  max-width: 42rem;
+  margin: -0.65rem 0 clamp(2rem, 4vw, 3.5rem);
+  color: #c4bdb4;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.apparel-category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.2rem, 3vw, 3rem);
+}
+
+.apparel-category-grid--single {
+  grid-template-columns: minmax(0, 43rem);
+}
+
+.apparel-category-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  background: #11100e;
+}
+
+.apparel-category-card > a {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.apparel-category-card > a:focus-visible,
+.apparel-hero__copy .apparel-kicker a:focus-visible {
+  outline: 2px solid var(--color-gold-bright);
+  outline-offset: 3px;
+}
+
+.apparel-category-card__media {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 38%, #27231d, #0b0b0b 76%);
+}
+
+.apparel-category-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: clamp(1rem, 3vw, 3.5rem);
+  transition: transform 250ms ease;
+}
+
+.apparel-category-card:hover .apparel-category-card__media img,
+.apparel-category-card a:focus-visible .apparel-category-card__media img {
+  transform: scale(1.035);
+}
+
+.apparel-category-card__media > span {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.apparel-category-card__info {
+  padding: clamp(1.3rem, 3vw, 2.6rem);
+  border-top: 1px solid var(--color-border);
+}
+
+.apparel-category-card__info h3 {
+  margin: 0.55rem 0 0.65rem;
+  font-size: clamp(2rem, 3.2vw, 3.8rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.apparel-category-card__info > p:not(.apparel-kicker) {
+  max-width: 38rem;
+  margin: 0 0 1.35rem;
+  color: #c4bdb4;
+  line-height: 1.65;
+}
+
+.apparel-category-card__action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  gap: 0.65rem;
+  color: var(--color-gold-bright);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.apparel-category-footnote {
+  margin: 2.5rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+  line-height: 1.7;
+}
+
+.apparel-hero__copy .apparel-kicker a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+@media (max-width: 47rem) {
+  .apparel-department .apparel-hero {
+    min-height: unset;
+  }
+
+  .apparel-category-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .apparel-category-intro {
+    margin-top: 0;
+  }
+}
