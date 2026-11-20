@@ -44,4 +44,7 @@ jobs:
             echo "Missing Oxygen deployment token: preview deployment skipped"
             exit 1
           fi
+          # Codegen in typecheck/build changes the tracked generated d.ts; restore
+          # only generated artifacts before the clean-tree deployment guard.
+          git checkout -- storefrontapi.generated.d.ts customer-accountapi.generated.d.ts
           npx shopify hydrogen deploy --preview --metadata-description "Render-Lab Apparel PR 78 review"
