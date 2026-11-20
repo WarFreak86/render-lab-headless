@@ -26,6 +26,15 @@ export function ProductDetails({
     editorial.fabricDetails,
   );
 
+  // Shopify's supplier-supplied chart stays the source of measurement facts.
+  // Give the existing details element a stable anchor without duplicating it.
+  const garmentDescriptionHtml = garment
+    ? descriptionHtml.replace(
+        'class="sbl-size-guide"',
+        'class="sbl-size-guide" id="garment-size-guide"',
+      )
+    : descriptionHtml;
+
   return (
     <div className="product-details">
       <section
@@ -37,7 +46,10 @@ export function ProductDetails({
           <h2 id="product-overview-title">{garment ? "Design and details" : "About the work"}</h2>
         </div>
         <div className="product-details__rich">
-          <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+          <div
+            className={garment ? 'product-details__raw product-details__raw--apparel' : undefined}
+            dangerouslySetInnerHTML={{__html: garmentDescriptionHtml}}
+          />
           <ProductTechnicalSpecs variants={variants} />
         </div>
       </section>
