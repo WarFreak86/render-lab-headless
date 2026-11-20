@@ -29,6 +29,71 @@ export function getShippingProgress(
   };
 }
 
+type CartMoney<TCurrency extends string> = {
+  amount?: string;
+  currencyCode?: TCurrency;
+};
+
+type CartDiscountAllocation<TCurrency extends string> = {
+  targetType?: string;
+  discountedAmount?: CartMoney<TCurrency> | null;
+};
+
+/**
+ * Read savings already allocated and priced by Shopify, not an assumed
+ * percentage. Optimistic carts can temporarily contain partial money values,
+ * so guard them before rendering a confirmed discounted cart amount.
+ */
+export function getCartDiscountSavings<TCurrency extends string>({
+  subtotal,
+  total,
+  applications,
+}: {
+  subtotal?: CartMoney<TCurrency> | null;
+  total?: CartMoney<TCurrency> | null;
+  applications?: ReadonlyArray<CartDiscountAllocation<TCurrency>> | null;
+}): {amount: string; currencyCode: TCurrency} | null {
+  if (
+    !subtotal?.amount ||
+    !total?.amount ||
+    !subtotal.currencyCode ||
+    subtotal.currencyCode !== total.currencyCode
+  ) {
+    return null;
+  }
+
+  const subtotalCents = Math.round(Number(subtotal.amount) * 100);
+  const totalCents = Math.round(Number(total.amount) * 100);
+  if (!Number.isFinite(subtotalCents) || !Number.isFinite(totalCents)) {
+    return null;
+  }
+
+  // CartCost.subtotalAmount excludes cart-level discounts; totalAmount is
+  // Shopify's latest estimate after applicable offers.
+  const cartReductionCents = Math.max(0, subtotalCents - totalCents);
+  if (!cartReductionCents) return null;
+
+  const allocatedCents = (applications ?? []).reduce((sum, allocation) => {
+    const amount = allocation.discountedAmount;
+    if (
+      allocation.targetType !== 'LINE_ITEM' ||
+      !amount?.amount ||
+      amount.currencyCode !== subtotal.currencyCode
+    ) {
+      return sum;
+    }
+    const cents = Math.round(Number(amount.amount) * 100);
+    return Number.isFinite(cents) && cents > 0 ? sum + cents : sum;
+  }, 0);
+
+  // Product-level discounts may already be included in the subtotal.
+  // Cap the displayed savings at the change in Shopify's own totals.
+  const savingsCents = Math.min(cartReductionCents, allocatedCents);
+  return savingsCents > 0
+    ? {amount: (savingsCents / 100).toFixed(2), currencyCode: subtotal.currencyCode}
+    : null;
+}
+
 export function getCartMutationMessage(data: unknown) {
   if (!data || typeof data !== 'object') return undefined;
   const result = data as {errors?: unknown; warnings?: unknown};

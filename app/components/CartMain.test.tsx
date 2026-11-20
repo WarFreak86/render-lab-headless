@@ -218,7 +218,12 @@ describe('premium cart', () => {
 
   it('uses Shopify subtotal and checkout URL without client arithmetic', () => {
     renderCart(cart({subtotal: '127.50'}));
-    expect(screen.getByText('$127.50')).toHaveAttribute('data-money', '127.50');
+    expect(
+      document.querySelector('.cart-summary__subtotal [data-money="127.50"]'),
+    ).toBeInTheDocument();
+    expect(
+      document.querySelector('.cart-summary__total [data-money="127.50"]'),
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', {name: 'Checkout'})).toHaveAttribute(
       'href',
       'https://render-lab-3.myshopify.com/cart/c/test',

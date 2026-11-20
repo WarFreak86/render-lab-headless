@@ -1,6 +1,7 @@
 import {
   canQuickAddRecommendation,
   getCartMutationMessage,
+  getCartDiscountSavings,
   getShippingProgress,
   isMeaningfulCartOption,
   isStableShopifyLineId,
@@ -53,6 +54,76 @@ describe('cart commerce helpers', () => {
   it('permits quick-add architecture only for one available variant', () => {
     expect(canQuickAddRecommendation([{availableForSale: true}])).toBe(true);
     expect(canQuickAddRecommendation([{availableForSale: false}])).toBe(false);
+  });
+
+  it('shows a full-code discount against the subtotal and Shopify total', () => {
+    expect(getCartDiscountSavings({
+      subtotal: {amount: '79.00', currencyCode: 'USD'},
+      total: {amount: '0.00', currencyCode: 'USD'},
+      applications: [
+        {
+          targetType: 'LINE_ITEM',
+          discountedAmount: {amount: '79.00', currencyCode: 'USD'},
+        },
+      ],
+    })).toEqual({amount: '79.00', currencyCode: 'USD'});
+  });
+
+  it('shows an ordinary percentage discount without guessing its rate', () => {
+    expect(getCartDiscountSavings({
+      subtotal: {amount: '79.00', currencyCode: 'USD'},
+      total: {amount: '71.10', currencyCode: 'USD'},
+      applications: [
+        {
+          targetType: 'LINE_ITEM',
+          discountedAmount: {amount: '7.90', currencyCode: 'USD'},
+        },
+      ],
+    })).toEqual({amount: '7.90', currencyCode: 'USD'});
+  });
+
+  it('does not invent savings from shipping codes or gift-card payments', () => {
+    const subtotal = {amount: '79.00', currencyCode: 'USD'};
+    const total = {amount: '0.00', currencyCode: 'USD'};
+    expect(getCartDiscountSavings({subtotal, total, applications: []})).toBeNull();
+    expect(getCartDiscountSavings({
+      subtotal,
+      total,
+      applications: [{
+        targetType: 'SHIPPING_LINE',
+        discountedAmount: {amount: '79.00', currencyCode: 'USD'},
+      }],
+    })).toBeNull();
+  });
+
+  it('caps allocation savings at the actual Shopify-reported reduction', () => {
+    expect(getCartDiscountSavings({
+      subtotal: {amount: '79.00', currencyCode: 'USD'},
+      total: {amount: '74.00', currencyCode: 'USD'},
+      applications: [{
+        targetType: 'LINE_ITEM',
+        discountedAmount: {amount: '9.00', currencyCode: 'USD'},
+      }],
+    })).toEqual({amount: '5.00', currencyCode: 'USD'});
+  });
+
+  it('does not mix currencies or display a negative discount', () => {
+    expect(getCartDiscountSavings({
+      subtotal: {amount: '79.00', currencyCode: 'USD'},
+      total: {amount: '85.00', currencyCode: 'USD'},
+      applications: [{
+        targetType: 'LINE_ITEM',
+        discountedAmount: {amount: '5.00', currencyCode: 'USD'},
+      }],
+    })).toBeNull();
+    expect(getCartDiscountSavings({
+      subtotal: {amount: '79.00', currencyCode: 'USD'},
+      total: {amount: '0.00', currencyCode: 'EUR'},
+      applications: [{
+        targetType: 'LINE_ITEM',
+        discountedAmount: {amount: '79.00', currencyCode: 'USD'},
+      }],
+    })).toBeNull();
   });
 
   it('maps inventory errors to safe cart language', () => {
