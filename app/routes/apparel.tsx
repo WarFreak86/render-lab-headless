@@ -180,6 +180,12 @@ export default function ApparelPage() {
               Sizes vary by garment. Open a design to review its available options,
               measurements where supplied, fabric and care details.
             </p>
+            <p>
+              Made to order. Estimated production takes 2–7 business days,
+              followed by standard shipping of 6–9 business days in the
+              contiguous U.S. or 13–16 business days to U.S. remote areas.
+              These are estimates, not guaranteed delivery dates.
+            </p>
             {leadProductHandle ? (
               <Link to={'/products/' + leadProductHandle + '#garment-size-guide'}>
                 View garment sizes and fit ↗
