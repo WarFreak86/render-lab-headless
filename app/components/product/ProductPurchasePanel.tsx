@@ -723,6 +723,14 @@ export function ProductPurchasePanel({
               is an estimate.
             </p>
           ) : null}
+          {isApparel ? (
+            <p className="product-purchase__guide">
+              Made to order. Estimated production: 2–7 business days, then
+              standard U.S. shipping typically takes another 6–9 business
+              days (13–16 to U.S. remote areas). Times may vary; these are
+              not guaranteed delivery dates.
+            </p>
+          ) : null}
           <p className="product-purchase__guide">
             <Link to="/policies/shipping-policy">
               Production and shipping details{' '}
