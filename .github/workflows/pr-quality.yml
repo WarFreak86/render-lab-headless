@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  deployments: write
 
 jobs:
   validate:
@@ -30,3 +31,36 @@ jobs:
         run: npm test
       - name: Build (no deploy)
         run: npm run build
+
+      # Temporary, PR-only private Oxygen QA. Remove before production review.
+      - name: Deploy category-layout preview to Oxygen
+        if: ${{ github.event.pull_request.number == 78 && github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000173485 }}
+        run: |
+          test -n "$SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN"
+          git checkout -- storefrontapi.generated.d.ts customer-accountapi.generated.d.ts
+          npx shopify hydrogen deploy --preview --auth-bypass-token --metadata-description "Apparel category hub and Hoodies PR 78 review"
+
+      - name: Install browser for apparel category QA
+        if: ${{ github.event.pull_request.number == 78 && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          npm install --no-save --ignore-scripts --legacy-peer-deps playwright
+          npx playwright install chromium
+
+      - name: Check department and Hoodies routes, breadcrumbs, redirects
+        if: ${{ github.event.pull_request.number == 78 && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          export DEPLOYMENT_URL="$(jq -r '.url // empty' h2_deploy_log.json)"
+          export AUTH_BYPASS_TOKEN="$(jq -r '.authBypassToken // empty' h2_deploy_log.json)"
+          test -n "$DEPLOYMENT_URL"
+          test -n "$AUTH_BYPASS_TOKEN"
+          node scripts/apparel-category-preview-qa.mjs
+
+      - name: Save category layout screenshots
+        if: ${{ always() && github.event.pull_request.number == 78 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: apparel-category-preview-qa
+          path: apparel-category-preview-shots/
+          if-no-files-found: warn
