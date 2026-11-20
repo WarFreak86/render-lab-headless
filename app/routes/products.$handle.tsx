@@ -27,6 +27,7 @@ import {
 } from '~/lib/product-confidence';
 import {getProductionUrl} from '~/lib/config';
 import {isGarmentProductType} from '~/lib/apparel';
+import {getApparelCategoryByProductType} from '~/lib/apparel-categories';
 import {getVariantGidFromRequest, normalizeProductPage} from '~/lib/product';
 import {PRODUCT_QUERY, PRODUCT_VARIANT_BY_ID_QUERY} from '~/lib/product-query';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
@@ -187,6 +188,7 @@ export default function Product() {
   const {product, initialSizeSelected, initialVariantImageId, initialVariantImageUrl} =
     useLoaderData<typeof loader>();
   const isGarment = isGarmentProductType(product.productType);
+  const garmentCategory = isGarment ? getApparelCategoryByProductType(product.productType) : undefined;
   const [requestedChoice, setRequestedChoice] = useState<{
     id: string;
     handle: string;
@@ -235,7 +237,12 @@ export default function Product() {
       breadcrumb: [
         {name: 'Shop', url: getProductionUrl('/collections')},
         ...(isGarment
-          ? [{name: 'Apparel', url: getProductionUrl('/apparel')}]
+          ? [
+              {name: 'Apparel', url: getProductionUrl('/apparel')},
+              ...(garmentCategory
+                ? [{name: garmentCategory.title, url: getProductionUrl('/apparel/' + garmentCategory.slug)}]
+                : []),
+            ]
           : page.breadcrumb
             ? [
                 {
@@ -264,6 +271,12 @@ export default function Product() {
           <>
             <Link to="/apparel">Apparel</Link>
             <span aria-hidden>/</span>
+            {garmentCategory ? (
+              <>
+                <Link to={'/apparel/' + garmentCategory.slug}>{garmentCategory.title}</Link>
+                <span aria-hidden>/</span>
+              </>
+            ) : null}
           </>
         ) : page.breadcrumb ? (
           <>
