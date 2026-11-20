@@ -458,3 +458,108 @@
     transition: none;
   }
 }
+
+/* Launch layout: shorten the hero and put shopping ahead of brand decoration. */
+.apparel-hero {
+  min-height: 0;
+}
+.apparel-hero__copy {
+  gap: clamp(1.15rem, 2.5vw, 1.85rem);
+  padding-top: clamp(3rem, 5vw, 5rem);
+  padding-bottom: clamp(3rem, 5vw, 5rem);
+}
+.apparel-hero__copy h1 {
+  font-size: clamp(3.5rem, 5vw, 6.5rem);
+}
+.apparel-hero__visual {
+  min-height: clamp(23rem, 35vw, 37rem);
+}
+.apparel-shop {
+  padding-top: clamp(2.5rem, 4.5vw, 4.5rem);
+}
+.apparel-grid--single {
+  grid-template-columns: minmax(0, min(100%, 26rem));
+}
+.apparel-card__details {
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.apparel-card__price {
+  margin: 0;
+  white-space: normal;
+  font-size: 0.82rem;
+}
+.apparel-card__fit {
+  color: var(--color-gold-bright);
+  font-size: 0.72rem;
+}
+.apparel-card__soldout {
+  position: absolute;
+  z-index: 1;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.45rem 0.6rem;
+  background: rgba(8, 8, 8, 0.86);
+  color: var(--color-text);
+  font-size: 0.69rem;
+}
+.apparel-standards__heading h2 {
+  max-width: 13ch;
+}
+.apparel-standards__items > p {
+  max-width: 36rem;
+  margin: 0 0 1rem;
+  color: var(--color-text-muted);
+}
+.apparel-standards__items > a,
+.apparel-standards__links a {
+  color: var(--color-gold-bright);
+  font-size: 0.84rem;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+.apparel-standards__links {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  margin-top: 1.3rem;
+  padding-top: 1.5rem !important;
+}
+.apparel-pagination__button {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  margin-top: 2rem;
+  border: 1px solid var(--color-border-strong);
+  padding: 0.75rem 1.5rem;
+  color: var(--color-text);
+}
+.apparel-pagination__button:focus-visible,
+.apparel-standards a:focus-visible {
+  outline: 2px solid var(--color-gold-bright);
+  outline-offset: 4px;
+}
+@media (max-width: 65rem) and (min-width: 47.01rem) {
+  .apparel-grid:not(.apparel-grid--single) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 47rem) {
+  .apparel-hero__visual {
+    min-height: 17rem;
+    max-height: 31rem;
+    aspect-ratio: 4 / 5;
+  }
+  .apparel-hero__copy {
+    padding-top: 2.5rem;
+    padding-bottom: 2rem;
+  }
+  .apparel-hero__copy h1 {
+    font-size: clamp(3.3rem, 12vw, 5rem);
+  }
+}
+@media (max-width: 27rem) {
+  .apparel-grid:not(.apparel-grid--single) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
