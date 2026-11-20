@@ -233,14 +233,16 @@ export default function Product() {
       variants: product.variants.nodes,
       breadcrumb: [
         {name: 'Shop', url: getProductionUrl('/collections')},
-        ...(page.breadcrumb
-          ? [
-              {
-                name: page.breadcrumb.title,
-                url: getProductionUrl(`/collections/${page.breadcrumb.handle}`),
-              },
-            ]
-          : []),
+        ...(isGarment
+          ? [{name: 'Apparel', url: getProductionUrl('/apparel')}]
+          : page.breadcrumb
+            ? [
+                {
+                  name: page.breadcrumb.title,
+                  url: getProductionUrl(`/collections/${page.breadcrumb.handle}`),
+                },
+              ]
+            : []),
         {name: product.title, url: canonical},
       ],
     }),
@@ -257,7 +259,12 @@ export default function Product() {
       <nav className="product-detail__breadcrumb" aria-label="Breadcrumb">
         <Link to="/collections">Shop</Link>
         <span aria-hidden>/</span>
-        {page.breadcrumb ? (
+        {isGarment ? (
+          <>
+            <Link to="/apparel">Apparel</Link>
+            <span aria-hidden>/</span>
+          </>
+        ) : page.breadcrumb ? (
           <>
             <Link to={`/collections/${page.breadcrumb.handle}`}>
               {page.breadcrumb.title}
