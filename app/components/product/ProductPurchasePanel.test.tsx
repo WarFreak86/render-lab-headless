@@ -75,6 +75,8 @@ function variant({
 
 function renderPanel({
   handle = 'artwork',
+  productType = 'Metal print',
+  initialSizeSelected = false,
   buyerConfidence = false,
   variants = [],
   options,
@@ -82,6 +84,8 @@ function renderPanel({
   title = 'Artwork',
 }: {
   handle?: string;
+  productType?: string;
+  initialSizeSelected?: boolean;
   buyerConfidence?: boolean;
   variants?: ChoiceVariant[];
   options: any[];
@@ -93,10 +97,11 @@ function renderPanel({
       <Aside.Provider>
         <ProductPurchasePanel
           buyerConfidence={buyerConfidence}
+          initialSizeSelected={initialSizeSelected}
           variants={variants}
           product={{
             handle,
-            productType: 'Metal print',
+            productType,
             title,
           }}
           productOptions={options}
@@ -112,6 +117,39 @@ function renderPanel({
 }
 
 describe('ProductPurchasePanel', () => {
+  it('requires deliberate garment size confirmation before purchase', () => {
+    renderPanel({
+      productType: 'Fashion Hoodie - AOP',
+      title: 'Army — Sunset Patrol Fleece Hoodie',
+      options: [{
+        name: 'Size',
+        optionValues: [
+          {name: 'Small', available: true, exists: true, selected: true, variantUriQuery: 'Size=Small'},
+          {name: 'Medium', available: true, exists: true, selected: false, variantUriQuery: 'Size=Medium'},
+        ],
+      }],
+    });
+    expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('Army — Sunset Patrol Fleece Hoodie');
+    expect(screen.getByRole('group', {name: 'Size'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Select a size'})).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', {name: 'Small'}));
+    expect(screen.getByRole('button', {name: /Add to cart.*\$80\.00/})).toBeEnabled();
+  });
+
+  it('honors a validated garment size deep link', () => {
+    renderPanel({
+      productType: 'Fashion Hoodie - AOP',
+      initialSizeSelected: true,
+      options: [{
+        name: 'Size',
+        optionValues: [
+          {name: 'Small', available: true, exists: true, selected: true, variantUriQuery: 'Size=Small'},
+        ],
+      }],
+    });
+    expect(screen.getByRole('button', {name: /Add to cart.*\$80\.00/})).toBeEnabled();
+  });
+
   it('composes rapid option clicks without restoring a stale material', () => {
     const options = [
       {
