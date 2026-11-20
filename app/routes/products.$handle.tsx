@@ -26,6 +26,7 @@ import {
   type ChoiceVariant,
 } from '~/lib/product-confidence';
 import {getProductionUrl} from '~/lib/config';
+import {isGarmentProductType} from '~/lib/apparel';
 import {getVariantGidFromRequest, normalizeProductPage} from '~/lib/product';
 import {PRODUCT_QUERY, PRODUCT_VARIANT_BY_ID_QUERY} from '~/lib/product-query';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
@@ -153,8 +154,18 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     ),
   );
 
+  const requestedSize = selectedOptions.find(({name}) => /^size$/i.test(name))?.value;
+  const initialSizeSelected = Boolean(
+    matchingVariant?.selectedOptions.some(({name}) => /^size$/i.test(name)) ||
+      (requestedSize &&
+        selectedProduct.selectedOrFirstAvailableVariant?.selectedOptions.some(
+          ({name, value}) => /^size$/i.test(name) && value === requestedSize,
+        )),
+  );
+
   return {
     product: selectedProduct,
+    initialSizeSelected,
     initialVariantImageId:
       matchingVariant || hasMatchingOption
         ? selectedProduct.selectedOrFirstAvailableVariant?.image?.id
@@ -173,7 +184,7 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
 export default function Product() {
   const navigate = useNavigate();
   const location = useLocation();
-  const {product, initialVariantImageId, initialVariantImageUrl} =
+  const {product, initialSizeSelected, initialVariantImageId, initialVariantImageUrl} =
     useLoaderData<typeof loader>();
   const [requestedChoice, setRequestedChoice] = useState<{
     id: string;
@@ -196,7 +207,8 @@ export default function Product() {
   });
 
   const page = normalizeProductPage(product);
-  const confidence = hasPrintChoices(product.variants.nodes);
+  const isGarment = isGarmentProductType(product.productType);
+  const confidence = !isGarment && hasPrintChoices(product.variants.nodes);
   const artwork = confidence ? artworkImage(page.gallery) : undefined;
   function selectVariant(variant: ChoiceVariant) {
     setRequestedChoice({id: variant.id, handle: product.handle});
@@ -236,7 +248,7 @@ export default function Product() {
 
   return (
     <article
-      className={`product-detail product-detail--editorial${confidence ? ' product-detail--confidence' : ''}`}
+      className={`product-detail product-detail--editorial${confidence ? ' product-detail--confidence' : ''}${isGarment ? ' product-detail--apparel' : ''}`}
     >
       <script
         dangerouslySetInnerHTML={{__html: jsonLdString}}
@@ -260,6 +272,7 @@ export default function Product() {
         <ProductGallery
           artwork={artwork}
           buyerConfidence={confidence}
+          presentation={isGarment ? 'apparel' : 'artwork'}
           images={page.gallery}
           initialVariantImageId={
             initialVariantImageId ?? (confidence ? selectedImageId : undefined)
@@ -275,6 +288,7 @@ export default function Product() {
         <div className="product-detail__purchase-column">
           <ProductPurchasePanel
             buyerConfidence={confidence}
+            initialSizeSelected={initialSizeSelected}
             scaleAvailable={Boolean(artwork)}
             selectionUpdating={
               requestedChoice?.handle === product.handle &&
@@ -293,6 +307,7 @@ export default function Product() {
       <ProductDetails
         descriptionHtml={product.descriptionHtml}
         editorial={page.editorial}
+        garment={isGarment}
         variants={product.variants.nodes}
       />
 
