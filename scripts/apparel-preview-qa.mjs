@@ -58,6 +58,34 @@ try {
       products.length,
       width + 'px garment images',
     );
+    // Presence in the DOM is insufficient. Lazy-loading images need to enter
+    // the viewport, fetch from Shopify CDN, then decode before visual QA.
+    const images = page.locator('.apparel-card__media img');
+    const hero = page.locator('.apparel-hero__visual img');
+    await hero.scrollIntoViewIfNeeded();
+    await hero.evaluate(async (img) => {
+      if (!img.complete) await new Promise((resolve) => {
+        img.addEventListener('load', resolve, {once: true});
+        img.addEventListener('error', resolve, {once: true});
+      });
+    });
+    assert.ok(
+      await hero.evaluate((img) => img.complete && img.naturalWidth > 0),
+      width + 'px hero product photo must actually load',
+    );
+    for (let i = 0; i < await images.count(); i++) {
+      const image = images.nth(i);
+      await image.scrollIntoViewIfNeeded({timeout: 15000});
+      await page.waitForFunction(
+        (index) => {
+          const img = document.querySelectorAll('.apparel-card__media img')[index];
+          return img && img.complete && img.naturalWidth > 0;
+        },
+        i,
+        {timeout: 20000},
+      );
+    }
+    await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({
       path: output + '/apparel-' + width + '.png',
       fullPage: true,
