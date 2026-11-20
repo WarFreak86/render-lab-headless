@@ -147,7 +147,7 @@ it.each([
   },
 );
 
-it('redirects the published hoodies collection to canonical /apparel without querying Shopify', async () => {
+it('redirects the published hoodies collection to canonical /apparel/hoodies without querying Shopify', async () => {
   const query = vi.fn();
   await expect(
     collectionLoader({
@@ -158,7 +158,7 @@ it('redirects the published hoodies collection to canonical /apparel without que
   try {
     await collectionLoader({params: {handle: 'hoodies'}} as never);
   } catch (response) {
-    expect((response as Response).headers.get('Location')).toBe('/apparel');
+    expect((response as Response).headers.get('Location')).toBe('/apparel/hoodies');
   }
   expect(query).not.toHaveBeenCalled();
 });
