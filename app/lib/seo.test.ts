@@ -271,7 +271,7 @@ describe('ProductGroup structured data', () => {
       currency: 'USD',
     });
     expect(canvas.offers.shippingDetails?.shippingRate).toMatchObject({
-      value: 18.29,
+      value: 15.19,
       currency: 'USD',
     });
   });
@@ -339,7 +339,7 @@ describe('ProductGroup structured data', () => {
       ['Metal', '18x24', 20.58],
       ['Metal', '24x32', 31.84],
       ['Canvas', '12x16', 9.19],
-      ['Canvas', '18x24', 18.29],
+      ['Canvas', '18x24', 15.19],
       ['Canvas', '24x32', 18.29],
       ['Poster', '12x16', 4.9],
       ['Poster', '18x24', 4.9],

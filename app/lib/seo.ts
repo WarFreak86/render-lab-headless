@@ -311,12 +311,12 @@ function getVariantDimensions(variant: ProductGroupVariantInput) {
 }
 
 /**
- * U.S. single-item rates verified against the 2026-10-28 GMC product export
- * and the Gelato-based rates used at checkout. Omit unsupported options rather
+ * U.S. single-item rates checked against Shopify's active Gelato shipping
+ * profiles on 2026-11-10; checkout remains authoritative for final shipping. Omit unsupported options rather
  * than advertising an unverified shipping price in structured data.
  */
 const GELATO_US_SHIPPING_RATES: Record<string, Record<string, number>> = {
-  canvas: {'12x16': 9.19, '18x24': 18.29, '24x32': 18.29},
+  canvas: {'12x16': 9.19, '18x24': 15.19, '24x32': 18.29},
   metal: {'12x16': 10.56, '18x24': 20.58, '24x32': 31.84},
   poster: {'12x16': 4.9, '18x24': 4.9, '24x32': 5.9},
 };
