@@ -18,8 +18,8 @@ export function isGarmentProductType(productType: string | null | undefined) {
 }
 
 type Money = {amount: string; currencyCode: string};
-export type ApparelPrice = {
-  amount: Money | null;
+export type ApparelPrice<T extends Money> = {
+  amount: T | null;
   label: 'From' | 'Available size' | '';
 };
 
@@ -28,17 +28,17 @@ export type ApparelPrice = {
  * catalog price needs no prefix; a range only says "From" if that minimum is
  * actually the first available variant's price.
  */
-export function apparelCardPrice({
+export function apparelCardPrice<T extends Money>({
   min,
   max,
   firstAvailable,
   availableForSale,
 }: {
-  min: Money;
-  max: Money;
-  firstAvailable: Money | null;
+  min: T;
+  max: T;
+  firstAvailable: T | null;
   availableForSale: boolean;
-}): ApparelPrice {
+}): ApparelPrice<T> {
   const fixed = min.amount === max.amount && min.currencyCode === max.currencyCode;
   if (!availableForSale) return {amount: min, label: fixed ? '' : 'From'};
   if (fixed) return {amount: min, label: ''};
