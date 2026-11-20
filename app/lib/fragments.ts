@@ -195,9 +195,9 @@ export const CART_QUERY_FRAGMENT = `#graphql
       code
       applicable
     }
-    discountApplications {
+    discountAllocations {
       targetType
-      totalAllocatedAmount {
+      discountedAmount {
         ...Money
       }
     }
