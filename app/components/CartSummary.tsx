@@ -20,7 +20,7 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   const savings = getCartDiscountSavings({
     subtotal,
     total,
-    applications: cart?.discountApplications,
+    applications: cart?.discountAllocations,
   });
   const itemCount = cart?.totalQuantity ?? 0;
   const hasApplicableCode = cart?.discountCodes?.some((code) => code.applicable);
