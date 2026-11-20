@@ -1,209 +1,254 @@
-import {Analytics, Image, Money} from '@shopify/hydrogen';
+import {Analytics, Image, Money, Pagination, getPaginationVariables} from '@shopify/hydrogen';
 import {Link, useLoaderData} from 'react-router';
+import type {ApparelCollectionQuery} from 'storefrontapi.generated';
 import type {Route} from './+types/apparel';
-import {getProductionUrl} from '~/lib/config';
-import {purchasableApparel} from '~/lib/apparel';
+import {getProductionUrl, getStorefrontEnvironment} from '~/lib/config';
+import {apparelCardPrice} from '~/lib/apparel';
+import {PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
 import apparelStyles from '~/styles/apparel.css?url';
 
-const HOODIE_COLLECTION_HANDLE = 'hoodies';
-const APPAREL_TITLE = 'Graphic Hoodies & Wearable Art | Render-Lab';
+const COLLECTION_HANDLE = 'hoodies';
+const APPAREL_TITLE = 'Graphic Hoodies & Artist-Designed Apparel | Render-Lab';
 const APPAREL_DESCRIPTION =
-  'Discover Render-Lab graphic hoodies featuring bold, original artwork. Explore each design, compare garment options, and find your fit.';
+  'Explore Render-Lab artwork on clothing. Browse available graphic hoodies, compare prices, and find sizing details for each design.';
+
+type ApparelProduct = NonNullable<ApparelCollectionQuery['collection']>['products']['nodes'][number];
 
 export const links = () => [{rel: 'stylesheet', href: apparelStyles}];
 
-export const meta: Route.MetaFunction = ({data}) => {
-  const canonical = getProductionUrl('/apparel');
-  const image = data?.heroImage;
+export const meta: Route.MetaFunction = ({data, location}) => {
+  const search = new URLSearchParams(location.search);
+  const cursor = search.get('cursor');
+  const direction = search.get('direction');
+  const pagination = cursor
+    ? '?' + new URLSearchParams({
+        cursor,
+        ...(direction ? {direction} : {}),
+      }).toString()
+    : '';
+  const canonical = getProductionUrl('/apparel' + pagination);
+  const heroImage = data?.heroImage;
+
   return [
     {title: APPAREL_TITLE},
     {name: 'description', content: APPAREL_DESCRIPTION},
     {tagName: 'link', rel: 'canonical', href: canonical},
-    // Keep an empty or unpublished assortment out of search results.
-    ...(!data?.hasPurchasableProducts
-      ? [{name: 'robots', content: 'noindex,follow'}]
-      : []),
+    ...(!data?.hasPurchasableProducts ? [{name: 'robots', content: 'noindex,follow'}] : []),
     {property: 'og:title', content: APPAREL_TITLE},
     {property: 'og:description', content: APPAREL_DESCRIPTION},
     {property: 'og:type', content: 'website'},
     {property: 'og:url', content: canonical},
-    ...(image?.url
+    ...(heroImage?.url
       ? [
-          {property: 'og:image', content: image.url},
-          {property: 'og:image:alt', content: image.altText || 'Render-Lab graphic hoodie'},
+          {property: 'og:image', content: heroImage.url},
+          {property: 'og:image:alt', content: heroImage.altText || 'Render-Lab graphic hoodie front view'},
         ]
       : []),
   ];
 };
 
-export async function loader({context}: Route.LoaderArgs) {
+export async function loader({context, request}: Route.LoaderArgs) {
+  const pagination = getPaginationVariables(request, {pageBy: 12});
   const {collection} = await context.storefront.query(APPAREL_COLLECTION_QUERY, {
-    variables: {handle: HOODIE_COLLECTION_HANDLE},
+    cache: context.storefront.CacheShort(),
+    variables: {handle: COLLECTION_HANDLE, ...pagination},
   });
+  const products = collection?.products.nodes ?? [];
+  const hasPublishedProducts = products.length > 0;
+  const hasPurchasableProducts = products.some((product) => product.availableForSale);
 
-  // Storefront API excludes draft or unpublished merchandise. Never construct
-  // public product links from Admin-only draft IDs or placeholder mockups.
-  const products = purchasableApparel(collection?.products.nodes ?? []);
-  const heroImage = products[0]?.featuredImage ?? collection?.image ?? null;
+  // No public "coming soon" shop when Shopify provides no published garments.
+  // Preview may still render a safe empty state for development and review.
+  if (!hasPublishedProducts && getStorefrontEnvironment(request.url) === 'production') {
+    throw new Response('Apparel is not yet available', {status: 404});
+  }
+
+  // Choose a real garment photograph. A collection banner is not a valid
+  // substitute for the front of a purchasable product.
+  const leadProduct =
+    products.find((product) => product.availableForSale && product.featuredImage) ??
+    products.find((product) => product.featuredImage) ??
+    null;
 
   return {
     collectionId: collection?.id ?? null,
-    heroImage,
-    hasPurchasableProducts: products.length > 0,
-    products,
+    heroImage: leadProduct?.featuredImage ?? null,
+    leadProductHandle: leadProduct?.availableForSale ? leadProduct.handle : null,
+    hasPurchasableProducts,
+    products: {nodes: products, pageInfo: collection?.products.pageInfo ?? {
+      hasNextPage: false,
+      hasPreviousPage: false,
+      startCursor: null,
+      endCursor: null,
+    }},
   };
 }
 
 export default function ApparelPage() {
-  const {collectionId, heroImage, hasPurchasableProducts, products} =
+  const {collectionId, heroImage, leadProductHandle, hasPurchasableProducts, products} =
     useLoaderData<typeof loader>();
+  const singleStyle = products.nodes.length === 1 && hasPurchasableProducts;
+  const leadProduct = singleStyle ? products.nodes[0] : null;
 
   return (
     <div className="apparel-page">
       <section className="apparel-hero" aria-labelledby="apparel-heading">
         <div className="apparel-hero__copy">
-          <p className="apparel-kicker">Render-Lab / Wearable art</p>
-          <h1 id="apparel-heading">Art that goes <em>everywhere.</em></h1>
+          <p className="apparel-kicker">Render-Lab / Apparel</p>
+          <h1 id="apparel-heading">Art you <em>wear.</em></h1>
           <p className="apparel-hero__description">
-            Not just another graphic hoodie. Bold visual work made to be worn,
-            seen, and remembered.
+            Original graphic artwork on clothing. See each design on the garment,
+            then choose your size on its product page.
           </p>
           {hasPurchasableProducts ? (
-            <a className="apparel-hero__cta" href="#shop-hoodies">
-              Explore the hoodies <span aria-hidden="true">↗</span>
-            </a>
+            singleStyle && leadProduct ? (
+              <Link className="apparel-hero__cta" prefetch="intent" to={'/products/' + leadProduct.handle}>
+                View {leadProduct.title} <span aria-hidden="true">↗</span>
+              </Link>
+            ) : (
+              <a className="apparel-hero__cta" href="#garments">
+                Shop the collection <span aria-hidden="true">↓</span>
+              </a>
+            )
           ) : (
             <p className="apparel-hero__status" role="status">
-              Our first apparel release is being prepared.
+              This release is not yet available to purchase.
             </p>
           )}
-          <p className="apparel-hero__footnote">
-            Designed by Render-Lab. Details and sizing on each garment page.
-          </p>
         </div>
         {heroImage ? (
           <div className="apparel-hero__visual">
             <Image
-              alt={heroImage.altText || 'Render-Lab graphic hoodie'}
+              alt={heroImage.altText || 'Front view of a Render-Lab graphic hoodie'}
               data={heroImage}
               loading="eager"
-              sizes="(min-width: 70rem) 50vw, 100vw"
+              sizes="(min-width: 70rem) 50vw, (min-width: 47rem) 50vw, 100vw"
             />
-            <span className="apparel-hero__image-caption">
-              The art, on the garment.
-            </span>
           </div>
         ) : (
-          <div className="apparel-hero__visual apparel-hero__visual--empty">
-            <span aria-hidden="true">RENDER-LAB</span>
+          <div className="apparel-hero__visual apparel-hero__visual--empty" aria-hidden="true">
+            <span>RENDER-LAB</span>
           </div>
         )}
       </section>
 
-      <div className="apparel-marquee" aria-label="Collection values">
-        <span>Artwork first</span>
-        <span aria-hidden="true">✳</span>
-        <span>Wearable expression</span>
-        <span aria-hidden="true">✳</span>
-        <span>Made for the details</span>
-      </div>
-
-      <section className="apparel-shop container container--wide" id="shop-hoodies">
+      <section className="apparel-shop container container--standard" id="garments">
         <div className="apparel-section-heading">
           <div>
             <p className="apparel-kicker">01 / The collection</p>
-            <h2>Graphic hoodies</h2>
+            <h2>Shop apparel</h2>
           </div>
-          {hasPurchasableProducts ? (
-            <p className="apparel-section-heading__note">
-              {products.length} {products.length === 1 ? 'design' : 'designs'} to explore
-            </p>
-          ) : null}
         </div>
 
-        {hasPurchasableProducts ? (
-          <div className="apparel-grid">
-            {products.map((product, index) => (
-              <article className="apparel-card" key={product.id}>
-                <Link prefetch="intent" to={'/products/' + product.handle}>
-                  <div className="apparel-card__media">
-                    {product.featuredImage ? (
-                      <Image
-                        alt={product.featuredImage.altText || product.title}
-                        data={product.featuredImage}
-                        loading={index < 2 ? 'eager' : 'lazy'}
-                        sizes="(min-width: 70rem) 30vw, (min-width: 40rem) 46vw, 100vw"
-                      />
-                    ) : (
-                      <span className="apparel-card__no-image">
-                        Image not available
-                      </span>
-                    )}
-                    <span className="apparel-card__explore" aria-hidden="true">
-                      Explore design ↗
-                    </span>
-                  </div>
-                  <div className="apparel-card__details">
-                    <div>
-                      <p className="apparel-card__eyebrow">Render-Lab / Hoodie</p>
-                      <h3>{product.title}</h3>
-                    </div>
-                    <p className="apparel-card__price">
-                      From <Money data={product.priceRange.minVariantPrice} />
-                    </p>
-                  </div>
-                </Link>
-              </article>
-            ))}
-          </div>
+        {products.nodes.length ? (
+          <Pagination connection={products}>
+            {({nodes, PreviousLink, NextLink, hasPreviousPage, hasNextPage, isLoading}) => (
+              <div className="apparel-pagination">
+                {hasPreviousPage ? (
+                  <PreviousLink className="apparel-pagination__button">
+                    {isLoading ? 'Loading…' : 'Previous designs'}
+                  </PreviousLink>
+                ) : null}
+                <div className={'apparel-grid' + (singleStyle ? ' apparel-grid--single' : '')}>
+                  {nodes.map((product, index) => (
+                    <ApparelCard key={product.id} product={product} loading={index === 0 && !heroImage ? 'eager' : 'lazy'} />
+                  ))}
+                </div>
+                {hasNextPage ? (
+                  <NextLink className="apparel-pagination__button">
+                    {isLoading ? 'Loading…' : 'Load more designs'}
+                  </NextLink>
+                ) : null}
+              </div>
+            )}
+          </Pagination>
         ) : (
           <div className="apparel-empty">
-            <h3>First release in preparation.</h3>
-            <p>
-              The hoodies are being finalized. Product pages will appear here
-              when their sizing, pricing, and checkout are ready.
-            </p>
-            <Link to="/collections/wall-art">Explore wall art while you are here ↗</Link>
+            <h3>Apparel is being prepared.</h3>
+            <p>Products will appear when they are published and ready for shoppers.</p>
           </div>
         )}
       </section>
 
       <section className="apparel-standards" aria-labelledby="apparel-standards-heading">
-        <div className="container container--wide apparel-standards__inner">
+        <div className="container container--editorial apparel-standards__inner">
           <div className="apparel-standards__heading">
             <p className="apparel-kicker">02 / Before you buy</p>
-            <h2 id="apparel-standards-heading">
-              Look closer.<br /><em>Choose confidently.</em>
-            </h2>
+            <h2 id="apparel-standards-heading">Fit and garment details</h2>
           </div>
           <div className="apparel-standards__items">
-            <div>
-              <span>01</span>
-              <h3>See the artwork</h3>
-              <p>Explore the actual garment mockups on each design’s product page.</p>
-            </div>
-            <div>
-              <span>02</span>
-              <h3>Check the fit</h3>
-              <p>Review available sizes and fit information before selecting a variant.</p>
-            </div>
-            <div>
-              <span>03</span>
-              <h3>Know the details</h3>
-              <p>Check current materials, care guidance, shipping, and total price before checkout.</p>
+            <p>
+              Sizes vary by garment. Open a design to review its available options,
+              measurements where supplied, fabric and care details.
+            </p>
+            {leadProductHandle ? (
+              <Link to={'/products/' + leadProductHandle + '#garment-size'}>
+                View garment sizes and fit ↗
+              </Link>
+            ) : null}
+            <div className="apparel-standards__links">
+              <Link to="/policies/shipping-policy">Shipping information ↗</Link>
+              <Link to="/policies/refund-policy">Returns policy ↗</Link>
             </div>
           </div>
         </div>
       </section>
-
-      {collectionId && hasPurchasableProducts ? (
-        <Analytics.CollectionView
-          data={{
-            collection: {id: collectionId, handle: HOODIE_COLLECTION_HANDLE},
-          }}
-        />
+      {collectionId && products.nodes.length > 0 ? (
+        <Analytics.CollectionView data={{collection: {id: collectionId, handle: COLLECTION_HANDLE}}} />
       ) : null}
     </div>
+  );
+}
+
+function ApparelCard({
+  product,
+  loading,
+}: {
+  product: ApparelProduct;
+  loading: 'eager' | 'lazy';
+}) {
+  const price = apparelCardPrice({
+    min: product.priceRange.minVariantPrice,
+    max: product.priceRange.maxVariantPrice,
+    firstAvailable: product.selectedOrFirstAvailableVariant?.availableForSale
+      ? product.selectedOrFirstAvailableVariant.price
+      : null,
+    availableForSale: product.availableForSale,
+  });
+  return (
+    <article className="apparel-card">
+      <Link prefetch="intent" to={'/products/' + product.handle}>
+        <div className="apparel-card__media">
+          {product.featuredImage ? (
+            <Image
+              alt={product.featuredImage.altText || product.title + ' graphic hoodie front view'}
+              data={product.featuredImage}
+              loading={loading}
+              sizes="(min-width: 70rem) 30vw, (min-width: 47rem) 45vw, (min-width: 27rem) 46vw, 100vw"
+            />
+          ) : (
+            <span className="apparel-card__no-image">Photo not available</span>
+          )}
+          {!product.availableForSale ? (
+            <span className="apparel-card__soldout">Currently unavailable</span>
+          ) : null}
+        </div>
+        <div className="apparel-card__details">
+          <div>
+            <p className="apparel-card__eyebrow">Graphic hoodie</p>
+            <h3>{product.title}</h3>
+          </div>
+          <p className="apparel-card__price">
+            {price.amount ? (
+              <>{price.label ? price.label + ' ' : ''}<Money data={price.amount} /></>
+            ) : (
+              'See pricing and size options'
+            )}
+          </p>
+          <span className="apparel-card__fit">View sizes and fit details ↗</span>
+        </div>
+      </Link>
+    </article>
   );
 }
 
@@ -212,39 +257,28 @@ const APPAREL_COLLECTION_QUERY = `#graphql
     $handle: String!
     $country: CountryCode
     $language: LanguageCode
+    $first: Int
+    $last: Int
+    $startCursor: String
+    $endCursor: String
   ) @inContext(country: $country, language: $language) {
     collection(handle: $handle) {
       id
       handle
       title
-      image {
-        id
-        url
-        altText
-        width
-        height
-      }
-      products(first: 24) {
+      products(first: $first, last: $last, before: $startCursor, after: $endCursor) {
         nodes {
-          id
-          handle
-          title
+          ...ProductCard
+          productType
           availableForSale
-          featuredImage {
-            id
-            url
-            altText
-            width
-            height
-          }
-          priceRange {
-            minVariantPrice {
-              amount
-              currencyCode
-            }
+          selectedOrFirstAvailableVariant {
+            availableForSale
+            price {amount currencyCode}
           }
         }
+        pageInfo {hasPreviousPage hasNextPage startCursor endCursor}
       }
     }
   }
+  ${PRODUCT_CARD_FRAGMENT}
 ` as const;
