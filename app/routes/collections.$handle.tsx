@@ -11,6 +11,7 @@ import type {Route} from './+types/collections.$handle';
 import {CollectionView} from '~/components/collection/CollectionView';
 import {CollectionDirectoryView} from '~/components/collection/CollectionDirectoryView';
 import {getProductionUrl} from '~/lib/config';
+import {getApparelCategoryByCollectionHandle} from '~/lib/apparel-categories';
 import {
   getApprovedEditorialCollectionSeo,
   getCollectionSortVariables,
@@ -96,9 +97,10 @@ export const meta: Route.MetaFunction = ({data, location}) => {
 export async function loader({context, params, request}: Route.LoaderArgs) {
   const {handle} = params;
   if (!handle) throw redirect('/collections');
-  // Legacy and Shopify-generated collection URLs should have one canonical
-  // apparel destination rather than falling through to unrelated wall art.
-  if (handle === 'hoodies') throw redirect('/apparel', 301);
+  // Keep Shopify's collection URLs as permanent aliases of individual
+  // apparel categories; the clothing department itself is /apparel.
+  const apparelCategory = getApparelCategoryByCollectionHandle(handle);
+  if (apparelCategory) throw redirect('/apparel/' + apparelCategory.slug, 301);
   if (!isLiveCollectionHandle(handle))
     throw redirect('/collections/wall-art', 301);
 
