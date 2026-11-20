@@ -366,11 +366,13 @@ export function ProductPurchasePanel({
       replace: true,
     });
   }
-  const identityLabel = context
-    ? `Series / ${context}`
-    : product.productType && !isGenericCatalogLabel(product.productType)
-      ? product.productType
-      : undefined;
+  const identityLabel = isApparel
+    ? 'Graphic hoodie'
+    : context
+      ? `Series / ${context}`
+      : product.productType && !isGenericCatalogLabel(product.productType)
+        ? product.productType
+        : undefined;
 
   return (
     <section
@@ -694,8 +696,14 @@ export function ProductPurchasePanel({
             aria-label="Purchase information"
           >
             <li>
-              <span>{isApparel ? 'Choose your fit' : 'Made to order'}</span>
-              <small>{isApparel ? 'Select a garment size above' : 'Produced after purchase'}</small>
+              <span>{isApparel ? 'Garment size' : 'Made to order'}</span>
+              <small>
+                {isApparel
+                  ? requiresSizeChoice
+                    ? 'Select a size above'
+                    : `Selected: ${selectedVariant?.selectedOptions.find(({name}) => /^size$/i.test(name))?.value ?? 'See size options above'}`
+                  : 'Produced after purchase'}
+              </small>
             </li>
             <li>
               <span>
