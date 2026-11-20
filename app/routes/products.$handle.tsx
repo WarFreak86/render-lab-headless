@@ -186,6 +186,7 @@ export default function Product() {
   const location = useLocation();
   const {product, initialSizeSelected, initialVariantImageId, initialVariantImageUrl} =
     useLoaderData<typeof loader>();
+  const isGarment = isGarmentProductType(product.productType);
   const [requestedChoice, setRequestedChoice] = useState<{
     id: string;
     handle: string;
@@ -196,7 +197,8 @@ export default function Product() {
     getAdjacentAndFirstAvailableVariants(product),
   );
 
-  useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
+  // Garment sizes must not be silently confirmed by an auto-populated URL.
+  useSelectedOptionInUrlParam(isGarment ? [] : selectedVariant.selectedOptions);
   useEffect(() => {
     if (requestedChoice?.id === selectedVariant.id) setRequestedChoice(null);
   }, [requestedChoice, selectedVariant.id]);
@@ -207,7 +209,6 @@ export default function Product() {
   });
 
   const page = normalizeProductPage(product);
-  const isGarment = isGarmentProductType(product.productType);
   const confidence = !isGarment && hasPrintChoices(product.variants.nodes);
   const artwork = confidence ? artworkImage(page.gallery) : undefined;
   function selectVariant(variant: ChoiceVariant) {
