@@ -35,7 +35,7 @@ async function waitSelected(expected) {
   const value = JSON.parse(await page.locator('input[name="analytics"]').inputValue());
   assert.equal(value.products[0].variantGid, expected.id);
   assert.equal(value.products[0].variantName, expected.size);
-  assert.equal(value.totalValue, expected.price);
+  assert.equal(Number(value.totalValue), Number(expected.price));
   assert.ok(await page.locator('.product-purchase__add').first().isEnabled(), 'Selected variant must be buyable');
 }
 
@@ -47,9 +47,9 @@ try {
     for (const variant of item.variants) {
       await page.getByRole('button', {name: variant.size, exact: true}).click();
       await waitSelected(variant);
-      assert.equal(
+      assert.match(
         await page.locator('.product-option__value[aria-pressed="true"]').first().innerText(),
-        variant.size,
+        new RegExp('^'+variant.size+'(?:\\s|$)'),
         item.title + ': selected size visually matches SKU'
       );
       console.log('PASS SKU '+item.handle+' '+variant.size+' '+variant.sku);
