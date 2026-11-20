@@ -297,6 +297,7 @@ export default function Product() {
           <ProductPurchasePanel
             buyerConfidence={confidence}
             initialSizeSelected={initialSizeSelected}
+            sizeGuideAvailable={isGarment && product.descriptionHtml.includes('class="sbl-size-guide"')}
             scaleAvailable={Boolean(artwork)}
             selectionUpdating={
               requestedChoice?.handle === product.handle &&
