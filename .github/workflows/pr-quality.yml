@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  deployments: write
 
 jobs:
   validate:
@@ -30,3 +31,28 @@ jobs:
         run: npm test
       - name: Build (no deploy)
         run: npm run build
+
+      # Temporary PR #78 preview QA. No production deployment or test order.
+      - name: Deploy temporary private Oxygen Preview
+        if: ${{ github.event.pull_request.number == 78 && github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000173485 }}
+        run: |
+          test -n "$SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN"
+          git checkout -- storefrontapi.generated.d.ts customer-accountapi.generated.d.ts
+          npx shopify hydrogen deploy --preview --auth-bypass-token --metadata-description "PR 78 shipping and mobile QA"
+
+      - name: Install browser for mobile verification
+        if: ${{ github.event.pull_request.number == 78 && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          npm install --no-save --ignore-scripts --legacy-peer-deps playwright
+          npx playwright install chromium
+
+      - name: Verify Shopify address quotes and mobile Apparel menu
+        if: ${{ github.event.pull_request.number == 78 && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          export DEPLOYMENT_URL="$(jq -r '.url // empty' h2_deploy_log.json)"
+          export AUTH_BYPASS_TOKEN="$(jq -r '.authBypassToken // empty' h2_deploy_log.json)"
+          test -n "$DEPLOYMENT_URL"
+          test -n "$AUTH_BYPASS_TOKEN"
+          node scripts/apparel-shipping-qa.mjs
