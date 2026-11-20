@@ -96,6 +96,9 @@ export const meta: Route.MetaFunction = ({data, location}) => {
 export async function loader({context, params, request}: Route.LoaderArgs) {
   const {handle} = params;
   if (!handle) throw redirect('/collections');
+  // Legacy and Shopify-generated collection URLs should have one canonical
+  // apparel destination rather than falling through to unrelated wall art.
+  if (handle === 'hoodies') throw redirect('/apparel', 301);
   if (!isLiveCollectionHandle(handle))
     throw redirect('/collections/wall-art', 301);
 
