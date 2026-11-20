@@ -51,7 +51,7 @@ function mockCart({
     appliedGiftCards: [],
     discountCodes: code ? [{code: 'TESTPROMO', applicable: true}] : [],
     discountApplications: Number(allocated) > 0
-      ? [{targetType: 'LINE_ITEM', totalAllocatedAmount: dollar(allocated)}]
+      ? [{targetType: 'LINE_ITEM', discountedAmount: dollar(allocated)}]
       : [],
   } as never;
 }
