@@ -74,13 +74,15 @@ export function getCartDiscountSavings<TCurrency extends string>({
   if (!cartReductionCents) return null;
 
   const allocatedCents = (applications ?? []).reduce((sum, allocation) => {
+    const amount = allocation.discountedAmount;
     if (
       allocation.targetType !== 'LINE_ITEM' ||
-      allocation.discountedAmount?.currencyCode !== subtotal.currencyCode
+      !amount?.amount ||
+      amount.currencyCode !== subtotal.currencyCode
     ) {
       return sum;
     }
-    const cents = Math.round(Number(allocation.discountedAmount.amount) * 100);
+    const cents = Math.round(Number(amount.amount) * 100);
     return Number.isFinite(cents) && cents > 0 ? sum + cents : sum;
   }, 0);
 
