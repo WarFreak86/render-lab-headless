@@ -3,7 +3,7 @@ import {Link, useLoaderData} from 'react-router';
 import type {ApparelCollectionQuery} from 'storefrontapi.generated';
 import type {Route} from './+types/apparel';
 import {getProductionUrl, getStorefrontEnvironment} from '~/lib/config';
-import {apparelCardPrice} from '~/lib/apparel';
+import {apparelCardPrice, apparelListingState} from '~/lib/apparel';
 import {PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
 import apparelStyles from '~/styles/apparel.css?url';
 
@@ -54,8 +54,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
     variables: {handle: COLLECTION_HANDLE, ...pagination},
   });
   const products = collection?.products.nodes ?? [];
-  const hasPublishedProducts = products.length > 0;
-  const hasPurchasableProducts = products.some((product) => product.availableForSale);
+  const {hasPublishedProducts, hasPurchasableProducts} = apparelListingState(products);
 
   // No public "coming soon" shop when Shopify provides no published garments.
   // Preview may still render a safe empty state for development and review.
