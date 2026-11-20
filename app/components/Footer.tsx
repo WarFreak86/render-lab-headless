@@ -36,6 +36,7 @@ export function Footer({
         <FooterLinkGroup title="Explore">
           <NavLink to="/collections">Collections</NavLink>
           <NavLink to="/collections/wall-art">Wall Art</NavLink>
+          <NavLink to="/apparel">Apparel</NavLink>
           <NavLink to="/artists">Our Studio</NavLink>
         </FooterLinkGroup>
         <FooterLinkGroup title="Support">

@@ -644,3 +644,55 @@
     scroll-behavior: auto;
   }
 }
+
+/* Garment-only fit guide: the supplier's embedded styles target a light
+   background and would otherwise make measurements hard to read in the
+   dark Render-Lab PDP. Keep the table scroll inside the details disclosure. */
+.product-detail--apparel #garment-size-guide {
+  scroll-margin-top: 6rem;
+  margin-top: var(--space-6);
+  border: var(--border-thin);
+  border-radius: 0.25rem;
+  padding: 1rem;
+}
+.product-detail--apparel #garment-size-guide summary {
+  min-height: 2.75rem;
+  display: list-item;
+  color: var(--color-text);
+  cursor: pointer;
+}
+.product-detail--apparel #garment-size-guide summary:focus-visible,
+.product-purchase__size-link:focus-visible {
+  outline: 2px solid var(--color-gold-bright);
+  outline-offset: 3px;
+}
+.product-detail--apparel .sbl-size-guide-content {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.product-detail--apparel .sbl-size-guide-content .sbl-size-table {
+  width: 100%;
+  min-width: 38rem;
+  border-collapse: collapse;
+}
+.product-detail--apparel .sbl-size-table :is(th, td) {
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+  text-shadow: none;
+  padding: 0.7rem 0.6rem;
+  line-height: 1.5;
+}
+.product-purchase__size-link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  margin: 0.2rem 0 0.75rem;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+@media (max-width: 47rem) {
+  .product-detail--apparel #garment-size-guide {
+    padding: 0.75rem;
+  }
+}

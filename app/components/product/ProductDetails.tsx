@@ -6,10 +6,12 @@ import {ProductTechnicalSpecs} from './ProductTechnicalSpecs';
 export function ProductDetails({
   descriptionHtml,
   editorial,
+  garment = false,
   variants = [],
 }: {
   descriptionHtml: string;
   editorial: ProductEditorialData;
+  garment?: boolean;
   variants?: ReadonlyArray<{
     selectedOptions: ReadonlyArray<{name: string; value: string}>;
   }>;
@@ -24,6 +26,15 @@ export function ProductDetails({
     editorial.fabricDetails,
   );
 
+  // Shopify's supplier-supplied chart stays the source of measurement facts.
+  // Give the existing details element a stable anchor without duplicating it.
+  const garmentDescriptionHtml = garment
+    ? descriptionHtml.replace(
+        'class="sbl-size-guide"',
+        'class="sbl-size-guide" id="garment-size-guide"',
+      )
+    : descriptionHtml;
+
   return (
     <div className="product-details">
       <section
@@ -31,16 +42,19 @@ export function ProductDetails({
         aria-labelledby="product-overview-title"
       >
         <div className="product-details__section-heading">
-          <p className="product-details__eyebrow">About the piece</p>
-          <h2 id="product-overview-title">About the work</h2>
+          <p className="product-details__eyebrow">{garment ? "About the garment" : "About the piece"}</p>
+          <h2 id="product-overview-title">{garment ? "Design and details" : "About the work"}</h2>
         </div>
         <div className="product-details__rich">
-          <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+          <div
+            className={garment ? 'product-details__raw product-details__raw--apparel' : undefined}
+            dangerouslySetInnerHTML={{__html: garmentDescriptionHtml}}
+          />
           <ProductTechnicalSpecs variants={variants} />
         </div>
       </section>
 
-      {editorial.roomImages.length > 0 ? (
+      {!garment && editorial.roomImages.length > 0 ? (
         <section className="product-room" aria-labelledby="product-room-title">
           <div>
             <p className="product-details__eyebrow">In a space</p>
@@ -124,7 +138,7 @@ export function ProductDetails({
         </section>
       ) : null}
 
-      {hasEdition ? (
+      {!garment && hasEdition ? (
         <section
           className="product-edition"
           aria-labelledby="product-edition-title"

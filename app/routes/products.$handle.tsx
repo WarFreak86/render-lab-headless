@@ -26,6 +26,8 @@ import {
   type ChoiceVariant,
 } from '~/lib/product-confidence';
 import {getProductionUrl} from '~/lib/config';
+import {isGarmentProductType} from '~/lib/apparel';
+import {getApparelCategoryByProductType} from '~/lib/apparel-categories';
 import {getVariantGidFromRequest, normalizeProductPage} from '~/lib/product';
 import {PRODUCT_QUERY, PRODUCT_VARIANT_BY_ID_QUERY} from '~/lib/product-query';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
@@ -153,8 +155,18 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     ),
   );
 
+  const requestedSize = selectedOptions.find(({name}) => /^size$/i.test(name))?.value;
+  const initialSizeSelected = Boolean(
+    matchingVariant?.selectedOptions.some(({name}) => /^size$/i.test(name)) ||
+      (requestedSize &&
+        selectedProduct.selectedOrFirstAvailableVariant?.selectedOptions.some(
+          ({name, value}) => /^size$/i.test(name) && value === requestedSize,
+        )),
+  );
+
   return {
     product: selectedProduct,
+    initialSizeSelected,
     initialVariantImageId:
       matchingVariant || hasMatchingOption
         ? selectedProduct.selectedOrFirstAvailableVariant?.image?.id
@@ -173,8 +185,10 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
 export default function Product() {
   const navigate = useNavigate();
   const location = useLocation();
-  const {product, initialVariantImageId, initialVariantImageUrl} =
+  const {product, initialSizeSelected, initialVariantImageId, initialVariantImageUrl} =
     useLoaderData<typeof loader>();
+  const isGarment = isGarmentProductType(product.productType);
+  const garmentCategory = isGarment ? getApparelCategoryByProductType(product.productType) : undefined;
   const [requestedChoice, setRequestedChoice] = useState<{
     id: string;
     handle: string;
@@ -185,7 +199,8 @@ export default function Product() {
     getAdjacentAndFirstAvailableVariants(product),
   );
 
-  useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
+  // Garment sizes must not be silently confirmed by an auto-populated URL.
+  useSelectedOptionInUrlParam(isGarment ? [] : selectedVariant.selectedOptions);
   useEffect(() => {
     if (requestedChoice?.id === selectedVariant.id) setRequestedChoice(null);
   }, [requestedChoice, selectedVariant.id]);
@@ -196,7 +211,7 @@ export default function Product() {
   });
 
   const page = normalizeProductPage(product);
-  const confidence = hasPrintChoices(product.variants.nodes);
+  const confidence = !isGarment && hasPrintChoices(product.variants.nodes);
   const artwork = confidence ? artworkImage(page.gallery) : undefined;
   function selectVariant(variant: ChoiceVariant) {
     setRequestedChoice({id: variant.id, handle: product.handle});
@@ -221,14 +236,21 @@ export default function Product() {
       variants: product.variants.nodes,
       breadcrumb: [
         {name: 'Shop', url: getProductionUrl('/collections')},
-        ...(page.breadcrumb
+        ...(isGarment
           ? [
-              {
-                name: page.breadcrumb.title,
-                url: getProductionUrl(`/collections/${page.breadcrumb.handle}`),
-              },
+              {name: 'Apparel', url: getProductionUrl('/apparel')},
+              ...(garmentCategory
+                ? [{name: garmentCategory.title, url: getProductionUrl('/apparel/' + garmentCategory.slug)}]
+                : []),
             ]
-          : []),
+          : page.breadcrumb
+            ? [
+                {
+                  name: page.breadcrumb.title,
+                  url: getProductionUrl(`/collections/${page.breadcrumb.handle}`),
+                },
+              ]
+            : []),
         {name: product.title, url: canonical},
       ],
     }),
@@ -236,7 +258,7 @@ export default function Product() {
 
   return (
     <article
-      className={`product-detail product-detail--editorial${confidence ? ' product-detail--confidence' : ''}`}
+      className={`product-detail product-detail--editorial${confidence ? ' product-detail--confidence' : ''}${isGarment ? ' product-detail--apparel' : ''}`}
     >
       <script
         dangerouslySetInnerHTML={{__html: jsonLdString}}
@@ -245,7 +267,18 @@ export default function Product() {
       <nav className="product-detail__breadcrumb" aria-label="Breadcrumb">
         <Link to="/collections">Shop</Link>
         <span aria-hidden>/</span>
-        {page.breadcrumb ? (
+        {isGarment ? (
+          <>
+            <Link to="/apparel">Apparel</Link>
+            <span aria-hidden>/</span>
+            {garmentCategory ? (
+              <>
+                <Link to={'/apparel/' + garmentCategory.slug}>{garmentCategory.title}</Link>
+                <span aria-hidden>/</span>
+              </>
+            ) : null}
+          </>
+        ) : page.breadcrumb ? (
           <>
             <Link to={`/collections/${page.breadcrumb.handle}`}>
               {page.breadcrumb.title}
@@ -260,6 +293,7 @@ export default function Product() {
         <ProductGallery
           artwork={artwork}
           buyerConfidence={confidence}
+          presentation={isGarment ? 'apparel' : 'artwork'}
           images={page.gallery}
           initialVariantImageId={
             initialVariantImageId ?? (confidence ? selectedImageId : undefined)
@@ -275,6 +309,8 @@ export default function Product() {
         <div className="product-detail__purchase-column">
           <ProductPurchasePanel
             buyerConfidence={confidence}
+            initialSizeSelected={initialSizeSelected}
+            sizeGuideAvailable={isGarment && product.descriptionHtml.includes('class="sbl-size-guide"')}
             scaleAvailable={Boolean(artwork)}
             selectionUpdating={
               requestedChoice?.handle === product.handle &&
@@ -293,6 +329,7 @@ export default function Product() {
       <ProductDetails
         descriptionHtml={product.descriptionHtml}
         editorial={page.editorial}
+        garment={isGarment}
         variants={product.variants.nodes}
       />
 

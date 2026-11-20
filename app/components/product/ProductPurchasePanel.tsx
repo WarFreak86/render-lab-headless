@@ -22,6 +22,7 @@ import {
   type ChoiceVariant,
 } from '~/lib/product-confidence';
 import {getOptionState} from '~/lib/product';
+import {isGarmentProductType} from '~/lib/apparel';
 import {REFUND_POLICY_PATH, STANDARD_RETURN_DAYS} from '~/lib/return-policy';
 import {
   getProductContext,
@@ -255,6 +256,8 @@ function ProductAddToCart({
 
 export function ProductPurchasePanel({
   buyerConfidence = false,
+  initialSizeSelected = false,
+  sizeGuideAvailable = false,
   scaleAvailable = false,
   selectionUpdating = false,
   variants = [],
@@ -271,6 +274,8 @@ export function ProductPurchasePanel({
   statusLabel,
 }: {
   buyerConfidence?: boolean;
+  initialSizeSelected?: boolean;
+  sizeGuideAvailable?: boolean;
   scaleAvailable?: boolean;
   selectionUpdating?: boolean;
   variants?: ReadonlyArray<ChoiceVariant>;
@@ -289,6 +294,8 @@ export function ProductPurchasePanel({
   const navigate = useNavigate();
   const location = useLocation();
   const [dialog, setDialog] = useState<ChoiceDialogKind>(null);
+  const [sizeConfirmed, setSizeConfirmed] = useState(initialSizeSelected);
+  const previousProductHandle = useRef(product.handle);
   const lastRequestedOptions = useRef<OptionSelection | null>(null);
   const [requestedOptions, setRequestedOptions] =
     useState<OptionSelection | null>(null);
@@ -325,7 +332,18 @@ export function ProductPurchasePanel({
   const identity = splitProductIdentity(product.title);
   const context = getProductContext(product.title, collectionTitle);
   const isStandard = presentation === 'standard';
-  const confidence = buyerConfidence && isStandard;
+  const isApparel = isGarmentProductType(product.productType);
+  const confidence = buyerConfidence && isStandard && !isApparel;
+  const requiresSizeChoice = isApparel &&
+    visibleOptions.some((option) => /^size$/i.test(option.name)) &&
+    !sizeConfirmed;
+
+  useEffect(() => {
+    if (previousProductHandle.current !== product.handle) {
+      previousProductHandle.current = product.handle;
+      setSizeConfirmed(initialSizeSelected);
+    }
+  }, [product.handle, initialSizeSelected]);
   const printName = printIdentity(product.title, collectionTitle);
   const baseOptions = {
     ...Object.fromEntries(
@@ -348,11 +366,13 @@ export function ProductPurchasePanel({
       replace: true,
     });
   }
-  const identityLabel = context
-    ? `Series / ${context}`
-    : product.productType && !isGenericCatalogLabel(product.productType)
-      ? product.productType
-      : undefined;
+  const identityLabel = isApparel
+    ? 'Graphic hoodie'
+    : context
+      ? `Series / ${context}`
+      : product.productType && !isGenericCatalogLabel(product.productType)
+        ? product.productType
+        : undefined;
 
   return (
     <section
@@ -376,7 +396,7 @@ export function ProductPurchasePanel({
           <h1 id="product-title">
             {confidence
               ? printName.title
-              : isStandard
+              : isStandard && !isApparel
                 ? identity.artworkTitle
                 : product.title}
           </h1>
@@ -396,7 +416,11 @@ export function ProductPurchasePanel({
       {visibleOptions.length > 0 ? (
         <div className="product-purchase__options">
           {visibleOptions.map((option, optionIndex) => (
-            <fieldset className="product-option" key={option.name}>
+            <fieldset
+              className="product-option"
+              id={isApparel && /^size$/i.test(option.name) ? 'garment-size' : undefined}
+              key={option.name}
+            >
               <legend>
                 {confidence ? (
                   <span className="confidence-step">
@@ -406,9 +430,21 @@ export function ProductPurchasePanel({
                 {/^(material|finish)$/i.test(option.name)
                   ? 'Material'
                   : /^size$/i.test(option.name)
-                    ? 'Size (inches)'
+                    ? isApparel ? 'Size' : 'Size (inches)'
                     : option.name}
               </legend>
+              {isApparel && sizeGuideAvailable && /^size$/i.test(option.name) ? (
+                <a
+                  className="product-purchase__guide product-purchase__size-link"
+                  href="#garment-size-guide"
+                  onClick={() => {
+                    const guide = document.getElementById('garment-size-guide');
+                    if (guide instanceof HTMLDetailsElement) guide.open = true;
+                  }}
+                >
+                  View size chart and measurements ↗
+                </a>
+              ) : null}
               {confidence && /^(material|finish)$/i.test(option.name) ? (
                 <a
                   className="confidence-option-guide"
@@ -511,6 +547,9 @@ export function ProductPurchasePanel({
                       disabled={!value.exists}
                       key={value.name}
                       onClick={() => {
+                        if (isApparel && /^size$/i.test(option.name)) {
+                          setSizeConfirmed(true);
+                        }
                         if (!isSelected) {
                           const query = getNextOptionQuery(
                             value.variantUriQuery,
@@ -555,6 +594,12 @@ export function ProductPurchasePanel({
             </fieldset>
           ))}
         </div>
+      ) : null}
+
+      {requiresSizeChoice ? (
+        <p className="product-purchase__guide" aria-live="polite">
+          Select a garment size before adding to cart.
+        </p>
       ) : null}
 
       {auxiliaryAction}
@@ -605,9 +650,9 @@ export function ProductPurchasePanel({
       </div>
 
       <ProductAddToCart
-        disabledLabel={selectionPending ? 'Updating selection…' : disabledLabel}
+        disabledLabel={selectionPending ? 'Updating selection…' : requiresSizeChoice ? 'Select a size' : disabledLabel}
         product={product}
-        purchaseAllowed={purchaseAllowed && !selectionPending}
+        purchaseAllowed={purchaseAllowed && !selectionPending && !requiresSizeChoice}
         selectedVariant={selectedVariant}
       />
       {confidence ? (
@@ -651,8 +696,14 @@ export function ProductPurchasePanel({
             aria-label="Purchase information"
           >
             <li>
-              <span>Made to order</span>
-              <small>Produced after purchase</small>
+              <span>{isApparel ? 'Garment size' : 'Made to order'}</span>
+              <small>
+                {isApparel
+                  ? requiresSizeChoice
+                    ? 'Select a size above'
+                    : `Selected: ${selectedVariant?.selectedOptions.find(({name}) => /^size$/i.test(name))?.value ?? 'See size options above'}`
+                  : 'Produced after purchase'}
+              </small>
             </li>
             <li>
               <span>
@@ -670,6 +721,14 @@ export function ProductPurchasePanel({
               Render-Lab metal and canvas prints typically take 2–4 business
               days to produce before shipping; transit time is additional. This
               is an estimate.
+            </p>
+          ) : null}
+          {isApparel ? (
+            <p className="product-purchase__guide">
+              Made to order. Estimated production: 2–7 business days, then
+              standard U.S. shipping typically takes another 6–9 business
+              days (13–16 to U.S. remote areas). Times may vary; these are
+              not guaranteed delivery dates.
             </p>
           ) : null}
           <p className="product-purchase__guide">

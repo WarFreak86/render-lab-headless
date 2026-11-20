@@ -89,6 +89,7 @@ export function buildExploreNavGroups(
 
 export const PRIMARY_NAV_ITEMS: ReadonlyArray<NavigationItem> = [
   {title: 'Wall Art', url: '/collections/wall-art'},
+  {title: 'Apparel', url: '/apparel'},
   {title: 'Materials', url: '/materials'},
   {title: 'Our Studio', url: '/artists'},
 ];
