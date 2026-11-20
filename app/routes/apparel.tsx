@@ -208,7 +208,7 @@ export default function ApparelPage() {
   );
 }
 
-const APPAREL_COLLECTION_QUERY = \`#graphql
+const APPAREL_COLLECTION_QUERY = `#graphql
   query ApparelCollection(
     $handle: String!
     $country: CountryCode
@@ -248,4 +248,4 @@ const APPAREL_COLLECTION_QUERY = \`#graphql
       }
     }
   }
-\` as const;
+` as const;
