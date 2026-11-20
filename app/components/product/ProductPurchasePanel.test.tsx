@@ -77,6 +77,7 @@ function renderPanel({
   handle = 'artwork',
   productType = 'Metal print',
   initialSizeSelected = false,
+  sizeGuideAvailable = false,
   buyerConfidence = false,
   variants = [],
   options,
@@ -86,6 +87,7 @@ function renderPanel({
   handle?: string;
   productType?: string;
   initialSizeSelected?: boolean;
+  sizeGuideAvailable?: boolean;
   buyerConfidence?: boolean;
   variants?: ChoiceVariant[];
   options: any[];
@@ -98,6 +100,7 @@ function renderPanel({
         <ProductPurchasePanel
           buyerConfidence={buyerConfidence}
           initialSizeSelected={initialSizeSelected}
+          sizeGuideAvailable={sizeGuideAvailable}
           variants={variants}
           product={{
             handle,
@@ -117,6 +120,23 @@ function renderPanel({
 }
 
 describe('ProductPurchasePanel', () => {
+  it('links the size control to existing supplier measurements when provided', () => {
+    renderPanel({
+      productType: 'Fashion Hoodie - AOP',
+      sizeGuideAvailable: true,
+      options: [{
+        name: 'Size',
+        optionValues: [
+          {name: 'M', available: true, exists: true, selected: true, variantUriQuery: 'Size=M'},
+          {name: 'L', available: true, exists: true, selected: false, variantUriQuery: 'Size=L'},
+        ],
+      }],
+    });
+    expect(screen.getByRole('link', {name: /View size chart and measurements/}))
+      .toHaveAttribute('href', '#garment-size-guide');
+  });
+
+
   it('requires deliberate garment size confirmation before purchase', () => {
     renderPanel({
       productType: 'Fashion Hoodie - AOP',
