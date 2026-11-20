@@ -257,6 +257,7 @@ function ProductAddToCart({
 export function ProductPurchasePanel({
   buyerConfidence = false,
   initialSizeSelected = false,
+  sizeGuideAvailable = false,
   scaleAvailable = false,
   selectionUpdating = false,
   variants = [],
@@ -274,6 +275,7 @@ export function ProductPurchasePanel({
 }: {
   buyerConfidence?: boolean;
   initialSizeSelected?: boolean;
+  sizeGuideAvailable?: boolean;
   scaleAvailable?: boolean;
   selectionUpdating?: boolean;
   variants?: ReadonlyArray<ChoiceVariant>;
@@ -429,6 +431,18 @@ export function ProductPurchasePanel({
                     ? isApparel ? 'Size' : 'Size (inches)'
                     : option.name}
               </legend>
+              {isApparel && sizeGuideAvailable && /^size$/i.test(option.name) ? (
+                <a
+                  className="product-purchase__guide product-purchase__size-link"
+                  href="#garment-size-guide"
+                  onClick={() => {
+                    const guide = document.getElementById('garment-size-guide');
+                    if (guide instanceof HTMLDetailsElement) guide.open = true;
+                  }}
+                >
+                  View size chart and measurements ↗
+                </a>
+              ) : null}
               {confidence && /^(material|finish)$/i.test(option.name) ? (
                 <a
                   className="confidence-option-guide"
