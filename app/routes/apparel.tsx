@@ -181,7 +181,7 @@ export default function ApparelPage() {
               measurements where supplied, fabric and care details.
             </p>
             {leadProductHandle ? (
-              <Link to={'/products/' + leadProductHandle + '#garment-size'}>
+              <Link to={'/products/' + leadProductHandle + '#garment-size-guide'}>
                 View garment sizes and fit ↗
               </Link>
             ) : null}
