@@ -47,4 +47,27 @@ jobs:
           # Codegen in typecheck/build changes the tracked generated d.ts; restore
           # only generated artifacts before the clean-tree deployment guard.
           git checkout -- storefrontapi.generated.d.ts customer-accountapi.generated.d.ts
-          npx shopify hydrogen deploy --preview --metadata-description "Render-Lab Apparel PR 78 review"
+          npx shopify hydrogen deploy --preview --auth-bypass-token --metadata-description "Render-Lab Apparel PR 78 browser QA"
+
+      - name: Install Chromium for PR 78 browser QA
+        if: ${{ github.event.pull_request.number == 78 && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          npm install --no-save --ignore-scripts --legacy-peer-deps playwright
+          npx playwright install chromium
+
+      - name: Verify real apparel pages, responsive widths and cart on Oxygen Preview
+        if: ${{ github.event.pull_request.number == 78 && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          export DEPLOYMENT_URL="$(jq -r '.url // empty' h2_deploy_log.json)"
+          export AUTH_BYPASS_TOKEN="$(jq -r '.authBypassToken // empty' h2_deploy_log.json)"
+          test -n "$DEPLOYMENT_URL"
+          test -n "$AUTH_BYPASS_TOKEN"
+          node scripts/apparel-preview-qa.mjs
+
+      - name: Save preview QA screenshots
+        if: ${{ always() && github.event.pull_request.number == 78 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: apparel-preview-qa
+          path: apparel-qa-screenshots/
+          if-no-files-found: warn
