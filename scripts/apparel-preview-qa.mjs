@@ -33,6 +33,20 @@ async function openPage(path, width = 390) {
   return {page, context};
 }
 
+
+async function scrollOnceHydrated(page, locator) {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      await locator.scrollIntoViewIfNeeded({timeout: 5000});
+      return;
+    } catch (error) {
+      if (!String(error).includes('not attached')) throw error;
+      await page.waitForTimeout(250);
+    }
+  }
+  throw new Error('Image element was repeatedly replaced while attempting to scroll');
+}
+
 try {
   for (const width of widths) {
     const {page, context} = await openPage('/apparel', width);
@@ -62,7 +76,7 @@ try {
     // the viewport, fetch from Shopify CDN, then decode before visual QA.
     const images = page.locator('.apparel-card__media img');
     const hero = page.locator('.apparel-hero__visual img');
-    await hero.scrollIntoViewIfNeeded();
+    await scrollOnceHydrated(page, hero);
     await page.waitForFunction(
       () => {
         const img = document.querySelector('.apparel-hero__visual img');
@@ -77,7 +91,7 @@ try {
     );
     for (let i = 0; i < await images.count(); i++) {
       const image = images.nth(i);
-      await image.scrollIntoViewIfNeeded({timeout: 15000});
+      await scrollOnceHydrated(page, image);
       await page.waitForFunction(
         (index) => {
           const img = document.querySelectorAll('.apparel-card__media img')[index];
