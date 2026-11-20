@@ -123,7 +123,6 @@ it.each([
   'alt-history',
   'neon-speed',
   'limited-editions',
-  'hoodies',
   'bundles',
   'unknown',
 ])(
@@ -147,6 +146,22 @@ it.each([
     expect(allLoader().headers.get('Location')).toBe('/collections/wall-art');
   },
 );
+
+it('redirects the published hoodies collection to canonical /apparel without querying Shopify', async () => {
+  const query = vi.fn();
+  await expect(
+    collectionLoader({
+      params: {handle: 'hoodies'},
+      context: {storefront: {query}},
+    } as never),
+  ).rejects.toMatchObject({status: 301, headers: expect.any(Headers)});
+  try {
+    await collectionLoader({params: {handle: 'hoodies'}} as never);
+  } catch (response) {
+    expect((response as Response).headers.get('Location')).toBe('/apparel');
+  }
+  expect(query).not.toHaveBeenCalled();
+});
 
 it.each(['dante-mercer', 'kai-stratos', 'mara-voss', 'nico-vale'])(
   'permanently redirects retired artist %s',
