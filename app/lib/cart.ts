@@ -33,7 +33,7 @@ type CartMoney = {amount: string; currencyCode: string};
 
 type CartDiscountApplication = {
   targetType: string;
-  totalAllocatedAmount: CartMoney;
+  discountedAmount: CartMoney;
 };
 
 /**
@@ -71,11 +71,11 @@ export function getCartDiscountSavings({
   const allocatedCents = (applications ?? []).reduce((sum, application) => {
     if (
       application.targetType !== 'LINE_ITEM' ||
-      application.totalAllocatedAmount.currencyCode !== subtotal.currencyCode
+      application.discountedAmount.currencyCode !== subtotal.currencyCode
     ) {
       return sum;
     }
-    const cents = Math.round(Number(application.totalAllocatedAmount.amount) * 100);
+    const cents = Math.round(Number(application.discountedAmount.amount) * 100);
     return Number.isFinite(cents) && cents > 0 ? sum + cents : sum;
   }, 0);
 
