@@ -22,6 +22,7 @@ import {
   type ChoiceVariant,
 } from '~/lib/product-confidence';
 import {getOptionState} from '~/lib/product';
+import {isGarmentProductType} from '~/lib/apparel';
 import {REFUND_POLICY_PATH, STANDARD_RETURN_DAYS} from '~/lib/return-policy';
 import {
   getProductContext,
@@ -325,9 +326,7 @@ export function ProductPurchasePanel({
   const identity = splitProductIdentity(product.title);
   const context = getProductContext(product.title, collectionTitle);
   const isStandard = presentation === 'standard';
-  const isApparel = /hoodie|sweatshirt|shirt|apparel|garment|tee|fleece/i.test(
-    product.productType ?? '',
-  );
+  const isApparel = isGarmentProductType(product.productType);
   const confidence = buyerConfidence && isStandard && !isApparel;
   const printName = printIdentity(product.title, collectionTitle);
   const baseOptions = {
