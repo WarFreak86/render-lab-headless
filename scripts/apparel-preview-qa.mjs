@@ -111,7 +111,7 @@ try {
   await page.waitForFunction(() => {
     const button = document.querySelector('.product-purchase__add');
     return button && !button.disabled;
-  }, {timeout: 15000});
+  }, undefined, {timeout: 15000});
 
   await page.screenshot({
     path: output + '/army-pdp-size-guide-390.png',
