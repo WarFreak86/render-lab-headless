@@ -6,7 +6,7 @@ import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import type {CartLayout} from '~/components/CartMain';
 import {useAside} from '~/components/Aside';
 import {Icon} from '~/components/Icon';
-import {getCartMutationMessage} from '~/lib/cart';
+import {getCartDiscountSavings, getCartMutationMessage} from '~/lib/cart';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;
@@ -16,17 +16,41 @@ type CartSummaryProps = {
 export function CartSummary({cart, layout}: CartSummaryProps) {
   const {close} = useAside();
   const subtotal = cart?.cost?.subtotalAmount;
+  const total = cart?.cost?.totalAmount;
+  const savings = getCartDiscountSavings({
+    subtotal,
+    total,
+    applications: cart?.discountApplications,
+  });
   const itemCount = cart?.totalQuantity ?? 0;
+  const hasApplicableCode = cart?.discountCodes?.some((code) => code.applicable);
 
   return (
     <footer className={`cart-summary cart-summary--${layout}`}>
       <CartOffers cart={cart} />
-      <dl className="cart-summary__subtotal">
-        <dt>
-          Subtotal ({itemCount} {itemCount === 1 ? 'item' : 'items'})
-        </dt>
-        <dd>{subtotal ? <Money data={subtotal} /> : '—'}</dd>
+      <dl className="cart-summary__totals">
+        <div className="cart-summary__subtotal">
+          <dt>
+            Subtotal ({itemCount} {itemCount === 1 ? 'item' : 'items'})
+          </dt>
+          <dd>{subtotal ? <Money data={subtotal} /> : '—'}</dd>
+        </div>
+        {savings ? (
+          <div className="cart-summary__discount">
+            <dt>Discounts</dt>
+            <dd>−<Money data={savings} /></dd>
+          </div>
+        ) : null}
+        <div className="cart-summary__total" aria-live="polite">
+          <dt>Estimated total</dt>
+          <dd>{total ? <Money data={total} /> : '—'}</dd>
+        </div>
       </dl>
+      {hasApplicableCode && !savings ? (
+        <p className="cart-summary__offer-note">
+          Discount applied. Any remaining savings are confirmed at checkout.
+        </p>
+      ) : null}
       <p className="cart-summary__disclaimer">
         Shipping and taxes calculated at checkout.
       </p>
