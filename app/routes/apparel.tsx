@@ -42,10 +42,10 @@ export async function loader({context, request}: Route.LoaderArgs) {
     category: (typeof APPAREL_CATEGORIES)[number];
     collection: ShopifyCategoryCollection | null;
   }> = [
-    {category: APPAREL_CATEGORIES[0], collection: result.hoodies},
-    {category: APPAREL_CATEGORIES[1], collection: result.tShirts},
-    {category: APPAREL_CATEGORIES[2], collection: result.sweatshirts},
-    {category: APPAREL_CATEGORIES[3], collection: result.jackets},
+    {category: APPAREL_CATEGORIES[0], collection: result.hoodies ?? null},
+    {category: APPAREL_CATEGORIES[1], collection: result.tShirts ?? null},
+    {category: APPAREL_CATEGORIES[2], collection: result.sweatshirts ?? null},
+    {category: APPAREL_CATEGORIES[3], collection: result.jackets ?? null},
   ];
   // Never advertise empty, draft or unlisted Shopify collections to customers.
   const categories = found.flatMap(({category, collection}) => {
