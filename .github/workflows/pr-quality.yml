@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  deployments: write
 
 jobs:
   validate:
@@ -30,3 +31,29 @@ jobs:
         run: npm test
       - name: Build (no deploy)
         run: npm run build
+
+      # Temporary, strictly non-production PR #78 browser release QA.
+      # Remove from branch once checked and keep the base workflow unchanged.
+      - name: Deploy PR 78 to temporary Oxygen Preview
+        if: ${{ github.event.pull_request.number == 78 && github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000173485 }}
+        run: |
+          test -n "$SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN"
+          git checkout -- storefrontapi.generated.d.ts customer-accountapi.generated.d.ts
+          npx shopify hydrogen deploy --preview --auth-bypass-token --metadata-description "Render-Lab PR 78 cart release QA"
+
+      - name: Install Chromium for private checkout QA
+        if: ${{ github.event.pull_request.number == 78 && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          npm install --no-save --ignore-scripts --legacy-peer-deps playwright
+          npx playwright install chromium
+
+      - name: Test variant mapping, cart operations and checkout handoff
+        if: ${{ github.event.pull_request.number == 78 && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          export DEPLOYMENT_URL="$(jq -r '.url // empty' h2_deploy_log.json)"
+          export AUTH_BYPASS_TOKEN="$(jq -r '.authBypassToken // empty' h2_deploy_log.json)"
+          test -n "$DEPLOYMENT_URL"
+          test -n "$AUTH_BYPASS_TOKEN"
+          node scripts/apparel-release-qa.mjs
