@@ -71,8 +71,8 @@ export function getApparelCategoryByCollectionHandle(handle: string | undefined)
 export function getApparelCategoryByProductType(type: string | null | undefined) {
   const label = type?.toLowerCase() ?? '';
   if (/hoodie/.test(label)) return getApparelCategory('hoodies');
-  if (/t[ -]?shirt|\btees?\b/.test(label)) return getApparelCategory('t-shirts');
   if (/sweatshirt|crewneck/.test(label)) return getApparelCategory('sweatshirts');
+  if (/\b(?:t[ -]?shirts?|tees?)\b/.test(label)) return getApparelCategory('t-shirts');
   if (/jacket|outerwear/.test(label)) return getApparelCategory('jackets');
   return undefined;
 }
