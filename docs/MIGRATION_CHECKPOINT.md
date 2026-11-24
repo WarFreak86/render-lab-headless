@@ -68,3 +68,9 @@ All three originally referred to source metaobject `gid://shopify/Metaobject/212
 
 ## Backup provenance
 Original source backup Library ID: `libfile_79fae253a794819181aa6cd75203c1b2`; filename `Render-Lab-Replacement-Store-Package.zip`, snapshot captured 2026-11-24 03:52 UTC. It is a pre-import snapshot, not a post-migration checkpoint.
+
+## Oxygen preview milestone — 2026-11-24
+- Merchant terminal and browser screenshots confirm the local checkout linked to the replacement Hydrogen storefront, destination SHOP_ID 103251870010 and destination store domain, and successful Oxygen Preview deployment. Homepage hero, branding, navigation, and editorial imagery render in the browser on the preview host. Full route, checkout, and restricted-access verification remain outstanding.
+- The dependency versions and lockfile remain unchanged by explicit merchant decision. Production dependency audit reported 5 findings (1 high, 4 moderate); security remediation deferred separately. Preview access should remain restricted; public launch readiness has not been established.
+- Fresh destination Admin read: 242 DRAFT, 0 ACTIVE. Gelato and Subliminator installed. One listed active Shop location, one General profile with 3 active methods and 1 location without rates; provider-specific routing and shipping are not verified. Payment account read was denied by the current access scopes, so verify payment setup in Admin.
+- Next: establish existing-product provider mappings without creating duplicates; verify one wall-art and one apparel product, shipping and payments, then request approval for a limited preview publication and test order. No cutover or source-store changes.
