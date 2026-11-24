@@ -103,6 +103,25 @@ describe('ProductDetails', () => {
     expect(screen.queryByText('See the work at room scale.')).not.toBeInTheDocument();
   });
 
+  it('labels the unlabeled supplier diagram and preserves supplied alt attributes', () => {
+    const {container} = render(
+      <ProductDetails
+        descriptionHtml={`<details class="sbl-size-guide">
+          <img class="sbl-size-guide-image" src="/hoodie.png">
+          <img class="sbl-size-guide-image" src="/custom.png" alt="Existing diagram label">
+          <img src="/divider.png" alt="">
+        </details>`}
+        editorial={emptyEditorial}
+        garment
+      />,
+    );
+
+    expect(screen.getByRole('img', {name: 'Hoodie measurement diagram'})).toBeInTheDocument();
+    expect(screen.getByRole('img', {name: 'Existing diagram label'})).toBeInTheDocument();
+    expect(container.querySelector('img[src="/divider.png"]')).toHaveAttribute('alt', '');
+    expect(container.querySelector('#garment-size-guide')).toBeInTheDocument();
+  });
+
   it('renders edition, story, highlights, and room preview only from merchant data', () => {
     render(
       <ProductDetails

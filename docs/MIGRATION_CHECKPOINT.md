@@ -1,70 +1,39 @@
 # Render-Lab replacement Shopify migration checkpoint
-_Observed 2026-11-23, America/New_York; destination queried live, no deployment._
 
-## Safety and identity
-- Source: `kn0xfa-4t.myshopify.com` — leave operating.
-- Destination: `ca510a-1w.myshopify.com`, Shopify Shop GID `gid://shopify/Shop/103251870010`.
-- Public domain: `https://render-lab.org`; checkout: `checkout.render-lab.org` — **no domain or DNS move**.
-- GitHub `main` remained at `c10c13ec9a0abacfc96cd76c383fb0fec2c6aeca` when verified.
-- Recovered tree: `7abbfe3e44c2a2aa51aea8134222cef006cbe2d2`.
-- Isolated branch: `migration/ca510a-1w`, initial commit `2c6d7c24edc6161f6c70c9b0df7a4e627d3b5c3a`.
-- Migration branch removes three source-account deployment workflows, updates four frontend files and includes `docs/REPLACEMENT_STORE_SETUP.md`. **Not deployed.**
-- Original scratch path no longer exists in the current working environment.
+_Production observations from November 24, 2026 (America/New_York)._
 
-## Reconciled live destination counts
+## Verified production state
 
-| Resource | Count or state |
-|---|---:|
-| Products | 242 — all DRAFT, zero ACTIVE |
-| Variants | 1,276 |
-| Collections | 29 (frontpage collection contains 0 products) |
-| Pages | 2 |
-| Menus | 3 (main, footer, customer account) |
-| Redirects | 18 |
-| Shopify Files | 642; all READY |
-| Metaobject definitions | 19 |
-| Metaobject records | 117, including 6 artist records |
-| Metafield definitions | 37 |
-| Active destination shipping profiles | One `General profile`, with 3 active methods; actual rate/fulfillment suitability NOT verified |
-| Locations | One active `Shop location` |
-| Current merchant display name | **My Store** (must become Render-Lab) |
+| Check | Observation |
+|---|---|
+| Storefront identity | `https://render-lab.org` served Shopify Shop `103251870010`. The replacement Admin connection identifies the same shop as Render-Lab, `ca510a-1w.myshopify.com`. |
+| Checkout domain attachment | Replacement Admin reports `https://checkout.render-lab.org` as the shop’s primary domain. |
+| Catalog | Replacement Admin returned 249 products (97 active, 145 draft, 7 archived) and 29 collections. These are Admin status counts. The live Hydrogen product sitemap separately listed 97 URLs. |
+| Intentional unpublication | The Last Radiance is draft in the replacement store. Its public product URL returned 404 and was absent from the live sitemap. |
+| Legal pages | The four storefront policy pages returned 200 and self-canonical URLs. The public privacy policy identifies Render-Lab and shows a November 24, 2026 update. |
+| November 24 SEO baseline | All four live sitemap children were inspected. Of 113 listed URLs, 112 returned 200 with self-canonicals. The News blog URL redirected to Collections. Eight eligible storefront routes were missing. The Veil Between Worlds guide linked to the unpublished product from the base, Metal and Canvas views. |
 
-Private destination ID lookup checkpoint independently saved as a Google Doc titled `Render-Lab Destination Shopify Migration ID Checkpoint — 2026-11-23`. It includes all destination product/variant IDs, SKUs, selected option pairs, 29 collection IDs, and 117 metaobject IDs, rebuilt from read-only Admin queries. Reconcile source IDs by handles and option combinations; never reuse source GIDs.
+The SEO repair is on `migration/ca510a-1w`. Production observations above describe the deployed site before this repair.
 
-### Source status preservation
-The original ZIP snapshot contains 99 ACTIVE, 36 DRAFT, and 107 ARCHIVED source products. They were intentionally imported as drafts. **Never bulk-activate 242 products.** Decide the launch subset only after end-to-end fulfillment and checkout testing and restore original status distinctions intentionally.
+## SEO repair validation
 
-### Policies
-- Refund, shipping and terms policy bodies match the source backup character-for-character (verified with matching length and UTF-16 FNV-1a checksums).
-- Contact-information policy differs from source (Shopify-generated formatting and fields).
-- Privacy policy differs from source; it still identifies the merchant as **My Store** and includes temporary destination domain links.
-- The connection lacks policy-writing scope. No permission bypass; restore/review in destination Shopify Admin, including data-sharing rights and correct identity/links.
+- The production build passed 413 tests and TypeScript checks. A local host serving that build against the replacement store returned valid sitemap XML with 126 unique canonical URLs and all 97 product dates intact.
+- The Veil Between Worlds base, Metal and Canvas views passed the content-link crawl. Keeper of the Threshold is the replacement recommendation. The account link was verified against the public sign-in page.
+- Browser checks covered desktop, tablet and mobile navigation and size selection. A local test cart reached the live checkout and displayed the selected hoodie. Payment was outside this check.
+- The hosted Oxygen preview requires replacement-store CLI authentication or an Oxygen deployment token. The local checks used a Node host because the Windows MiniOxygen worker failed to start.
 
-### App/channel facts
-- Latest live recheck: **Gelato: Print on Demand** and **Subliminator** are now installed alongside Messaging and the Shopify ChatGPT MCP App. Provider-side variant mappings and fulfillment routing remain unverified.
-- The replacement Hydrogen storefront publication is present and active: `gid://shopify/Publication/333491503418`, catalog `Channel Catalog 333491503418 for Render-Lab replacement`, `autoPublish: false`. This is a publication ID, not an Oxygen storefront ID.
-- Existing other publications: Online Store, Point of Sale, Shop. All 242 products remain DRAFT; zero ACTIVE. No new deployment was executed in this session.
-- New customer accounts are enabled; guest checkout is allowed. Verify callback, logout and JS origins after Hydrogen setup.
-- Shipping has 3 active general methods but provider rates, services and sample checkout totals remain unverified.
-- Read-only `shopifyPaymentsAccount` query returned null and the shop reported no digital wallets. Payment onboarding/verification still requires the merchant.
-- Test order, tax setup, marketing channel ID mapping and tracking are not yet verified.
+## Pending merchant and release checks
 
-### Known content exceptions
-Three original `shopify.finish` list-metaobject attributes could not be restored under current product-category constraints:
-- `pink-crown-urban-icon`
-- `queens-cipher-urban-icon`
-- `street-empire-urban-icon`
+- Verify replacement Pinterest catalog ingestion and variant-level feed matching in Pinterest. Public storefront product IDs cannot establish catalog ingestion or item matching.
+- Verify an authorized checkout purchase reaches the expected GA4 and Pinterest destinations once, with the replacement variant identifiers and correct consent behavior.
+- Verify live payment authorization, capture and payment methods through a separately authorized merchant test. Confirm actual tax, shipping rates and provider routing for representative art and apparel orders.
+- Finish any outstanding provider mappings and reconcile held fulfillment exceptions. The Gelato migration validation records mapping and asset evidence. Confirmation of a routed order remains pending.
+- Verify the replacement customer-account sign-in and logout callbacks and review destination contact and notification settings.
+- Take final replacement-store and configuration backups after reconciliation. Confirm backup location, access and restore instructions separately.
+- Verify the SEO repair on an isolated replacement Oxygen preview before requesting approval to deploy it to production.
 
-All three originally referred to source metaobject `gid://shopify/Metaobject/212438909089`. **Preserve the value as evidence only; do not transplant this source GID.** Find a valid destination taxonomy reference or leave the field unset with an audit note.
+## Historical migration evidence
 
-## Required next sequence
-1. Merchant signs into destination Shopify Admin, changes display name to Render-Lab, reviews business/notification info and manually corrects privacy/contact policies.
-2. Replacement Hydrogen storefront created and publication verified. Next: link a fresh checkout of `migration/ca510a-1w` to `ca510a-1w.myshopify.com` with `npx shopify hydrogen link --shop ca510a-1w.myshopify.com`, selecting the replacement storefront. Pull destination environment values and verify the store domain, shop ID, session secret and checkout domain. Use a preview-only deployment first; do not attach production to `main` or change domains.
-3. Reconnect the actual fulfillment providers to destination; map the existing destination variants to provider SKUs/masters (do **not** republish duplicate products).
-4. Configure and test shipping profiles, rates, taxes, payment account and required payout/identity verification.
-5. Publish only a tiny approved test subset to destination Hydrogen, validate preview pages, option combinations, cart, account sign-in, checkout, provider routing, notification and analytics event IDs.
-6. Do an authorized destination test order, reconcile source changes since ZIP snapshot and obtain explicit cutover approval.
-7. Only then move `render-lab.org` and `checkout.render-lab.org` and perform rollback-ready monitoring. Do not shut down original store.
+The November 23 import checkpoint recorded 242 products imported as drafts, 1,276 variants, 642 ready Shopify files, 19 metaobject definitions, 117 metaobject records and 37 metafield definitions. The original Shopify account (`kn0xfa-4t.myshopify.com`) is retained as a recovery reference. Source account identifiers in archived exports are for reconciliation. Destination IDs should be matched by handle, SKU and selected options.
 
-## Backup provenance
-Original source backup Library ID: `libfile_79fae253a794819181aa6cd75203c1b2`; filename `Render-Lab-Replacement-Store-Package.zip`, snapshot captured 2026-11-24 03:52 UTC. It is a pre-import snapshot, not a post-migration checkpoint.
+The pre-import source ZIP snapshot was captured November 24, 2026 at 03:52 UTC. The destination ID reconciliation and the source backup are stored separately. Three legacy finish attributes remain documented in the [replacement setup](REPLACEMENT_STORE_SETUP.md).

@@ -123,7 +123,7 @@ const COLLECTION_BUYING_GUIDES: Record<string, CollectionBuyingGuideData> = {
       },
       {
         heading: 'Choose by atmosphere',
-        text: 'Cathedral of the Void emphasizes gothic architecture and a spiraling sky. Ascension Beyond Time centers on a solitary figure and celestial scale. The Last Radiance leans into luminous, dramatic light. Compare their details before selecting a finish.',
+        text: 'Cathedral of the Void emphasizes gothic architecture and a spiraling sky. Ascension Beyond Time centers on a solitary figure and celestial scale. Keeper of the Threshold sets a shadowed guardian beneath a cosmic portal. Compare their details before selecting a finish.',
       },
     ],
     recommendations: [
@@ -136,8 +136,8 @@ const COLLECTION_BUYING_GUIDES: Record<string, CollectionBuyingGuideData> = {
         to: '/products/ascension-beyond-time',
       },
       {
-        label: 'The Last Radiance',
-        to: '/products/the-last-radiance',
+        label: 'Keeper of the Threshold',
+        to: '/products/keeper-of-the-threshold',
       },
     ],
   },

@@ -8,6 +8,39 @@ vi.mock('@shopify/hydrogen', async (importOriginal) => ({
 }));
 
 import {loader} from '~/routes/sitemap.$type.$page[.xml]';
+import {loader as storefrontSitemap} from '~/routes/sitemap.storefront[.xml]';
+
+it('excludes storefront pages that redirect, are unavailable or are noindex', async () => {
+  const query = vi.fn(async (operation: string) => {
+    if (operation.includes('query ApparelCategoryDirectory')) return {};
+    if (operation.includes('query ApparelCategoryProducts')) {
+      return {collection: {products: {nodes: [{availableForSale: false}]}}};
+    }
+    if (operation.includes('query ArtistProfile')) {
+      return {metaobject: {id: 'artist', handle: 'jb-render'}, collections: {nodes: []}};
+    }
+    if (operation.includes('query Policy')) {
+      return {shop: {privacyPolicy: {handle: 'different-policy'}}};
+    }
+    throw new Error('Unexpected storefront query');
+  });
+  const response = await storefrontSitemap({
+    context: {storefront: {query, CacheShort: vi.fn(), CacheNone: vi.fn()}},
+    params: {},
+    request: new Request('https://preview.myshopify.dev/sitemap/storefront.xml'),
+  } as never);
+  const document = new DOMParser().parseFromString(await response.text(), 'application/xml');
+  expect(document.querySelector('parsererror')).toBeNull();
+  expect([...document.querySelectorAll('loc')].map((entry) => entry.textContent)).toEqual([
+    'https://render-lab.org/',
+    'https://render-lab.org/materials',
+    'https://render-lab.org/collections',
+    'https://render-lab.org/artists',
+    'https://render-lab.org/policies',
+    'https://render-lab.org/legal/rights-notice',
+    'https://render-lab.org/policies/refund-policy',
+  ]);
+});
 
 describe('sitemap child routes', () => {
   afterEach(() => vi.useRealTimers());
@@ -94,10 +127,8 @@ describe('sitemap child routes', () => {
   );
 
   it.each([
-    null,
     {handle: 'example', updatedAt: 'invalid'},
     {handle: 'example', updatedAt: '2999-01-01T00:00:00Z'},
-    {handle: 'different-product', updatedAt: '2020-01-01T00:00:00Z'},
   ])('omits untrustworthy or missing product dates (%j)', async (product) => {
     const {withProductSitemapLastmod} = await import('~/lib/product-sitemap');
     const query = vi.fn().mockResolvedValue({p0: product});
@@ -109,6 +140,37 @@ describe('sitemap child routes', () => {
       '<loc>https://render-lab.org/products/example</loc>',
     );
   });
+
+  it.each([
+    null,
+    {handle: 'different-product', updatedAt: '2020-01-01T00:00:00Z'},
+    {handle: 'example', title: 'Nightmare Lab artwork'},
+    {handle: 'example', featuredImage: {url: 'https://cdn.shopify.com/nightmare-lab.jpg'}},
+  ])('removes confirmed unavailable, noncanonical or suppressed products (%j)', async (product) => {
+    const {withProductSitemapLastmod} = await import('~/lib/product-sitemap');
+    const query = vi.fn().mockResolvedValue({p0: product});
+    const xml =
+      '<urlset><url><loc>https://render-lab.org/products/example</loc><lastmod>wrong</lastmod></url></urlset>';
+    expect(await withProductSitemapLastmod(xml, {query})).toBe('<urlset></urlset>');
+    expect(await withProductSitemapLastmod(xml, {
+      query: vi.fn().mockResolvedValue({p0: null, errors: [{message: 'Partial failure'}]}),
+    })).toContain('/products/example');
+  });
+
+  it.each(['https://render-lab.org/', 'https://render-lab.org/blogs/news'])(
+    'rejects a child containing only an ineligible location (%s)',
+    async (location) => {
+      mocks.getSitemap.mockResolvedValueOnce(
+        new Response(`<urlset><url><loc>${location}</loc></url></urlset>`),
+      );
+      const response = await loader({
+        context: {storefront: {}},
+        params: {type: 'blogs', page: '1'},
+        request: new Request('https://render-lab.org/sitemap/blogs/1.xml'),
+      } as never);
+      expect(response.status).toBe(404);
+    },
+  );
 
   it('omits dates on lookup failure without failing discovery', async () => {
     const {withProductSitemapLastmod} = await import('~/lib/product-sitemap');

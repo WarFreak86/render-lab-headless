@@ -9,10 +9,23 @@ type SelectedPolicies = keyof Pick<
   'privacyPolicy' | 'shippingPolicy' | 'termsOfService' | 'refundPolicy'
 >;
 
+const POLICY_DESCRIPTIONS: Partial<Record<string, string>> = {
+  'privacy-policy':
+    'Learn how Render-Lab collects, uses and shares personal information when you browse or shop, and how to exercise your privacy rights.',
+  'refund-policy':
+    'Read Render-Lab’s 14-day return window, eligibility rules and instructions for requesting a return or reporting an issue with your order.',
+  'shipping-policy':
+    'Learn how Render-Lab handles made-to-order production, shipping destinations, carrier transit times and delivery issues.',
+  'terms-of-service':
+    'Read the terms for using the Render-Lab storefront and placing orders, including account information, payments and product terms.',
+};
+
 export const meta: Route.MetaFunction = ({data}) => {
   const policy = data?.policy;
+  const description = policy && POLICY_DESCRIPTIONS[policy.handle];
   return [
     {title: `${policy?.title ?? 'Policy'} | Render-Lab`},
+    ...(description ? [{name: 'description', content: description}] : []),
     {
       rel: 'canonical',
       tagName: 'link',

@@ -22,16 +22,6 @@ const SUPPRESSED_PRODUCT_HANDLE_MARKERS = [
 ];
 const SUPPRESSED_TITLE_MARKERS = ['nightmare lab', 'placeholder'];
 const SUPPRESSED_ASSET_MARKERS = ['nightmare-lab'];
-const SUPPRESSED_SITEMAP_MARKERS = [
-  '/collections/nightmare-lab',
-  '/collections/comic-placeholder',
-  '/collections/ww2-placeholder',
-  '/products/nightmare-lab',
-  '-nightmare-lab',
-  '/products/nightmare-icons',
-  '/products/harly-placeholder',
-  '/products/hell-placeholder',
-];
 
 function normalized(value?: string | null) {
   return value?.trim().toLocaleLowerCase() ?? '';
@@ -72,12 +62,20 @@ export function isSuppressedMerchandisingAssetUrl(url?: string | null) {
 }
 
 export function isSuppressedSitemapLocation(value: string) {
-  const location = normalized(value);
-  return containsMarker(location, SUPPRESSED_SITEMAP_MARKERS);
+  if (!URL.canParse(value)) return false;
+  const match = new URL(value).pathname.match(
+    /^\/(products|collections)\/([^/]+)\/?$/,
+  );
+  if (!match) return false;
+  const [, type, handle] = match;
+  return type === 'products'
+    ? isSuppressedProduct({handle})
+    : isSuppressedCollection({handle});
 }
 
 export function filterSuppressedSitemapXml(xml: string) {
-  return xml.replace(/<url>[^]*?<\/url>/gi, (entry) =>
-    isSuppressedSitemapLocation(entry) ? '' : entry,
-  );
+  return xml.replace(/<url>[^]*?<\/url>/gi, (entry) => {
+    const location = entry.match(/<loc>([^<]+)<\/loc>/i)?.[1];
+    return location && isSuppressedSitemapLocation(location) ? '' : entry;
+  });
 }

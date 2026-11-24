@@ -29,10 +29,17 @@ export function ProductDetails({
   // Shopify's supplier-supplied chart stays the source of measurement facts.
   // Give the existing details element a stable anchor without duplicating it.
   const garmentDescriptionHtml = garment
-    ? descriptionHtml.replace(
-        'class="sbl-size-guide"',
-        'class="sbl-size-guide" id="garment-size-guide"',
-      )
+    ? descriptionHtml
+        .replace(
+          'class="sbl-size-guide"',
+          'class="sbl-size-guide" id="garment-size-guide"',
+        )
+        .replace(/<img\b[^>]*>/gi, (tag) =>
+          /\sclass=["'][^"']*\bsbl-size-guide-image\b[^"']*["']/i.test(tag) &&
+          !/\salt\s*=/i.test(tag)
+            ? tag.replace(/^<img/i, '$& alt="Hoodie measurement diagram"')
+            : tag,
+        )
     : descriptionHtml;
 
   return (

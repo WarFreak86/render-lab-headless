@@ -1,10 +1,16 @@
 import type {Storefront} from '@shopify/hydrogen';
+import {isSuppressedProduct} from './merchandising';
 
-type ProductTimestamp = {handle: string; updatedAt: string};
+type SitemapProduct = {
+  handle: string;
+  updatedAt: string;
+  title: string;
+  featuredImage: {url: string} | null;
+};
 
 /** Shopify's sitemap PRODUCT resources can report request time as updatedAt.
- * Resolve the actual products by handle instead, without changing membership,
- * partitioning, URLs, or other resource types. Missing dates are optional in XML.
+ * Resolve the published products by handle to confirm eligibility and supply
+ * the real date. Missing dates are optional in XML.
  */
 export async function withProductSitemapLastmod(
   xml: string,
@@ -16,21 +22,36 @@ export async function withProductSitemapLastmod(
     ),
   ].map((match) => match[1]);
   const timestamps = new Map<string, string>();
+  const excluded = new Set<string>();
 
   // Bounded alias batches avoid scanning the entire catalog for each partition.
   for (let offset = 0; offset < handles.length; offset += 50) {
     const batch = handles.slice(offset, offset + 50);
     const query = `query ProductSitemapTimestamps {
-      ${batch.map((handle, index) => `p${index}: product(handle: ${JSON.stringify(handle)}) { handle updatedAt }`).join('\n')}
+      ${batch.map((handle, index) => `p${index}: product(handle: ${JSON.stringify(handle)}) { handle updatedAt title featuredImage { url } }`).join('\n')}
     }`;
     try {
-      const data =
-        await storefront.query<Record<string, ProductTimestamp | null>>(query);
+      const data = await storefront.query<
+        Record<string, SitemapProduct | null> & {errors?: ReadonlyArray<unknown>}
+      >(query);
       for (let index = 0; index < batch.length; index++) {
+        const handle = batch[index];
         const product = data[`p${index}`];
         if (
-          product &&
-          batch.includes(product.handle) &&
+          (product === null && !data.errors?.length) ||
+          (product &&
+            (product.handle !== handle ||
+              isSuppressedProduct({
+                handle,
+                title: product.title,
+                imageUrl: product.featuredImage?.url,
+              })))
+        ) {
+          excluded.add(handle);
+          continue;
+        }
+        if (
+          product?.handle === handle &&
           /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(
             product.updatedAt,
           ) &&
@@ -54,6 +75,7 @@ export async function withProductSitemapLastmod(
       /<loc>https:\/\/render-lab\.org\/products\/([^<]+)<\/loc>/,
     )?.[1];
     if (!handle) return entry;
+    if (excluded.has(handle)) return '';
     const withoutDate = entry.replace(/\s*<lastmod>[^<]*<\/lastmod>/g, '');
     const updatedAt = timestamps.get(handle);
     return updatedAt

@@ -61,22 +61,47 @@ export const meta: Route.MetaFunction = ({data, location}) => {
       data?.mode === 'products' &&
       data.collectionSeoDescription?.trim()) ||
     null;
-  const title =
+  const baseTitle =
     directorySeo?.title ??
     approvedEditorialSeo?.title ??
     (approvedEditorialSeo ? shopifySeoTitle : null) ??
     `${page?.hero.title ?? 'Collection'} | Render-Lab`;
-  const description = getMetaDescription(
+  const baseDescription = getMetaDescription(
     directorySeo?.description,
+    page?.handle === 'the-veil-between-worlds'
+      ? 'Explore The Veil Between Worlds by J.B. Render, a collection of cosmic gothic wall art featuring surreal cathedrals and celestial fantasy.'
+      : undefined,
     shopifySeoDescription,
     data?.collectionSeoDescription,
     page?.hero.description,
     `Browse ${page?.hero.title ?? 'the collection'} at Render-Lab.`,
   );
-  const canonical =
+  let canonical =
     data?.mode === 'products'
       ? getCollectionCanonicalUrl(page?.handle ?? '', location.search)
       : getProductionUrl(`/collections/${page?.handle ?? ''}`);
+  let title = baseTitle;
+  let description = baseDescription;
+  if (page?.handle === 'chrome-thunder' && data?.mode === 'products') {
+    const paginationUrl = new URL(canonical);
+    const direction = paginationUrl.searchParams.get('direction');
+    if (paginationUrl.searchParams.has('cursor')) {
+      if (
+        direction === 'previous' &&
+        data.productConnection?.pageInfo.hasPreviousPage === false
+      ) {
+        canonical = getProductionUrl(paginationUrl.pathname);
+      } else {
+        const artwork = page.products?.slice(0, 2).map(({title}) => title);
+        title = `More ${baseTitle}`;
+        description = getMetaDescription(
+          artwork?.length
+            ? `Explore more Chrome & Thunder wall art, including ${artwork.join(' and ')}.`
+            : 'Explore more Chrome & Thunder wall art featuring classic cars, hot rods and muscle cars.',
+        );
+      }
+    }
+  }
   return [
     {title},
     {name: 'description', content: description},

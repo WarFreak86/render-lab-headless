@@ -9,6 +9,9 @@ export async function loader({
   const response = await getSitemapIndex({
     storefront,
     request: getProductionRequest(request),
+    // Only these Shopify resource types have canonical catalog routes today.
+    types: ['products', 'pages', 'collections'],
+    customChildSitemaps: ['/sitemap/storefront.xml'],
   });
 
   response.headers.set('Cache-Control', `max-age=${60 * 60 * 24}`);
