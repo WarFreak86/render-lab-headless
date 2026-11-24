@@ -2,7 +2,7 @@ export const SITE_NAME = 'Render-Lab';
 export const PRODUCTION_ORIGIN = 'https://render-lab.org';
 // Fallback for preview/local environments when PUBLIC_CHECKOUT_DOMAIN is unavailable.
 // Production should use the matching Oxygen variable with this same host.
-export const SHOPIFY_CHECKOUT_DOMAIN = 'checkout.render-lab.org';
+export const SHOPIFY_CHECKOUT_DOMAIN = 'ca510a-1w.myshopify.com';
 
 export type StorefrontEnvironment = 'local' | 'preview' | 'production';
 
@@ -35,6 +35,9 @@ export function normalizeStorefrontLink(value: string) {
     'render-lab.org',
     'www.render-lab.org',
     SHOPIFY_CHECKOUT_DOMAIN,
+    'ca510a-1w.myshopify.com',
+    // Keep navigation links saved against the source store internal after migration.
+    'checkout.render-lab.org',
     'kn0xfa-4t.myshopify.com',
   ]);
   return internalHosts.has(url.hostname)

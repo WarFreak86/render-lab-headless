@@ -7,7 +7,7 @@ const MATERIALS = [
     description: 'Crisp detail. Clean edges. Built for impact.',
     to: '/collections/metal-wall-art',
     image:
-      'https://cdn.shopify.com/s/files/1/0748/7701/0081/files/render-lab-home-material-metal.png?v=1789594163',
+      'https://cdn.shopify.com/s/files/1/1032/5187/0010/files/render-lab-home-material-metal.jpg?v=1795494302',
     alt: 'Close-up of premium metal wall art with crisp rigid edge',
   },
   {
@@ -15,7 +15,7 @@ const MATERIALS = [
     description: 'Texture, depth and a gallery-ready finish.',
     to: '/collections/canvas-art',
     image:
-      'https://cdn.shopify.com/s/files/1/0748/7701/0081/files/render-lab-home-material-canvas.png?v=1789594173',
+      'https://cdn.shopify.com/s/files/1/1032/5187/0010/files/render-lab-home-material-canvas.jpg?v=1795494302',
     alt: 'Close-up of slim wrapped canvas wall art with visible texture',
   },
   {
@@ -23,7 +23,7 @@ const MATERIALS = [
     description: 'Bold imagery in an accessible archival format.',
     to: '/collections/posters',
     image:
-      'https://cdn.shopify.com/s/files/1/0748/7701/0081/files/render-lab-home-material-poster.png?v=1789594183',
+      'https://cdn.shopify.com/s/files/1/1032/5187/0010/files/render-lab-home-material-poster.jpg?v=1795494302',
     alt: 'Close-up of premium poster print with curled paper edge',
   },
 ] as const;
@@ -50,7 +50,7 @@ export function EditorialBand() {
       <img
         alt="Dark mountain valley at dusk with dramatic clouds and warm light"
         loading="lazy"
-        src="https://cdn.shopify.com/s/files/1/0748/7701/0081/files/render-lab-home-editorial-mountains.png?v=1789594150"
+        src="https://cdn.shopify.com/s/files/1/1032/5187/0010/files/render-lab-home-editorial-mountains.jpg?v=1795494302"
       />
       <span className="home-v2-editorial__shade" aria-hidden="true" />
       <div className="home-v2-editorial__copy">
@@ -186,7 +186,7 @@ export function ClosingCta() {
       <img
         alt="Dark coastal landscape beneath a crimson moon with a lone figure"
         loading="lazy"
-        src="https://cdn.shopify.com/s/files/1/0748/7701/0081/files/render-lab-home-closing-crimson-horizon.png?v=1789594202"
+        src="https://cdn.shopify.com/s/files/1/1032/5187/0010/files/render-lab-home-closing-crimson-horizon.png?v=1795494302"
       />
       <span className="home-v2-closing__shade" aria-hidden="true" />
       <div className="home-v2-closing__copy">

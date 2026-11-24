@@ -3,7 +3,7 @@ import {Icon} from '~/components/Icon';
 import '~/styles/immersive-editorial.css';
 
 const IMMERSIVE_IMAGE =
-  'https://cdn.shopify.com/s/files/1/0748/7701/0081/files/render-lab-immersive-art-editorial.png?v=1789454338';
+  'https://cdn.shopify.com/s/files/1/1032/5187/0010/files/render-lab-immersive-art-editorial.png?v=1795494302';
 
 export function ImmersiveEditorial() {
   return (

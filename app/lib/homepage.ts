@@ -13,7 +13,7 @@ export interface HomepageImage {
 }
 
 export const HOMEPAGE_HERO_IMAGE = {
-  url: 'https://cdn.shopify.com/s/files/1/0748/7701/0081/files/render-lab-home-volcanic-gallery.png?v=1789594138',
+  url: 'https://cdn.shopify.com/s/files/1/1032/5187/0010/files/render-lab-home-volcanic-gallery.jpg?v=1795494302',
   altText:
     'Large-scale volcanic landscape metal wall art print displayed in a dark modern gallery living room',
   width: 1672,
