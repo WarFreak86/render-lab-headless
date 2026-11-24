@@ -41,9 +41,9 @@ The original ZIP snapshot contains 99 ACTIVE, 36 DRAFT, and 107 ARCHIVED source 
 - The connection lacks policy-writing scope. No permission bypass; restore/review in destination Shopify Admin, including data-sharing rights and correct identity/links.
 
 ### App/channel facts
-- Installed apps queried live: **Messaging** and **Shopify ChatGPT MCP App** only.
-- **No Hydrogen, Gelato, Printful, Printify, Subliminator or other print fulfillment app** installed as of the check.
-- Existing publications: Online Store, Point of Sale, Shop; **no Hydrogen publication**.
+- Latest live recheck: **Gelato: Print on Demand** and **Subliminator** are now installed alongside Messaging and the Shopify ChatGPT MCP App. Provider-side variant mappings and fulfillment routing remain unverified.
+- The replacement Hydrogen storefront publication is present and active: `gid://shopify/Publication/333491503418`, catalog `Channel Catalog 333491503418 for Render-Lab replacement`, `autoPublish: false`. This is a publication ID, not an Oxygen storefront ID.
+- Existing other publications: Online Store, Point of Sale, Shop. All 242 products remain DRAFT; zero ACTIVE. No new deployment was executed in this session.
 - New customer accounts are enabled; guest checkout is allowed. Verify callback, logout and JS origins after Hydrogen setup.
 - Shipping has 3 active general methods but provider rates, services and sample checkout totals remain unverified.
 - Read-only `shopifyPaymentsAccount` query returned null and the shop reported no digital wallets. Payment onboarding/verification still requires the merchant.
@@ -59,7 +59,7 @@ All three originally referred to source metaobject `gid://shopify/Metaobject/212
 
 ## Required next sequence
 1. Merchant signs into destination Shopify Admin, changes display name to Render-Lab, reviews business/notification info and manually corrects privacy/contact policies.
-2. Install Hydrogen sales channel and set up a **new destination Hydrogen storefront**, attaching `migration/ca510a-1w`, not `main`; generate new storefront credentials/environment values and deployment token.
+2. Replacement Hydrogen storefront created and publication verified. Next: link a fresh checkout of `migration/ca510a-1w` to `ca510a-1w.myshopify.com` with `npx shopify hydrogen link --shop ca510a-1w.myshopify.com`, selecting the replacement storefront. Pull destination environment values and verify the store domain, shop ID, session secret and checkout domain. Use a preview-only deployment first; do not attach production to `main` or change domains.
 3. Reconnect the actual fulfillment providers to destination; map the existing destination variants to provider SKUs/masters (do **not** republish duplicate products).
 4. Configure and test shipping profiles, rates, taxes, payment account and required payout/identity verification.
 5. Publish only a tiny approved test subset to destination Hydrogen, validate preview pages, option combinations, cart, account sign-in, checkout, provider routing, notification and analytics event IDs.
