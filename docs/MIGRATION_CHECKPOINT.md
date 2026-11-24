@@ -46,7 +46,8 @@ The original ZIP snapshot contains 99 ACTIVE, 36 DRAFT, and 107 ARCHIVED source 
 - Existing publications: Online Store, Point of Sale, Shop; **no Hydrogen publication**.
 - New customer accounts are enabled; guest checkout is allowed. Verify callback, logout and JS origins after Hydrogen setup.
 - Shipping has 3 active general methods but provider rates, services and sample checkout totals remain unverified.
-- Payments, test order, tax setup, marketing channel ID mapping and tracking are not yet verified.
+- Read-only `shopifyPaymentsAccount` query returned null and the shop reported no digital wallets. Payment onboarding/verification still requires the merchant.
+- Test order, tax setup, marketing channel ID mapping and tracking are not yet verified.
 
 ### Known content exceptions
 Three original `shopify.finish` list-metaobject attributes could not be restored under current product-category constraints:
