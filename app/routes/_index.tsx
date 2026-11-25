@@ -14,10 +14,10 @@ import {
 } from '~/lib/homepage';
 
 const HOME_TITLE =
-  'Dark Modern Wall Art, Metal Prints & Stretched Canvas | Render-Lab';
+  'Dark Wall Art, Metal Prints & Graphic Hoodies | Render-Lab';
 export const links = () => [{rel: 'stylesheet', href: homeStyles}];
 const HOME_DESCRIPTION =
-  'Shop bold metal wall art, gallery-wrapped canvas prints, and archival posters by J.B. Render and Render-Lab Studio. Explore dark gothic, classic muscle car, macro botanical, military, and cinematic art collections.';
+  'Shop dark modern wall art, metal prints, canvas art, posters and graphic hoodies. Discover distinctive artwork from Render-Lab Studio.';
 
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/');
@@ -38,7 +38,7 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export async function loader({context}: Route.LoaderArgs) {
-  const {collections, artists} = await context.storefront.query(
+  const {collections, artists, hoodies} = await context.storefront.query(
     HOMEPAGE_QUERY,
     {variables: {collectionQuery: LIVE_COLLECTION_QUERY}},
   );
@@ -63,6 +63,9 @@ export async function loader({context}: Route.LoaderArgs) {
   return {
     isShopLinked: Boolean(context.env.PUBLIC_STORE_DOMAIN),
     artists: homepageArtists,
+    hoodies: (hoodies?.products.nodes ?? []).filter(
+      (product) => product.availableForSale,
+    ),
     homepage: normalizeHomepageData(
       {
         collections: collections.nodes,
@@ -78,7 +81,11 @@ export default function Homepage() {
   return (
     <>
       {data.isShopLinked ? null : <MockShopNotice />}
-      <HomepageView artists={data.artists} data={data.homepage} />
+      <HomepageView
+        artists={data.artists}
+        data={data.homepage}
+        hoodies={data.hoodies}
+      />
     </>
   );
 }
@@ -118,6 +125,18 @@ const HOMEPAGE_QUERY = `#graphql
     collections(query: $collectionQuery, first: 100, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...HomepageCollection
+      }
+    }
+    hoodies: collection(handle: "hoodies") {
+      products(first: 12) {
+        nodes {
+          ...ProductCard
+          availableForSale
+          selectedOrFirstAvailableVariant {
+            availableForSale
+            price { ...Money }
+          }
+        }
       }
     }
     artists: metaobjects(type: "artist", first: 100) {

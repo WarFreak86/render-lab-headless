@@ -1,5 +1,5 @@
 import {SERIES_COLLECTION_HANDLES} from '~/lib/catalog-collections';
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {MemoryRouter} from 'react-router';
 import {HomepageView} from './HomepageView';
@@ -122,6 +122,58 @@ describe('homepage presentation', () => {
     expect(screen.getByRole('link', {name: 'Echoes of War'})).toHaveAttribute(
       'href',
       '/collections/echoes-of-war',
+    );
+  });
+
+  it('links to the apparel department and featured hoodies with Shopify imagery and available pricing', () => {
+    const minVariantPrice = {amount: '69.0', currencyCode: 'USD'} as const;
+    const maxVariantPrice = {...minVariantPrice, amount: '89.0'};
+    const featuredImage = {id: 'image-1', ...image};
+    const hoodie = {
+      id: 'sombrero-1',
+      title: 'Sombrero — Skeleton Charro Fleece Hoodie',
+      handle: 'sombrero',
+      featuredImage,
+      availableForSale: true,
+      priceRange: {minVariantPrice, maxVariantPrice},
+      selectedOrFirstAvailableVariant: {
+        availableForSale: true,
+        price: maxVariantPrice,
+      },
+    };
+    render(
+      <MemoryRouter>
+        <HomepageView
+          data={data}
+          hoodies={[
+            hoodie,
+            {
+              ...hoodie,
+              id: 'fighter-1',
+              title: 'Fighter — Jet Sunset Fleece Hoodie',
+              handle: 'fighter-jet-graphic-hoodie',
+            },
+          ]}
+        />
+      </MemoryRouter>,
+    );
+
+    const section = within(screen.getByRole('region', {name: 'Graphic hoodies'}));
+    expect(section.getByRole('link', {name: 'Render-Lab Apparel'})).toHaveAttribute(
+      'href',
+      '/apparel',
+    );
+    expect(section.getByRole('link', {name: 'Explore Graphic Hoodies'})).toHaveAttribute(
+      'href',
+      '/apparel/hoodies',
+    );
+    const sombrero = section.getByRole('link', {name: /Sombrero/});
+    expect(sombrero).toHaveAttribute('href', '/products/sombrero');
+    expect(sombrero.querySelector('img')).toHaveAttribute('src', expect.stringContaining(image.url));
+    expect(sombrero).toHaveTextContent('Available size $89.00');
+    expect(section.getByRole('link', {name: /Fighter/})).toHaveAttribute(
+      'href',
+      '/products/fighter-jet-graphic-hoodie',
     );
   });
 

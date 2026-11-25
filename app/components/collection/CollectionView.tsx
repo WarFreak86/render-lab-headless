@@ -182,6 +182,10 @@ function CollectionBuyingGuide({handle}: {handle: string}) {
             >
               Compare metal and canvas finishes
             </Link>
+            <p>
+              Browse more <Link to="/collections/metal-wall-art">metal wall art</Link>{' '}
+              or <Link to="/collections/canvas-art">canvas prints</Link>.
+            </p>
           </div>
         </div>
       </div>

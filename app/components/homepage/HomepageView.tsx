@@ -1,3 +1,4 @@
+import {FeaturedApparel, type HomepageHoodies} from './FeaturedApparel';
 import {FeaturedProducts} from './FeaturedProducts';
 import {HomepageHero} from './HomepageHero';
 import {FeaturedCollections} from './FeaturedCollections';
@@ -13,9 +14,11 @@ import type {HomepageData} from '~/lib/homepage';
 export function HomepageView({
   data,
   artists = [],
+  hoodies = [],
 }: {
   data: HomepageData;
   artists?: ReadonlyArray<ArtistSpotlightItem>;
+  hoodies?: HomepageHoodies;
 }) {
   return (
     <div className="home homepage homepage-v2">
@@ -30,6 +33,7 @@ export function HomepageView({
         eyebrow="Distinct worlds. Original perspectives."
         title="Featured collections"
       />
+      <FeaturedApparel hoodies={hoodies} />
       <FeaturedProducts products={data.featuredProducts} />
       <EditorialBand />
       <MaterialShowcase />

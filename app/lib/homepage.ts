@@ -177,7 +177,17 @@ export const HOMEPAGE_EDITORIAL_FALLBACK: HomepageEditorialConfig = {
   },
 };
 
-const FEATURED_COLLECTION_PRIORITY: ReadonlyArray<string> = ['chrome-thunder'];
+const FEATURED_COLLECTION_PRIORITY: ReadonlyArray<string> = [
+  'chrome-thunder',
+  'the-veil-between-worlds',
+  'carnivora',
+];
+
+const FEATURED_ARTWORKS = [
+  ['reel-legends', 'midnight-shake-vincent-vega'],
+  ['chrome-thunder', 'fireglass-1934-ford-three-window'],
+  ['the-veil-between-worlds', 'cathedral-of-the-void'],
+] as const;
 
 const CATEGORY_PRIORITY = [
   'wall-art',
@@ -346,8 +356,7 @@ export function normalizeHomepageData(
   const featuredCandidates = storefrontSeriesCollections(
     merchandisableCollections,
   );
-  // Pin one priority series on the homepage while retaining the dynamic
-  // newest-updated order for all remaining published series.
+  // Pin priority series while retaining the newest-updated order for the rest.
   const featuredDisplayOrder = [
     ...prioritizedCollections(featuredCandidates, FEATURED_COLLECTION_PRIORITY),
     ...featuredCandidates.filter(
@@ -407,30 +416,46 @@ export function normalizeHomepageData(
     const normalized = normalizeProduct(product);
     return normalized ? [normalized] : [];
   });
-  // Round-robin across live series so the selection represents the gallery,
-  // deduplicating products that Shopify places in more than one collection.
+  // Feature selected artworks first, then round-robin across live series.
   const featuredProducts: HomepageData['featuredProducts'] = [];
   const seenProducts = new Set<string>();
+  function addFeaturedProduct(
+    collection: HomepageCollectionInput,
+    product: HomepageProductInput | undefined,
+  ) {
+    if (!product || seenProducts.has(product.id)) return;
+    const normalized = normalizeProduct(product);
+    if (!normalized?.price || !normalized.availableForSale) return;
+    seenProducts.add(product.id);
+    const materialValues =
+      product.options
+        ?.filter(({name}) => /^(material|finish)$/i.test(name))
+        .flatMap(({optionValues}) =>
+          optionValues.map(({name}) => name.toLowerCase()),
+        ) ?? [];
+    featuredProducts.push({
+      ...normalized,
+      series: collection.title,
+      materials: ['Metal', 'Canvas', 'Poster'].filter((name) =>
+        materialValues.includes(name.toLowerCase()),
+      ),
+    });
+  }
+
+  for (const [seriesHandle, productHandle] of FEATURED_ARTWORKS) {
+    const collection = featuredDisplayOrder.find(
+      ({handle}) => handle === seriesHandle,
+    );
+    if (!collection) continue;
+    addFeaturedProduct(
+      collection,
+      collection.products.nodes.find(({handle}) => handle === productHandle),
+    );
+  }
+
   for (let index = 0; index < 6 && featuredProducts.length < 12; index++) {
     for (const collection of featuredDisplayOrder) {
-      const product = collection.products.nodes[index];
-      if (!product || seenProducts.has(product.id)) continue;
-      const normalized = normalizeProduct(product);
-      if (!normalized?.price || !normalized.availableForSale) continue;
-      seenProducts.add(product.id);
-      const materialValues =
-        product.options
-          ?.filter(({name}) => /^(material|finish)$/i.test(name))
-          .flatMap(({optionValues}) =>
-            optionValues.map(({name}) => name.toLowerCase()),
-          ) ?? [];
-      featuredProducts.push({
-        ...normalized,
-        series: collection.title,
-        materials: ['Metal', 'Canvas', 'Poster'].filter((name) =>
-          materialValues.includes(name.toLowerCase()),
-        ),
-      });
+      addFeaturedProduct(collection, collection.products.nodes[index]);
       if (featuredProducts.length === 12) break;
     }
   }

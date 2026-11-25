@@ -1,4 +1,5 @@
 import {meta as collectionMeta} from '~/routes/collections.$handle';
+import {meta as collectionsDirectoryMeta} from '~/routes/collections._index';
 import {meta as homepageMeta} from '~/routes/_index';
 import {meta as materialsMeta} from '~/routes/materials';
 import {meta as pageMeta} from '~/routes/pages.$handle';
@@ -137,25 +138,41 @@ describe('Phase B1 route metadata', () => {
     });
   });
 
-  it('uses the approved Phase C homepage metadata', () => {
-    const entries = homepageMeta({data: undefined} as never);
-    const title =
-      'Dark Modern Wall Art, Metal Prints & Stretched Canvas | Render-Lab';
-    const description =
-      'Shop bold metal wall art, gallery-wrapped canvas prints, and archival posters by J.B. Render and Render-Lab Studio. Explore dark gothic, classic muscle car, macro botanical, military, and cinematic art collections.';
-
-    expect(entries).toContainEqual({title});
-    expect(entries).toContainEqual({name: 'description', content: description});
-    expect(entries).toContainEqual({property: 'og:title', content: title});
-    expect(entries).toContainEqual({
-      property: 'og:description',
-      content: description,
-    });
-    expect(entries).toContainEqual({
-      property: 'og:url',
-      content: 'https://render-lab.org/',
-    });
-  });
+  it.each([
+    {
+      path: '/',
+      meta: homepageMeta,
+      title: 'Dark Wall Art, Metal Prints & Graphic Hoodies | Render-Lab',
+      description:
+        'Shop dark modern wall art, metal prints, canvas art, posters and graphic hoodies. Discover distinctive artwork from Render-Lab Studio.',
+    },
+    {
+      path: '/collections',
+      meta: collectionsDirectoryMeta,
+      title: 'Dark Modern Wall Art Collections | Render-Lab',
+      description:
+        'Explore gothic, cinematic, automotive, botanical and military wall art collections. Discover distinctive metal prints, canvas art and posters.',
+    },
+  ])(
+    'aligns commercial metadata and the canonical for $path',
+    ({path, meta, title, description}) => {
+      const entries = meta({data: undefined} as never);
+      const canonical = `https://render-lab.org${path}`;
+      expect(entries).toContainEqual({title});
+      expect(entries).toContainEqual({name: 'description', content: description});
+      expect(entries).toContainEqual({property: 'og:title', content: title});
+      expect(entries).toContainEqual({
+        property: 'og:description',
+        content: description,
+      });
+      expect(entries).toContainEqual({
+        tagName: 'link',
+        rel: 'canonical',
+        href: canonical,
+      });
+      expect(entries).toContainEqual({property: 'og:url', content: canonical});
+    },
+  );
 
   it.each([
     [

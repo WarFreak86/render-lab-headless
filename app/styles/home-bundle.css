@@ -24,6 +24,85 @@
   max-width: none;
   white-space: normal;
 }
+.homepage .home-v2-apparel .home-section-heading {
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.homepage .home-v2-apparel .home-section-heading h2 {
+  font-size: clamp(1.85rem, 3vw, 2.75rem);
+}
+.homepage.homepage-v2 > .home-v2-apparel {
+  margin-block-end: calc(-1 * var(--space-3));
+  padding-block-start: var(--space-2);
+}
+.home-v2-apparel .home-eyebrow a {
+  color: var(--color-gold-bright);
+}
+.home-v2-apparel .home-eyebrow a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.home-v2-apparel .home-v2-button {
+  min-width: 0;
+  border-color: var(--color-border-gold);
+  padding-inline: var(--space-3);
+  color: var(--color-gold-bright);
+  backdrop-filter: none;
+}
+.home-v2-apparel__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+.home-v2-apparel__card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  background: var(--color-surface);
+  border: var(--border-thin);
+  color: var(--color-text);
+  text-decoration: none;
+}
+.home-v2-apparel__card:hover {
+  border-color: var(--color-border-gold);
+}
+.home-v2-apparel a:focus-visible {
+  outline: 2px solid var(--color-gold-bright);
+  outline-offset: 3px;
+}
+.home-v2-apparel__media {
+  flex: none;
+  width: clamp(6rem, 14vw, 9rem);
+  aspect-ratio: 4 / 5;
+  background: var(--color-bg-raised);
+}
+.home-v2-apparel__media img {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+}
+.home-v2-apparel__details {
+  min-width: 0;
+  padding: var(--space-3) clamp(0.75rem, 2vw, 1.5rem);
+}
+.home-v2-apparel__details h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2vw, 1.9rem);
+  line-height: 1.12;
+}
+.home-v2-apparel__details p {
+  margin: var(--space-2) 0 0;
+  color: var(--color-gold-bright);
+  font-size: var(--text-sm);
+}
+@media (max-width: 40rem) {
+  .home-v2-apparel__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+}
 .home-v2-products__grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

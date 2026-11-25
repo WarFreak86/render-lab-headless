@@ -278,6 +278,26 @@ export type CartApiQueryFragment = Pick<
   discountCodes: Array<
     Pick<StorefrontAPI.CartDiscountCode, 'code' | 'applicable'>
   >;
+  discountAllocations: Array<
+    | (Pick<StorefrontAPI.CartAutomaticDiscountAllocation, 'targetType'> & {
+        discountedAmount: Pick<
+          StorefrontAPI.MoneyV2,
+          'currencyCode' | 'amount'
+        >;
+      })
+    | (Pick<StorefrontAPI.CartCodeDiscountAllocation, 'targetType'> & {
+        discountedAmount: Pick<
+          StorefrontAPI.MoneyV2,
+          'currencyCode' | 'amount'
+        >;
+      })
+    | (Pick<StorefrontAPI.CartCustomDiscountAllocation, 'targetType'> & {
+        discountedAmount: Pick<
+          StorefrontAPI.MoneyV2,
+          'currencyCode' | 'amount'
+        >;
+      })
+  >;
 };
 
 export type MenuItemFragment = Pick<
@@ -1143,6 +1163,38 @@ export type HomepageQuery = {
       }
     >;
   };
+  hoodies?: StorefrontAPI.Maybe<{
+    products: {
+      nodes: Array<
+        Pick<
+          StorefrontAPI.Product,
+          'availableForSale' | 'id' | 'handle' | 'title'
+        > & {
+          selectedOrFirstAvailableVariant?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.ProductVariant, 'availableForSale'> & {
+              price: Pick<StorefrontAPI.MoneyV2, 'currencyCode' | 'amount'>;
+            }
+          >;
+          featuredImage?: StorefrontAPI.Maybe<
+            Pick<
+              StorefrontAPI.Image,
+              'id' | 'altText' | 'url' | 'width' | 'height'
+            >
+          >;
+          priceRange: {
+            minVariantPrice: Pick<
+              StorefrontAPI.MoneyV2,
+              'currencyCode' | 'amount'
+            >;
+            maxVariantPrice: Pick<
+              StorefrontAPI.MoneyV2,
+              'currencyCode' | 'amount'
+            >;
+          };
+        }
+      >;
+    };
+  }>;
   artists: {
     nodes: Array<
       Pick<StorefrontAPI.Metaobject, 'id' | 'handle'> & {
@@ -1165,6 +1217,133 @@ export type HomepageQuery = {
       }
     >;
   };
+};
+
+export type ApparelCategoryDirectoryQueryVariables = StorefrontAPI.Exact<{
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+}>;
+
+export type ApparelCategoryDirectoryQuery = {
+  hoodies?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Collection, 'id'> & {
+      products: {
+        nodes: Array<
+          Pick<StorefrontAPI.Product, 'id' | 'availableForSale'> & {
+            featuredImage?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+            >;
+          }
+        >;
+      };
+    }
+  >;
+  tShirts?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Collection, 'id'> & {
+      products: {
+        nodes: Array<
+          Pick<StorefrontAPI.Product, 'id' | 'availableForSale'> & {
+            featuredImage?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+            >;
+          }
+        >;
+      };
+    }
+  >;
+  sweatshirts?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Collection, 'id'> & {
+      products: {
+        nodes: Array<
+          Pick<StorefrontAPI.Product, 'id' | 'availableForSale'> & {
+            featuredImage?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+            >;
+          }
+        >;
+      };
+    }
+  >;
+  jackets?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Collection, 'id'> & {
+      products: {
+        nodes: Array<
+          Pick<StorefrontAPI.Product, 'id' | 'availableForSale'> & {
+            featuredImage?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+            >;
+          }
+        >;
+      };
+    }
+  >;
+};
+
+export type CategoryPreviewFragment = Pick<StorefrontAPI.Collection, 'id'> & {
+  products: {
+    nodes: Array<
+      Pick<StorefrontAPI.Product, 'id' | 'availableForSale'> & {
+        featuredImage?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+        >;
+      }
+    >;
+  };
+};
+
+export type ApparelCategoryProductsQueryVariables = StorefrontAPI.Exact<{
+  handle: StorefrontAPI.Scalars['String']['input'];
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+  first?: StorefrontAPI.InputMaybe<StorefrontAPI.Scalars['Int']['input']>;
+  last?: StorefrontAPI.InputMaybe<StorefrontAPI.Scalars['Int']['input']>;
+  startCursor?: StorefrontAPI.InputMaybe<
+    StorefrontAPI.Scalars['String']['input']
+  >;
+  endCursor?: StorefrontAPI.InputMaybe<
+    StorefrontAPI.Scalars['String']['input']
+  >;
+}>;
+
+export type ApparelCategoryProductsQuery = {
+  collection?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Collection, 'id' | 'handle' | 'title'> & {
+      products: {
+        nodes: Array<
+          Pick<
+            StorefrontAPI.Product,
+            'productType' | 'availableForSale' | 'id' | 'handle' | 'title'
+          > & {
+            selectedOrFirstAvailableVariant?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.ProductVariant, 'availableForSale'> & {
+                price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+              }
+            >;
+            featuredImage?: StorefrontAPI.Maybe<
+              Pick<
+                StorefrontAPI.Image,
+                'id' | 'altText' | 'url' | 'width' | 'height'
+              >
+            >;
+            priceRange: {
+              minVariantPrice: Pick<
+                StorefrontAPI.MoneyV2,
+                'currencyCode' | 'amount'
+              >;
+              maxVariantPrice: Pick<
+                StorefrontAPI.MoneyV2,
+                'currencyCode' | 'amount'
+              >;
+            };
+          }
+        >;
+        pageInfo: Pick<
+          StorefrontAPI.PageInfo,
+          'hasPreviousPage' | 'hasNextPage' | 'startCursor' | 'endCursor'
+        >;
+      };
+    }
+  >;
 };
 
 export type ArtistProfileQueryVariables = StorefrontAPI.Exact<{
@@ -1898,9 +2077,17 @@ interface GeneratedQueryTypes {
     return: DropProductQuery;
     variables: DropProductQueryVariables;
   };
-  '#graphql\n  fragment HomepageCollection on Collection {\n    id\n    handle\n    title\n    description\n    descriptionHtml\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n    products(first: 6) {\n      nodes {\n        ...ProductCard\n        description\n        descriptionHtml\n        options { name optionValues { name } }\n        productType\n        availableForSale\n      }\n    }\n  }\n\n  query Homepage(\n    $collectionQuery: String!\n    $country: CountryCode\n    $language: LanguageCode\n  )\n    @inContext(country: $country, language: $language) {\n    collections(query: $collectionQuery, first: 100, sortKey: UPDATED_AT, reverse: true) {\n      nodes {\n        ...HomepageCollection\n      }\n    }\n    artists: metaobjects(type: "artist", first: 100) {\n      nodes {\n        id\n        handle\n        name: field(key: "name") { value }\n        biography: field(key: "bio") { value }\n        photo: field(key: "profile_image") {\n          reference {\n            ... on MediaImage {\n              image {\n                id\n                url\n                altText\n                width\n                height\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n  #graphql\n  fragment ProductCard on Product {\n    id\n    handle\n    title\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    priceRange {\n      minVariantPrice {\n        ...Money\n      }\n      maxVariantPrice {\n        ...Money\n      }\n    }\n  }\n  #graphql\n  fragment Money on MoneyV2 {\n    currencyCode\n    amount\n  }\n\n\n': {
+  '#graphql\n  fragment HomepageCollection on Collection {\n    id\n    handle\n    title\n    description\n    descriptionHtml\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n    products(first: 6) {\n      nodes {\n        ...ProductCard\n        description\n        descriptionHtml\n        options { name optionValues { name } }\n        productType\n        availableForSale\n      }\n    }\n  }\n\n  query Homepage(\n    $collectionQuery: String!\n    $country: CountryCode\n    $language: LanguageCode\n  )\n    @inContext(country: $country, language: $language) {\n    collections(query: $collectionQuery, first: 100, sortKey: UPDATED_AT, reverse: true) {\n      nodes {\n        ...HomepageCollection\n      }\n    }\n    hoodies: collection(handle: "hoodies") {\n      products(first: 12) {\n        nodes {\n          ...ProductCard\n          availableForSale\n          selectedOrFirstAvailableVariant {\n            availableForSale\n            price { ...Money }\n          }\n        }\n      }\n    }\n    artists: metaobjects(type: "artist", first: 100) {\n      nodes {\n        id\n        handle\n        name: field(key: "name") { value }\n        biography: field(key: "bio") { value }\n        photo: field(key: "profile_image") {\n          reference {\n            ... on MediaImage {\n              image {\n                id\n                url\n                altText\n                width\n                height\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n  #graphql\n  fragment ProductCard on Product {\n    id\n    handle\n    title\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    priceRange {\n      minVariantPrice {\n        ...Money\n      }\n      maxVariantPrice {\n        ...Money\n      }\n    }\n  }\n  #graphql\n  fragment Money on MoneyV2 {\n    currencyCode\n    amount\n  }\n\n\n': {
     return: HomepageQuery;
     variables: HomepageQueryVariables;
+  };
+  '#graphql\n  query ApparelCategoryDirectory($country: CountryCode, $language: LanguageCode)\n    @inContext(country: $country, language: $language) {\n    hoodies: collection(handle: "hoodies") { ...CategoryPreview }\n    tShirts: collection(handle: "t-shirts") { ...CategoryPreview }\n    sweatshirts: collection(handle: "sweatshirts") { ...CategoryPreview }\n    jackets: collection(handle: "jackets") { ...CategoryPreview }\n  }\n  fragment CategoryPreview on Collection {\n    id\n    products(first: 8) {\n      nodes {\n        id\n        availableForSale\n        featuredImage { url altText width height }\n      }\n    }\n  }\n': {
+    return: ApparelCategoryDirectoryQuery;
+    variables: ApparelCategoryDirectoryQueryVariables;
+  };
+  '#graphql\n  query ApparelCategoryProducts(\n    $handle: String!\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    collection(handle: $handle) {\n      id\n      handle\n      title\n      products(first: $first, last: $last, before: $startCursor, after: $endCursor) {\n        nodes {\n          ...ProductCard\n          productType\n          availableForSale\n          selectedOrFirstAvailableVariant {\n            availableForSale\n            price {amount currencyCode}\n          }\n        }\n        pageInfo {hasPreviousPage hasNextPage startCursor endCursor}\n      }\n    }\n  }\n  #graphql\n  fragment ProductCard on Product {\n    id\n    handle\n    title\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    priceRange {\n      minVariantPrice {\n        ...Money\n      }\n      maxVariantPrice {\n        ...Money\n      }\n    }\n  }\n  #graphql\n  fragment Money on MoneyV2 {\n    currencyCode\n    amount\n  }\n\n\n': {
+    return: ApparelCategoryProductsQuery;
+    variables: ApparelCategoryProductsQueryVariables;
   };
   '#graphql\n  query ArtistProfile(\n    $handle: MetaobjectHandleInput!\n    $collectionQuery: String!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    metaobject(handle: $handle) {\n      id\n      handle\n      name: field(key: "name") { value }\n      biography: field(key: "bio") { value }\n      photo: field(key: "profile_image") {\n        reference {\n          ... on MediaImage {\n            image {\n              id\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n      }\n    }\n    collections(first: 100, query: $collectionQuery) {\n      nodes {\n        id\n        handle\n        title\n        description\n        image {\n          id\n          url\n          altText\n          width\n          height\n        }\n        artist: metafield(namespace: "custom", key: "artist") {\n          reference {\n            ... on Metaobject { id }\n          }\n        }\n      }\n    }\n  }\n': {
     return: ArtistProfileQuery;

@@ -12,9 +12,9 @@ import {
 
 export const meta: Route.MetaFunction = () => {
   const canonical = getProductionUrl('/collections');
-  const title = 'Collections | Render-Lab';
+  const title = 'Dark Modern Wall Art Collections | Render-Lab';
   const description =
-    'Explore Render-Lab wall art, curated series, and collector bundles.';
+    'Explore gothic, cinematic, automotive, botanical and military wall art collections. Discover distinctive metal prints, canvas art and posters.';
   return [
     {title},
     {name: 'description', content: description},
@@ -61,7 +61,19 @@ export default function Collections() {
 
   return (
     <div className="collections">
-      <h1>Collections</h1>
+      <header className="collections-intro">
+        <h1>Explore Our Wall Art Collections</h1>
+        <p>
+          Browse by subject, from cosmic gothic scenes and classic cars to
+          carnivorous plants, cinema and military history.
+        </p>
+        <p>
+          Shop by format for <Link to="/collections/metal-wall-art">metal prints</Link>,{' '}
+          <Link to="/collections/canvas-art">canvas art</Link> or{' '}
+          <Link to="/collections/posters">art posters</Link>. You can also{' '}
+          <Link to="/collections/wall-art">browse all wall art</Link>.
+        </p>
+      </header>
       <div className="collections-grid">
         {collections.map((collection, index) => (
           <CollectionItem
