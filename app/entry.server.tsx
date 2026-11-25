@@ -8,6 +8,14 @@ import {
 import type {EntryContext} from 'react-router';
 import {SHOPIFY_CHECKOUT_DOMAIN} from '~/lib/config';
 
+const extraDefaultSources = [
+  'https://s.pinimg.com',
+  'https://ct.pinterest.com',
+  'https://www.googletagmanager.com',
+  'https://hcaptcha.com',
+  'https://*.hcaptcha.com',
+];
+
 export default async function handleRequest(
   request: Request,
   responseStatusCode: number,
@@ -25,12 +33,15 @@ export default async function handleRequest(
     // existing CSP; add only these hosts to Hydrogen's default directives.
     // Shopify's native U.S. Privacy Choices page embeds hCaptcha. Allow only
     // hCaptcha-owned origins needed by its challenge scripts and frames.
-    defaultSrc: [
-      'https://s.pinimg.com',
-      'https://ct.pinterest.com',
-      'https://www.googletagmanager.com',
-      'https://hcaptcha.com',
-      'https://*.hcaptcha.com',
+    defaultSrc: extraDefaultSources,
+    // Keep the existing default image sources when setting an explicit img-src.
+    imgSrc: [
+      "'self'",
+      'https://cdn.shopify.com',
+      'https://shopify.com',
+      ...(import.meta.env.DEV ? ['http://localhost:*'] : []),
+      ...extraDefaultSources,
+      'https://static.subliminator.com/shops/images/size-guides/hoodie.png',
     ],
     connectSrc: [
       'https://ct.pinterest.com',

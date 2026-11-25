@@ -24,6 +24,7 @@ export function HomepageView({
     <div className="home homepage homepage-v2">
       <HomepageHero
         editorial={data.editorial?.hero}
+        hasHoodies={hoodies.length > 0}
         primaryCta={data.heroPrimaryCta}
         product={data.hero}
         secondaryCta={data.heroSecondaryCta}

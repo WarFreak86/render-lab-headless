@@ -23,9 +23,10 @@
 .collection-experience.collection-experience--storytelling .collection-statement__copy > p { margin-top: 1.5rem; font-size: 1rem; line-height: 1.65; }
 @media(max-width:767px) {
   .collection-experience.collection-experience--storytelling .collection-hero--story .collection-hero__inner { display: flex; flex-direction: column; min-height: 0; }
-  .collection-experience.collection-experience--storytelling .collection-hero--story .collection-hero__copy { padding: 2rem 0; }
-  .collection-experience.collection-experience--storytelling .collection-hero--story h1 { font-size: 2.75rem; }
-  .collection-experience.collection-experience--storytelling .collection-hero--story .collection-hero__media { height: 12rem; }
+  .collection-experience.collection-experience--storytelling .collection-hero--story .collection-hero__copy { padding: var(--space-6) 0; }
+  .collection-experience.collection-experience--storytelling .collection-hero--story h1 { font-size: clamp(2.25rem, 9.5vw, 2.75rem); }
+  .collection-experience.collection-experience--storytelling .collection-hero--story .collection-hero__media { height: clamp(8.5rem, 36vw, 12rem); }
+  .collection-experience.collection-experience--storytelling .collection-browser { padding-top: var(--space-4); }
   .collection-experience.collection-experience--storytelling .collection-product-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem 1rem; }
   .collection-experience.collection-experience--storytelling .collection-product-card h2 { font-size: 1.15rem; }
   .collection-experience.collection-experience--storytelling .collection-product-card__price { font-size: .8125rem; flex-wrap: wrap; }

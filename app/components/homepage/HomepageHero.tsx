@@ -8,8 +8,10 @@ import {
 
 export function HomepageHero({
   editorial,
+  hasHoodies = false,
 }: {
   editorial?: HomepageEditorialConfig['hero'];
+  hasHoodies?: boolean;
   primaryCta: {label: string; to: string} | null;
   product: HomepageProductFeature | null;
   secondaryCta: {label: string; to: string} | null;
@@ -47,6 +49,15 @@ export function HomepageHero({
             <ButtonLink prefetch="intent" to="/collections/wall-art">
               Explore wall art
             </ButtonLink>
+            {hasHoodies ? (
+              <ButtonLink
+                prefetch="intent"
+                to="/apparel/hoodies"
+                variant="secondary"
+              >
+                Shop graphic hoodies
+              </ButtonLink>
+            ) : null}
           </div>
         </div>
       </div>

@@ -183,6 +183,7 @@
   }
 
   .collection-sort {
+    position: relative;
     width: 100%;
     min-width: 0;
     min-height: 3rem;
@@ -191,10 +192,11 @@
 
   .collection-sort label {
     position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    inset: 0.3rem auto auto 0.75rem;
+    width: auto;
+    height: auto;
+    clip: auto;
+    pointer-events: none;
     white-space: nowrap;
   }
 
@@ -203,9 +205,10 @@
     min-width: 0;
     min-height: 3rem;
     border: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 0 1.8rem 0 0.75rem;
-    font-size: 1rem;
-    letter-spacing: 0.02em;
+    max-width: none;
+    padding: 0.9rem 0.25rem 0 0.65rem;
+    font-size: var(--text-sm);
+    letter-spacing: normal;
     text-transform: none;
   }
 

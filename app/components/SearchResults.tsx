@@ -117,14 +117,29 @@ function SearchResultsProducts({
             const image = product?.selectedOrFirstAvailableVariant?.image;
 
             return (
-              <div className="search-results-item" key={product.id}>
+              <div
+                className="search-results-item search-results-item--product"
+                key={product.id}
+              >
                 <Link prefetch="intent" to={productUrl}>
                   {image && (
-                    <Image data={image} alt={product.title} width={50} />
+                    <Image
+                      data={image}
+                      alt=""
+                      width={80}
+                      sizes="4rem"
+                      loading="lazy"
+                    />
                   )}
                   <div>
                     <p>{product.title}</p>
-                    <small>{price && <Money data={price} />}</small>
+                    {price && (
+                      <Money
+                        as="p"
+                        className="search-results-item__price"
+                        data={price}
+                      />
+                    )}
                   </div>
                 </Link>
               </div>

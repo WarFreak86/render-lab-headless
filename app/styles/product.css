@@ -671,6 +671,10 @@
   overflow-x: auto;
   overscroll-behavior-x: contain;
 }
+.product-detail--apparel #garment-size-guide .sbl-size-guide-image {
+  background: var(--color-text);
+  padding: var(--space-2);
+}
 .product-detail--apparel .sbl-size-guide-content .sbl-size-table {
   width: 100%;
   min-width: 38rem;

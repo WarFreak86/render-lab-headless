@@ -244,7 +244,7 @@ function ApparelCard({
           </div>
           <p className="apparel-card__price">
             {price.amount ? (
-              <>{price.label ? price.label + ' ' : ''}<Money data={price.amount} /></>
+              <>{price.label ? price.label + ' ' : ''}<Money as="span" data={price.amount} /></>
             ) : (
               'See pricing and size options'
             )}
