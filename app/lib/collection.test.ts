@@ -111,10 +111,6 @@ describe('collection data and URL state', () => {
     ['chrome-thunder', 'Chrome & Thunder: Muscle Car & Hot Rod Wall Art'],
     ['echoes-of-war', 'Echoes of War: Military History Wall Art'],
     ['reel-legends', 'Reel Legends: Cinematic Character Wall Art'],
-    [
-      'the-veil-between-worlds',
-      'The Veil Between Worlds: Cosmic Gothic Wall Art',
-    ],
     ['urban-icon', 'Urban Icon: Neon Hip-Hop-Inspired Wall Art'],
   ])('uses the approved Phase D H1 for %s', (handle, h1) => {
     const page = normalizeCollectionPage({
@@ -128,6 +124,22 @@ describe('collection data and URL state', () => {
       editorialHeading: h1,
       description: 'Distinctive existing editorial copy.',
     });
+  });
+
+  it('keeps the Veil headline and overrides stale Shopify descriptions', () => {
+    const page = normalizeCollectionPage({
+      ...rawCollection,
+      handle: 'the-veil-between-worlds',
+      title: 'The Veil Between Worlds',
+      description: 'Seven visions beyond the boundaries of existence.',
+      editorialCopy: {value: 'A seven-piece collection.'},
+    });
+
+    expect(page.hero.editorialHeading).toBe(
+      'The Veil Between Worlds: Cosmic Gothic Wall Art',
+    );
+    expect(page.hero.description).toContain('gothic wall art in metal or canvas');
+    expect(page.hero.description).not.toMatch(/seven/i);
   });
 
   it('keeps unapproved editorial collections outside the Phase D H1 map', () => {

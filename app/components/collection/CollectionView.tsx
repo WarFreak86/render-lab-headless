@@ -56,7 +56,7 @@ export function CollectionView({
           />
         </div>
       </div>
-      <CollectionBuyingGuide handle={data.handle} />
+      <CollectionBuyingGuide handle={data.handle} products={data.products} />
       {data.artist ? <CollectionArtist artist={data.artist} /> : null}
     </div>
   );
@@ -111,7 +111,7 @@ const COLLECTION_BUYING_GUIDES: Record<string, CollectionBuyingGuideData> = {
   'the-veil-between-worlds': {
     title: 'Choosing cosmic gothic wall art',
     introduction:
-      'The Veil Between Worlds pairs monumental architecture with celestial imagery and lone figures. Consider the mood of the room, the detail you want to emphasize, and the space available for a portrait-format print.',
+      'Start with the subject you want to live with. For an architectural focal point, look for strong vertical lines. For a quieter display, look for a composition with more open sky and a smaller central figure.',
     tips: [
       {
         heading: 'Metal or canvas?',
@@ -119,33 +119,44 @@ const COLLECTION_BUYING_GUIDES: Record<string, CollectionBuyingGuideData> = {
       },
       {
         heading: 'Which portrait size?',
-        text: 'Choose from 12 × 16, 18 × 24, or 24 × 32 inch portrait formats. A smaller piece can anchor a narrow wall, while a larger print creates a stronger focal point above furniture. Allow enough clear wall space around the composition.',
-      },
-      {
-        heading: 'Choose by atmosphere',
-        text: 'Cathedral of the Void emphasizes gothic architecture and a spiraling sky. Ascension Beyond Time centers on a solitary figure and celestial scale. Keeper of the Threshold sets a shadowed guardian beneath a cosmic portal. Compare their details before selecting a finish.',
+        text: 'Tape out 12 × 16, 18 × 24, or 24 × 32 inches on your wall before ordering. Smaller prints work in narrow spaces. Larger prints give distant details, such as cathedral spires, more room to read.',
       },
     ],
     recommendations: [
       {
-        label: 'Cathedral of the Void',
+        label: 'Cathedral of the Void — Gothic spires and a spiraling sky',
         to: '/products/cathedral-of-the-void',
       },
       {
-        label: 'Ascension Beyond Time',
+        label: 'Ascension Beyond Time — A lone figure against an open sky',
         to: '/products/ascension-beyond-time',
       },
       {
-        label: 'Keeper of the Threshold',
+        label: 'Keeper of the Threshold — A guardian beneath a cosmic portal',
         to: '/products/keeper-of-the-threshold',
       },
     ],
   },
 };
 
-function CollectionBuyingGuide({handle}: {handle: string}) {
+export function CollectionBuyingGuide({
+  handle,
+  products,
+}: {
+  handle: string;
+  products: CollectionPageData['products'];
+}) {
   const guide = COLLECTION_BUYING_GUIDES[handle];
   if (!guide) return null;
+  const isVeil = handle === 'the-veil-between-worlds';
+  const recommendations = isVeil
+    ? guide.recommendations.filter(({to}) =>
+        products.some(
+          (product) =>
+            product.availableForSale && `/products/${product.handle}` === to,
+        ),
+      )
+    : guide.recommendations;
 
   return (
     <section
@@ -168,17 +179,21 @@ function CollectionBuyingGuide({handle}: {handle: string}) {
             ))}
           </div>
           <div className="collection-buying-guide__links">
-            <h3>Explore individual artworks</h3>
-            <ul>
-              {guide.recommendations.map((recommendation) => (
-                <li key={recommendation.to}>
-                  <Link to={recommendation.to}>{recommendation.label}</Link>
-                </li>
-              ))}
-            </ul>
+            {recommendations.length ? (
+              <>
+                <h3>Explore individual artworks</h3>
+                <ul>
+                  {recommendations.map((recommendation) => (
+                    <li key={recommendation.to}>
+                      <Link to={recommendation.to}>{recommendation.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
             <Link
               className="collection-buying-guide__materials-link"
-              to="/materials"
+              to={isVeil ? '/materials#compare-formats' : '/materials'}
             >
               Compare metal and canvas finishes
             </Link>

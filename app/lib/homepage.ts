@@ -1,4 +1,5 @@
 import {normalizeCreatorCredit} from './navigation';
+import {getApprovedEditorialCollectionSeo} from './collection';
 import {isSuppressedMerchandisingAssetUrl} from './merchandising';
 import {
   isLiveCollectionHandle,
@@ -261,9 +262,11 @@ function normalizeCollectionHero(
     handle: collection.handle,
     title: collection.title,
     to: `/collections/${collection.handle}`,
-    description: cleanProductDescription(
-      collection.descriptionHtml || collection.description,
-    ),
+    description:
+      getApprovedEditorialCollectionSeo(collection.handle)?.teaser ??
+      cleanProductDescription(
+        collection.descriptionHtml || collection.description,
+      ),
     productType: 'Collection',
     availableForSale: false,
     image,
@@ -404,9 +407,11 @@ export function normalizeHomepageData(
         id: collection.id,
         title: collection.title,
         to: `/collections/${collection.handle}`,
-        description: cleanProductDescription(
-          collection.descriptionHtml || collection.description,
-        ),
+        description:
+          getApprovedEditorialCollectionSeo(collection.handle)?.teaser ??
+          cleanProductDescription(
+            collection.descriptionHtml || collection.description,
+          ),
         image,
       },
     ];

@@ -68,9 +68,7 @@ export const meta: Route.MetaFunction = ({data, location}) => {
     `${page?.hero.title ?? 'Collection'} | Render-Lab`;
   const baseDescription = getMetaDescription(
     directorySeo?.description,
-    page?.handle === 'the-veil-between-worlds'
-      ? 'Explore The Veil Between Worlds by J.B. Render, a collection of cosmic gothic wall art featuring surreal cathedrals and celestial fantasy.'
-      : undefined,
+    approvedEditorialSeo?.description,
     shopifySeoDescription,
     data?.collectionSeoDescription,
     page?.hero.description,

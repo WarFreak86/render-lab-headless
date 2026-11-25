@@ -7,6 +7,7 @@ import {
 } from './material-collection';
 import {editorialTeaser} from './editorial-text';
 import {isStorefrontSeriesCollection} from './catalog-collections';
+import {getApprovedEditorialCollectionSeo} from './collection';
 
 export const COLLECTION_DIRECTORY_HANDLES = [
   'wall-art',
@@ -247,7 +248,9 @@ export function buildCollectionDirectoryEntries(
       id: collection.id,
       handle: collection.handle,
       title: collection.title,
-      description: editorialTeaser(collection.description),
+      description:
+        getApprovedEditorialCollectionSeo(collection.handle)?.teaser ??
+        editorialTeaser(collection.description),
       image: normalizeImage(collection),
       to: `/collections/${collection.handle}${
         MATERIAL_BY_COLLECTION_HANDLE[directoryHandle]

@@ -112,14 +112,19 @@ describe('Phase B1 route metadata', () => {
 
   it('gives the materials route canonical and Open Graph metadata', () => {
     const entries = materialsMeta();
+    const title = 'Metal vs Canvas vs Poster: Wall Art Buying Guide | Render-Lab';
+    const description =
+      'Compare metal prints, canvas art and matte posters. Learn how to choose the right wall art material, size and finish for your space.';
+    expect(entries).toContainEqual({title});
+    expect(entries).toContainEqual({name: 'description', content: description});
     expect(getMetaContent(entries, 'rel', 'canonical')).toMatchObject({
       href: 'https://render-lab.org/materials',
     });
     expect(getMetaContent(entries, 'property', 'og:url')).toMatchObject({
       content: 'https://render-lab.org/materials',
     });
-    expect(getMetaContent(entries, 'property', 'og:title')).toBeDefined();
-    expect(getMetaContent(entries, 'property', 'og:description')).toBeDefined();
+    expect(entries).toContainEqual({property: 'og:title', content: title});
+    expect(entries).toContainEqual({property: 'og:description', content: description});
   });
 
   it('uses the deliberate homepage hero asset for social previews', () => {
@@ -235,10 +240,6 @@ describe('Phase B1 route metadata', () => {
   it.each([
     ['chrome-thunder', 'Muscle Car & Hot Rod Wall Art | Chrome & Thunder'],
     ['reel-legends', 'Reel Legends | Cinematic Icon Wall Art'],
-    [
-      'the-veil-between-worlds',
-      'The Veil Between Worlds | Cosmic Gothic Wall Art',
-    ],
     ['urban-icon', 'Urban Icon | Neon Hip-Hop Inspired Wall Art | Render-Lab'],
   ])(
     'uses the Shopify SEO title for approved Phase D collection %s',
@@ -260,6 +261,33 @@ describe('Phase B1 route metadata', () => {
       expect(entries).toContainEqual({property: 'og:title', content: title});
     },
   );
+
+  it('uses count-free Veil metadata and the base canonical for material views', () => {
+    const title = 'Cosmic Gothic Wall Art | The Veil Between Worlds';
+    const description =
+      'Explore cosmic gothic wall art by J.B. Render. Shop surreal cathedrals, celestial landscapes and dark fantasy artwork in metal and canvas.';
+    const canonical = 'https://render-lab.org/collections/the-veil-between-worlds';
+    expect(
+      collectionMeta({
+        data: {
+          mode: 'products',
+          collectionSeoTitle: 'The Veil Between Worlds | Cosmic Gothic Wall Art',
+          collectionSeoDescription: 'Seven cosmic gothic artworks.',
+          collectionPage: {
+            handle: 'the-veil-between-worlds',
+            hero: {title: 'The Veil Between Worlds'},
+          },
+        },
+        location: {search: '?material=Metal'},
+      } as never),
+    ).toEqual(expect.arrayContaining([
+      {title},
+      {name: 'description', content: description},
+      {property: 'og:title', content: title},
+      {property: 'og:description', content: description},
+      {tagName: 'link', rel: 'canonical', href: canonical},
+    ]));
+  });
 
   it('uses the approved Echoes of War title instead of duplicating its older Shopify title', () => {
     const title = 'Military History Wall Art | Echoes of War';

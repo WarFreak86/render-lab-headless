@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {createMemoryRouter, MemoryRouter, RouterProvider} from 'react-router';
 import {CollectionControls} from './CollectionControls';
@@ -6,7 +6,7 @@ import {CollectionProductCard} from './CollectionProductCard';
 import {CollectionProductGrid} from './CollectionProductGrid';
 import {CollectionDirectoryView} from './CollectionDirectoryView';
 import {CollectionArtist} from './CollectionArtist';
-import {CollectionView} from './CollectionView';
+import {CollectionBuyingGuide, CollectionView} from './CollectionView';
 import type {
   CollectionFilterGroup,
   CollectionProductCardData,
@@ -120,6 +120,35 @@ describe('collection presentation', () => {
       'href',
       '/products/real-artwork',
     );
+  });
+
+  it('only recommends Veil products that are purchasable in the current results', () => {
+    const products = [
+      {
+        ...product,
+        handle: 'cathedral-of-the-void',
+        to: '/products/cathedral-of-the-void?Material=Metal',
+      },
+      {
+        ...product,
+        id: 'sold-out',
+        handle: 'ascension-beyond-time',
+        availableForSale: false,
+      },
+    ];
+    render(
+      <MemoryRouter>
+        <CollectionBuyingGuide handle="the-veil-between-worlds" products={products} />
+      </MemoryRouter>,
+    );
+    const guide = within(
+      screen.getByRole('region', {name: 'Choosing cosmic gothic wall art'}),
+    );
+    expect(
+      guide.getByRole('link', {name: /Cathedral of the Void/}),
+    ).toHaveAttribute('href', '/products/cathedral-of-the-void');
+    expect(guide.queryByRole('link', {name: /Ascension/})).toBeNull();
+    expect(guide.queryByRole('link', {name: /Keeper/})).toBeNull();
   });
 
   it('opens the mobile filter drawer and restores focus after Escape', async () => {

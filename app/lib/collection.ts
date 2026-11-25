@@ -204,6 +204,9 @@ const COLLECTION_MERCHANDISING_FALLBACKS: Record<
 export interface ApprovedEditorialCollectionSeo {
   h1: string;
   title?: string;
+  description?: string;
+  intro?: string;
+  teaser?: string;
 }
 
 const APPROVED_EDITORIAL_COLLECTION_SEO: Record<
@@ -226,6 +229,13 @@ const APPROVED_EDITORIAL_COLLECTION_SEO: Record<
   },
   'the-veil-between-worlds': {
     h1: 'The Veil Between Worlds: Cosmic Gothic Wall Art',
+    title: 'Cosmic Gothic Wall Art | The Veil Between Worlds',
+    description:
+      'Explore cosmic gothic wall art by J.B. Render. Shop surreal cathedrals, celestial landscapes and dark fantasy artwork in metal and canvas.',
+    intro:
+      'In The Veil Between Worlds, J.B. Render pairs surreal cathedrals, celestial landscapes and solitary figures in obsidian, antique gold and ivory. Choose a piece of gothic wall art in metal or canvas.',
+    teaser:
+      'Surreal cathedrals and celestial landscapes in obsidian, antique gold and ivory.',
   },
   'urban-icon': {
     h1: 'Urban Icon: Neon Hip-Hop-Inspired Wall Art',
@@ -406,6 +416,7 @@ export function normalizeCollectionPage(
         cleanText(collection.editorialHeading?.value) ??
         merchandising?.heading,
       description:
+        approvedSeo?.intro ??
         cleanText(collection.editorialCopy?.value) ??
         cleanText(collection.description),
       image:

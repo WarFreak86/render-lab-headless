@@ -31,10 +31,16 @@ export function CollectionDirectoryView({
                 Choose a series below, or explore wall art by format:{' '}
                 <Link to="/collections/metal-wall-art">metal wall art</Link>,{' '}
                 <Link to="/collections/canvas-art">canvas wall art</Link>, and{' '}
-                <Link to="/collections/posters">art posters</Link>.
+                <Link to="/collections/posters">art posters</Link>. Use the{' '}
+                <Link to="/materials">wall art buying guide</Link> to compare
+                finishes and plan your display.
               </p>
             ) : (
-              <p>Choose a series to see only the artwork that belongs to it.</p>
+              <p>
+                Choose a series to see the artwork available in this format.
+                Compare surfaces and display options in the{' '}
+                <Link to="/materials#compare-formats">material guide</Link>.
+              </p>
             )}
           </div>
 
