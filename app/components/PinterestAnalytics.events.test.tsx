@@ -45,11 +45,12 @@ const product = (id = '47396821991585') => ({
   variantId: gid(id),
   variantTitle: 'Metal / 12×16',
   vendor: 'Render-Lab',
+  productType: 'Fashion Hoodie - AOP',
   price: '79.00',
 });
 const line = (id: string, quantity = 1) => ({
   quantity,
-  merchandise: {id: gid(id), title: 'Metal / 12×16', product: {id: 'gid://shopify/Product/123', title: 'Artwork'}},
+  merchandise: {id: gid(id), title: 'Metal / 12×16', product: {id: 'gid://shopify/Product/123', title: 'Artwork', productType: 'Fashion Hoodie - AOP'}},
   cost: {amountPerQuantity: {amount: '79.00', currencyCode: 'USD'}},
 });
 const publish = (name: string, event: unknown = {}) => act(() => {
@@ -83,10 +84,10 @@ describe('Pinterest catalog variant strings', () => {
       expect(getPinterestCatalogId(gid(id))).toBe(id);
       expect(createPinterestAddToCartData(line(id, 3), line(id, 1))).toMatchObject({
         value: 158, currency: 'USD', order_quantity: 2,
-        line_items: [{product_id: id, product_variant_id: gid(id), product_price: 79, product_quantity: 2}],
+        line_items: [{product_id: id, product_variant_id: gid(id), product_category: 'Fashion Hoodie - AOP', product_price: 79, product_quantity: 2}],
       });
       expect(createPinterestPageVisitData(product(id), 'USD')).toMatchObject({
-        currency: 'USD', line_items: [{product_id: id, product_price: 79}],
+        currency: 'USD', line_items: [{product_id: id, product_category: 'Fashion Hoodie - AOP', product_price: 79}],
       });
     },
   );
@@ -104,6 +105,21 @@ describe('Pinterest catalog variant strings', () => {
 });
 
 describe('Pinterest browser event lifecycle', () => {
+  it('initializes the base tag once and sends one enriched initial product visit', () => {
+    delete browser.pintrk;
+    render(<PinterestAnalytics />);
+    viewProduct();
+    publish('page_viewed');
+    viewProduct();
+    const queue = (browser.pintrk as unknown as {queue: unknown[][]}).queue;
+    expect(queue.filter(([command]) => command === 'load')).toHaveLength(1);
+    expect(queue.filter(([command]) => command === 'page')).toHaveLength(1);
+    expect(queue.filter(([, event]) => event === 'pagevisit')).toHaveLength(1);
+    expect(queue.find(([, event]) => event === 'pagevisit')?.[2]).toMatchObject({
+      line_items: [{product_category: 'Fashion Hoodie - AOP'}],
+    });
+    document.querySelector('script[src="https://s.pinimg.com/ct/core.js"]')?.remove();
+  });
   it('waits for selected variant, tracks changes once, and preserves return visits', () => {
     render(<PinterestAnalytics />);
     publish('page_viewed');

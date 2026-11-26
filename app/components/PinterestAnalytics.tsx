@@ -38,6 +38,7 @@ type CartLineSnapshot = {
       id: string;
       title: string;
       vendor?: string | null;
+      productType?: string | null;
     } | null;
   } | null;
 };
@@ -52,6 +53,7 @@ type AddToCartData = {
     product_name: string;
     product_variant?: string;
     product_brand?: string;
+    product_category?: string;
     product_price: number;
     product_quantity: number;
   }>;
@@ -69,6 +71,7 @@ type ViewedProduct = {
   title: string;
   variantTitle?: string | null;
   vendor?: string | null;
+  productType?: string | null;
   price?: string | null;
 };
 
@@ -88,6 +91,7 @@ export function createPinterestPageVisitData(
       product_name: product.title,
       ...(product.variantTitle ? {product_variant: product.variantTitle} : {}),
       ...(product.vendor ? {product_brand: product.vendor} : {}),
+      ...(product.productType?.trim() ? {product_category: product.productType.trim()} : {}),
       ...(validPrice ? {product_price: price} : {}),
     }],
   };
@@ -131,6 +135,7 @@ export function createPinterestAddToCartData(
         product_name: product.title,
         ...(variant.title ? {product_variant: variant.title} : {}),
         ...(product.vendor ? {product_brand: product.vendor} : {}),
+        ...(product.productType?.trim() ? {product_category: product.productType.trim()} : {}),
         product_price: price,
         product_quantity: quantity,
       },

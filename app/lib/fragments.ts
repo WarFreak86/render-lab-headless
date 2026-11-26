@@ -74,6 +74,7 @@ export const CART_QUERY_FRAGMENT = `#graphql
           title
           id
           vendor
+          productType
         }
         selectedOptions {
           name
@@ -129,6 +130,7 @@ export const CART_QUERY_FRAGMENT = `#graphql
           title
           id
           vendor
+          productType
         }
         selectedOptions {
           name
