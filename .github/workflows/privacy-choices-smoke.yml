@@ -2,7 +2,7 @@ name: Privacy choices hosted browser smoke test
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, migration/ca510a-1w]
     paths:
       - 'app/components/Footer.tsx'
       - 'app/components/PinterestAnalytics.tsx'
