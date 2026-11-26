@@ -9,9 +9,9 @@ on:
       - 'scripts/privacy-opt-out-smoke.py'
       - '.github/workflows/privacy-choices-smoke.yml'
   workflow_run:
-    workflows: ['Storefront 1000173485']
+    workflows: ['Storefront 1000186406']
     types: [completed]
-    branches: [main]
+    branches: [migration/ca510a-1w]
 
 permissions:
   contents: read
