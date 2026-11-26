@@ -351,6 +351,7 @@ export default function Product() {
               title: product.title,
               price: selectedVariant?.price.amount || '0',
               vendor: product.vendor,
+              productType: product.productType,
               variantId: selectedVariant?.id || '',
               variantTitle: selectedVariant?.title || '',
               quantity: 1,
