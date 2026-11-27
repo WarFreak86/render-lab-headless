@@ -1,6 +1,7 @@
 import {FeaturedApparel, type HomepageHoodies} from './FeaturedApparel';
 import {FeaturedProducts} from './FeaturedProducts';
 import {HomepageHero} from './HomepageHero';
+import {CraftMaterialsSection} from './CraftMaterialsSection';
 import {FeaturedCollections} from './FeaturedCollections';
 import {
   ArtistSpotlight,
@@ -29,6 +30,7 @@ export function HomepageView({
         product={data.hero}
         secondaryCta={data.heroSecondaryCta}
       />
+      <CraftMaterialsSection />
       <FeaturedCollections
         collections={data.featuredCollections}
         eyebrow="Distinct worlds. Original perspectives."

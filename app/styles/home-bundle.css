@@ -202,3 +202,21 @@
   height: 100%;
   object-fit: contain;
 }
+
+.craft-materials { padding-block: clamp(3.5rem, 6vw, 6rem); background: var(--surface-base); color: var(--text-primary); }
+.craft-materials__eyebrow { color: var(--text-secondary); font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.craft-materials h2 { margin-top: .6rem; font-family: var(--font-display); font-size: clamp(2.4rem, 4vw, 4rem); line-height: 1.05; }
+.craft-materials__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2vw, 2rem); margin-top: 2rem; }
+.craft-materials__card { background: var(--surface-elevated); border: 1px solid var(--border-subtle); }
+.craft-materials__visual { aspect-ratio: 4 / 3; overflow: hidden; }
+.craft-materials__visual img { width: 100%; height: 100%; object-fit: cover; }
+.craft-materials__copy { padding: clamp(1.25rem, 2vw, 2rem); }
+.craft-materials__copy h3 { font-family: var(--font-display); font-size: clamp(1.4rem, 2vw, 1.8rem); line-height: 1.15; }
+.craft-materials__copy p { margin-top: .75rem; color: var(--text-secondary); line-height: 1.7; }
+.craft-materials__link { display: inline-flex; gap: .5rem; margin-top: 1.75rem; color: var(--text-primary); text-decoration: underline; text-underline-offset: .25em; }
+.craft-materials__link:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 4px; }
+@media (max-width: 47.9375rem) { .craft-materials__grid { grid-template-columns: 1fr; } }
+
+@media (min-width: 48rem) {
+  .craft-materials__copy h3 { min-height: 2.3em; }
+}

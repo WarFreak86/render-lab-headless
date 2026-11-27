@@ -23,7 +23,6 @@
 
 @media (min-width: 64rem) {
   .site-header {
-    --header-height: 4.85rem;
     overflow: visible;
     border-bottom-color: rgba(201, 154, 69, 0.18);
   }

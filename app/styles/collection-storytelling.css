@@ -1,11 +1,11 @@
 /* Step 5: reusable collection and artist storytelling architecture. */
 .collection-experience--storytelling {
-  background: #020202;
+  background: var(--surface-base);
 }
 
 .collection-experience--storytelling .collection-hero--story {
   border-bottom: 0;
-  background: #020202;
+  background: var(--surface-base);
 }
 
 .collection-experience--storytelling .collection-hero--story .collection-hero__inner {
@@ -87,7 +87,7 @@
 }
 
 .collection-statement {
-  background: #020202;
+  background: var(--surface-base);
   padding-block: clamp(5rem, 9vw, 10rem);
 }
 

@@ -1,8 +1,8 @@
 /* Approved gallery evolution: shared rhythm, artwork-first browsing, compact purchase. */
 :root {
-  --color-gold: #c5a164;
+  --color-gold: var(--accent-primary);
   --color-gold-bright: #d3b17a;
-  --color-text-muted: #b8b4aa;
+  --color-text-muted: var(--text-secondary);
   --text-xs: .75rem;
   --text-sm: .875rem;
   --container-wide: 90rem;

@@ -12,7 +12,7 @@
 .collection-experience.collection-experience--storytelling .collection-product-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 2rem 1.5rem; }
 .collection-experience.collection-experience--storytelling .collection-product-card__media { padding: 0; background: #10100f; border: 0; }
 .collection-experience.collection-experience--storytelling .collection-product-card__media::after { display: none; }
-.collection-experience.collection-experience--storytelling .collection-product-card__media img { object-fit: contain; padding: 0; }
+.collection-experience.collection-experience--storytelling .collection-product-card__media:not(.collection-product-card__media--apparel) img { object-fit: cover; padding: 0; }
 .collection-experience.collection-experience--storytelling .collection-product-card h2 { font-family: var(--font-display); font-size: 1.4rem; line-height: 1.18; text-transform: none; }
 .collection-experience.collection-experience--storytelling .collection-product-card > a { border: 0; background: transparent; }
 .collection-experience.collection-experience--storytelling .collection-product-card__details { padding: 1rem 0; }
@@ -32,3 +32,5 @@
   .collection-experience.collection-experience--storytelling .collection-product-card__price { font-size: .8125rem; flex-wrap: wrap; }
   .collection-experience.collection-experience--storytelling .collection-product-card__attribution { display: none; }
 }
+
+.collection-experience.collection-experience--storytelling .collection-hero--story .collection-hero__eyebrow { color: var(--text-secondary); }

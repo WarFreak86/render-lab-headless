@@ -12,10 +12,6 @@
     touch-action: manipulation;
   }
 
-  .site-header {
-    --header-height: 4.25rem;
-  }
-
   .site-header__inner {
     padding-inline: max(0.75rem, env(safe-area-inset-left)) max(0.75rem, env(safe-area-inset-right));
     grid-template-columns: 3rem minmax(0, 1fr) 3rem;

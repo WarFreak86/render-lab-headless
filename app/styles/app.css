@@ -281,7 +281,6 @@ p {
 }
 
 .site-header {
-  --header-height: 4.1rem;
   position: sticky;
   z-index: var(--z-header);
   top: 0;
@@ -816,7 +815,6 @@ p {
 .order-search-buttons { display: flex; gap: var(--space-3); }
 
 @media (max-width: 63.9375rem) {
-  .site-header { --header-height: 4rem; }
   .site-header__inner { grid-template-columns: 2.75rem 1fr auto; }
   .brand-mark { justify-self: center; }
   .header-menu--desktop { display: none; }

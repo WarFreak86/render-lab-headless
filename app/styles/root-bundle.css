@@ -13,3 +13,19 @@
 @import './enhancements.css';
 @import './gallery-evolution.css';
 @import './mobile-commerce.css';
+
+/* Shared interactive boundaries and keyboard focus. */
+.button.button--secondary, .collection-sort select,
+.collection-filter-form input:not([type='checkbox']) {
+  border-color: var(--border-interactive);
+}
+.button.button--secondary:hover, .collection-sort select:hover {
+  border-color: var(--text-primary);
+  background-color: var(--surface-subtle);
+  color: var(--text-primary);
+}
+.button:focus-visible, .collection-sort select:focus-visible,
+.collection-filter-form input:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 3px;
+}

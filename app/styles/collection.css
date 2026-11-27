@@ -886,3 +886,11 @@
     transform: none;
   }
 }
+
+.collection-sort select { border: 1px solid var(--border-interactive); padding-inline: .75rem; }
+.collection-sort select:hover { border-color: var(--text-primary); background-color: var(--surface-subtle); }
+.collection-sort select:focus-visible, .collection-controls__filter-trigger .button:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 3px;
+}
+.collection-controls__filter-trigger .button { border-color: var(--border-interactive); }

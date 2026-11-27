@@ -77,6 +77,7 @@ export function CollectionProductCard({
               alt={product.image.altText}
               data={product.image}
               loading={loading}
+              decoding="async"
               sizes="(min-width: 48rem) 30vw, 46vw"
             />
           ) : (

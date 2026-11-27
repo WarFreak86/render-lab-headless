@@ -625,3 +625,6 @@
     transition: none;
   }
 }
+
+.home-hero--v2 .home-hero__actions .button--secondary { border-color: var(--border-interactive); }
+.home-hero--v2 .home-hero__actions .button--secondary:hover { border-color: var(--text-primary); background: var(--surface-subtle); }
