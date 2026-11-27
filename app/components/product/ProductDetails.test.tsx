@@ -27,6 +27,12 @@ function makeVariants(
 }
 
 describe('ProductDetails', () => {
+  it('keeps the artwork description while omitting duplicate choice lists when requested', () => {
+    render(<ProductDetails descriptionHtml="<p>Artwork story.</p>" editorial={emptyEditorial} showTechnicalSpecs={false} variants={makeVariants(['Metal', 'Canvas'], ['16x12'])} />);
+    expect(screen.getByText('Artwork story.')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', {name: 'Available materials'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', {name: 'Available sizes'})).not.toBeInTheDocument();
+  });
   it('describes only the metal/canvas formats and sizes present in Shopify variants', () => {
     const {container} = render(
       <ProductDetails

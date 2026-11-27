@@ -113,6 +113,7 @@
 .confidence-gallery-caption a {
   color: var(--color-gold-bright);
   white-space: nowrap;
+  flex-shrink: 0;
   min-height: 2rem;
 }
 .product-detail.product-detail--confidence .product-purchase--standard h1 {
@@ -975,7 +976,6 @@
     gap: 0.7rem;
   }
   .confidence-gallery-caption a {
-    white-space: normal;
     min-width: 3.5rem;
     text-align: right;
   }
@@ -1158,3 +1158,43 @@
     animation: none !important;
   }
 }
+
+/* PDP controls and disclosures share the storefront contrast tokens. */
+@media (min-width: 56.0625rem) {
+  .product-detail.product-detail--confidence .product-gallery {
+    position: sticky;
+    top: calc(var(--header-offset) + 1.5rem);
+    align-self: start;
+  }
+}
+.product-detail--confidence .product-detail__breadcrumb,
+.product-detail--confidence .confidence-price-note,
+.product-detail--confidence .confidence-gallery-caption,
+.product-detail--confidence .confidence-gallery-caption a,
+.product-detail--confidence .confidence-option-description,
+.product-detail--confidence .confidence-option-guide,
+.product-detail--confidence .confidence-step,
+.product-detail--confidence .confidence-compare-row button,
+.confidence-purchase-note,
+.confidence-purchase-information { color: var(--text-secondary); }
+.product-detail.product-detail--confidence .product-option__value,
+.confidence-scale-controls button,
+.confidence-scale-controls input { border-color: var(--border-interactive); }
+.product-detail.product-detail--confidence .product-option__value[data-state^='selected'],
+.confidence-scale-controls button[aria-pressed='true'] { border-color: var(--accent-primary); color: var(--text-primary); }
+.product-detail--confidence .confidence-option-price { color: var(--text-primary); }
+.product-detail--confidence .product-purchase__add { background: var(--accent-primary); border-color: var(--accent-primary); }
+.product-detail--confidence :is(a, button, input, summary):focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 3px;
+}
+.confidence-scale { scroll-margin-top: calc(var(--header-offset) + 1.5rem); }
+.confidence-purchase-note { margin-top: .75rem; font-size: .7rem; line-height: 1.6; }
+.confidence-purchase-information { margin-top: 1.25rem; font-size: .75rem; line-height: 1.6; }
+.confidence-trust-summary { display: grid; gap: .5rem; margin-bottom: 1rem; }
+.confidence-trust-summary li { display: flex; flex-wrap: wrap; gap: .25rem .65rem; }
+.confidence-trust-summary strong, .confidence-trust-summary a { color: var(--text-primary); }
+.confidence-purchase-information details { border-top: 1px solid var(--border-subtle); padding-block: .7rem; }
+.confidence-purchase-information summary { cursor: pointer; color: var(--text-primary); }
+.confidence-purchase-information details p { margin-block: .5rem; }
+.confidence-purchase-information details a { text-decoration: underline; text-underline-offset: .2em; }

@@ -330,6 +330,7 @@ export default function Product() {
         descriptionHtml={product.descriptionHtml}
         editorial={page.editorial}
         garment={isGarment}
+        showTechnicalSpecs={!confidence}
         variants={product.variants.nodes}
       />
 

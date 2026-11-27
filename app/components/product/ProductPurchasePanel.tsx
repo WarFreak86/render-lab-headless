@@ -460,7 +460,7 @@ export function ProductPurchasePanel({
                       className="confidence-option-guide"
                       href="#product-room-scale"
                     >
-                      Find your fit ↗
+                      Preview size on a wall ↓
                     </a>
                   ) : null}
                   <p className="confidence-dimension-label">
@@ -657,14 +657,7 @@ export function ProductPurchasePanel({
       />
       {confidence ? (
         <>
-          <button
-            className="confidence-review-link"
-            type="button"
-            disabled={selectionPending}
-            onClick={() => setDialog('review')}
-          >
-            Review your selection before adding ↗
-          </button>
+          <p className="confidence-purchase-note">Printed to order · Shipping and tax calculated at checkout</p>
           <ProductChoiceDialog
             kind={dialog}
             onClose={() => setDialog(null)}
@@ -689,7 +682,27 @@ export function ProductPurchasePanel({
         </>
       ) : null}
 
-      {isStandard ? (
+      {confidence ? (
+        <div className="confidence-purchase-information">
+          <ul className="confidence-trust-summary" aria-label="Purchase information">
+            <li><strong>Printed to order</strong><span>{selectedMaterial === 'metal' || selectedMaterial === 'canvas' ? 'Typically produced in 2–4 business days' : 'Production time varies by material'}</span></li>
+            <li><strong>{selectedMaterial === 'metal' || selectedMaterial === 'canvas' ? 'Ready to hang' : 'Mounting'}</strong><span>{selectedMaterial === 'metal' || selectedMaterial === 'canvas' ? 'Integrated hanging hardware included' : 'See material details for mounting'}</span></li>
+            <li><Link to={REFUND_POLICY_PATH}>{STANDARD_RETURN_DAYS}-day returns</Link><span>Return coverage and secure checkout</span></li>
+          </ul>
+          <details>
+            <summary>Production and shipping</summary>
+            <p>{selectedMaterial === 'metal' || selectedMaterial === 'canvas' ? 'Metal and canvas typically take 2–4 business days to produce. This is an estimate; carrier transit is additional.' : 'Production time varies by material and current capacity; carrier transit is additional.'}</p>
+            <Link to="/policies/shipping-policy">Production and shipping details ↗</Link>
+          </details>
+          <details>
+            <summary>Returns and product details</summary>
+            <p>Customer pays return shipping for non-defective items.</p>
+            {selectedVariant?.sku ? <p>SKU {selectedVariant.sku}</p> : null}
+            <Link to={REFUND_POLICY_PATH}>Read the return policy ↗</Link>{' · '}
+            <a href="mailto:support@render-lab.org">Contact Render-Lab ↗</a>
+          </details>
+        </div>
+      ) : isStandard ? (
         <>
           <ul
             className="product-purchase__assurances"
@@ -761,7 +774,7 @@ export function ProductPurchasePanel({
           Secure checkout
         </p>
       )}
-      {purchaseAllowed ? (
+      {purchaseAllowed && !confidence ? (
         <p className="product-purchase__returns">
           <Link to={REFUND_POLICY_PATH}>
             {STANDARD_RETURN_DAYS}-day returns

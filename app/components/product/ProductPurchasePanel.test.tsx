@@ -569,6 +569,15 @@ describe('ProductPurchasePanel', () => {
 });
 
 describe('buyer confidence commerce integration', () => {
+  it('keeps detailed production and return information in native disclosures', () => {
+    const selectedVariant = {...variant(), selectedOptions: [{name: 'Material', value: 'Metal'}]};
+    renderPanel({buyerConfidence: true, options: [{name: 'Material', optionValues: [{name: 'Metal', selected: true, exists: true, available: true}]}], selectedVariant});
+    expect(screen.getByText('Typically produced in 2–4 business days')).toBeInTheDocument();
+    expect(screen.getByText('Integrated hanging hardware included')).toBeInTheDocument();
+    expect(screen.getByText('Production and shipping').closest('details')).not.toHaveAttribute('open');
+    expect(screen.getByText('Returns and product details').closest('details')).not.toHaveAttribute('open');
+    expect(screen.getByRole('link', {name: '14-day returns'})).toHaveAttribute('href', '/policies/refund-policy');
+  });
   it('selects a complete comparison variant, blocks the stale cart, and reviews the updated merchandise', () => {
     mockCart.fetcher.state = 'idle';
     mockCart.fetcher.data = undefined;
@@ -646,17 +655,9 @@ describe('buyer confidence commerce integration', () => {
         </Aside.Provider>
       </MemoryRouter>,
     );
-    fireEvent.click(
-      screen.getByRole('button', {name: /Review your selection before adding/}),
-    );
-    const review = screen.getByRole('dialog');
-    expect(
-      within(review).getByText('Pending shipping & tax'),
-    ).toBeInTheDocument();
-    expect(
-      within(review).getByRole('button', {name: /Add to cart.*\$89.00/}),
-    ).toBeEnabled();
-    const form = review.querySelector('form');
+    expect(screen.queryByRole('button', {name: /Review your selection before adding/})).not.toBeInTheDocument();
+    expect(screen.getByRole('button', {name: /Add to cart.*\$89.00/})).toBeEnabled();
+    const form = view.container.querySelector('form');
     const lines = JSON.parse(
       form?.getAttribute('data-lines') || '[]',
     ) as Array<{merchandiseId: string}>;

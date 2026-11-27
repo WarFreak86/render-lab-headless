@@ -101,7 +101,7 @@ export function ProductConfidenceSections({
                       <dt>Mounting</dt>
                       <dd>
                         {/^metal|canvas$/i.test(material)
-                          ? 'Manufacturer hardware included'
+                          ? 'Integrated hanging hardware included'
                           : 'Check framing requirements'}
                       </dd>
                     </div>
@@ -204,9 +204,8 @@ function ProductRoomScale({
           <h2 id={`${id}-title`}>Give the work its space.</h2>
         </div>
         <p>
-          Compare print proportions against a reference sofa or desk, then
-          measure your own wall. This illustration cannot measure your room or
-          prove a physical finish.
+          Enter your sofa or desk width to preview print proportions before you
+          hang. Measure your wall to confirm the fit.
         </p>
       </div>
       <div className="confidence-scale-layout">

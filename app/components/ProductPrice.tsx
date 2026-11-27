@@ -8,6 +8,11 @@ export function ProductPrice({
   price?: MoneyV2;
   compareAtPrice?: MoneyV2 | null;
 }) {
+  const showCompareAtPrice = Boolean(
+    price && compareAtPrice?.amount &&
+      Number(compareAtPrice.amount) > 0 &&
+      Number(compareAtPrice.amount) > Number(price.amount),
+  );
   return (
     <div
       aria-label="Price"
@@ -15,7 +20,7 @@ export function ProductPrice({
       className="product-price"
       role="group"
     >
-      {compareAtPrice ? (
+      {showCompareAtPrice && compareAtPrice ? (
         <div className="product-price-on-sale">
           {price ? <Money data={price} /> : null}
           <s>

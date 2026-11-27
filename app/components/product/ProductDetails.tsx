@@ -7,11 +7,13 @@ export function ProductDetails({
   descriptionHtml,
   editorial,
   garment = false,
+  showTechnicalSpecs = true,
   variants = [],
 }: {
   descriptionHtml: string;
   editorial: ProductEditorialData;
   garment?: boolean;
+  showTechnicalSpecs?: boolean;
   variants?: ReadonlyArray<{
     selectedOptions: ReadonlyArray<{name: string; value: string}>;
   }>;
@@ -57,7 +59,7 @@ export function ProductDetails({
             className={garment ? 'product-details__raw product-details__raw--apparel' : undefined}
             dangerouslySetInnerHTML={{__html: garmentDescriptionHtml}}
           />
-          <ProductTechnicalSpecs variants={variants} />
+          {showTechnicalSpecs ? <ProductTechnicalSpecs variants={variants} /> : null}
         </div>
       </section>
 
