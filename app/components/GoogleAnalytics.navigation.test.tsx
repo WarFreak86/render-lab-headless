@@ -63,6 +63,30 @@ it('queues standard gtag Arguments objects so the Google tag can process command
   }
 });
 
+it('reuses the shared Google Tag Manager loader across navigation', () => {
+  const script = document.createElement('script');
+  script.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-N4SWXDCM';
+  document.head.appendChild(script);
+  const gtag = vi.fn();
+  browser.gtag = gtag;
+
+  const {rerender} = render(<GoogleAnalytics />);
+  window.history.pushState({}, '', '/collections/hoodies');
+  state.pathname = '/collections/hoodies';
+  rerender(<GoogleAnalytics />);
+  act(() => state.subscriptions.get('page_viewed')?.({}));
+
+  expect(
+    document.querySelectorAll('script[src*="googletagmanager.com"]'),
+  ).toHaveLength(1);
+  expect(
+    gtag.mock.calls.filter(([command]) => command === 'config'),
+  ).toHaveLength(1);
+  expect(
+    gtag.mock.calls.filter(([, event]) => event === 'page_view'),
+  ).toHaveLength(2);
+});
+
 it('initializes once and sends clean paths, ignoring variant queries and repeated notifications', () => {
   const {rerender} = render(<GoogleAnalytics />);
   const events = () =>
